@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Your Name — Portfolio</title>
+    <meta name="description" content="A modern personal portfolio showcasing projects and skills." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script defer src="js/script.js"></script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="logo" href="#">Your Name</a>
+            <nav class="nav" id="main-nav">
+                <a href="#about">About</a>
+                <a href="#projects">Projects</a>
+                <a href="#contact">Contact</a>
+            </nav>
+            <div class="controls">
+                <button id="theme-toggle" aria-label="Toggle theme">🌙</button>
+                <button id="menu-toggle" class="menu-btn" aria-label="Toggle menu">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container hero-inner">
+                <div>
+                    <h1>Hi, I'm <span class="accent">Your Name</span></h1>
+                    <p class="lead">I build thoughtful interfaces and delightful user experiences.</p>
+                    <p class="cta-row">
+                        <a class="btn" href="#projects">See my work</a>
+                        <a class="btn btn-outline" href="#contact">Contact me</a>
+                    </p>
+                </div>
+                <div class="hero-visual" aria-hidden="true">
+                    <svg width="320" height="240" viewBox="0 0 320 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="320" height="240" rx="16" fill="url(#g)"/>
+                        <defs>
+                            <linearGradient id="g" x1="0" x2="1">
+                                <stop offset="0" stop-color="#6EE7B7" />
+                                <stop offset="1" stop-color="#3B82F6" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="section">
+            <div class="container">
+                <h2>About</h2>
+                <div class="about-grid">
+                    <div>
+                        <p>I’m a front-end developer who cares about clean design, performant code, and accessible experiences. I enjoy building products from first prototype to production.</p>
+                        <p class="muted">Location: Your City • Available for freelance</p>
+                    </div>
+                    <ul class="skills">
+                        <li>HTML & CSS</li>
+                        <li>JavaScript (ES6+)</li>
+                        <li>React / Vue</li>
+                        <li>Design systems</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="section">
+            <div class="container">
+                <h2>Selected Projects</h2>
+                <div class="projects-grid">
+                    <article class="card">
+                        <div class="card-media" style="background:linear-gradient(120deg,#f6d365,#fda085);"></div>
+                        <div class="card-body">
+                            <h3>Project One</h3>
+                            <p class="muted">A clean UI with responsive layout and subtle animations.</p>
+                            <p class="card-actions"><a class="link" href="#">View project</a></p>
+                        </div>
+                    </article>
+
+                    <article class="card">
+                        <div class="card-media" style="background:linear-gradient(120deg,#9be15d,#00e3ae);"></div>
+                        <div class="card-body">
+                            <h3>Project Two</h3>
+                            <p class="muted">A small web app showcasing data visualization and interactions.</p>
+                            <p class="card-actions"><a class="link" href="#">View project</a></p>
+                        </div>
+                    </article>
+
+                    <article class="card">
+                        <div class="card-media" style="background:linear-gradient(120deg,#67b26f,#4ca2cd);"></div>
+                        <div class="card-body">
+                            <h3>Project Three</h3>
+                            <p class="muted">Design system work and component libraries.</p>
+                            <p class="card-actions"><a class="link" href="#">View project</a></p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section">
+            <div class="container">
+                <h2>Contact</h2>
+                <div class="contact-grid">
+                    <form id="contact-form" class="contact-form">
+                        <label>
+                            <span>Name</span>
+                            <input name="name" required>
+                        </label>
+                        <label>
+                            <span>Email</span>
+                            <input name="email" type="email" required>
+                        </label>
+                        <label>
+                            <span>Message</span>
+                            <textarea name="message" rows="5" required></textarea>
+                        </label>
+                        <div class="form-actions">
+                            <button class="btn" type="submit">Send message</button>
+                        </div>
+                        <p id="form-status" class="muted" aria-live="polite"></p>
+                    </form>
+                    <aside class="contact-card">
+                        <h3>Get in touch</h3>
+                        <p class="muted">Email: <a class="link" href="mailto:you@example.com">you@example.com</a></p>
+                        <p class="muted">LinkedIn / GitHub / Twitter: update links in the source.</p>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p class="muted">© <span id="year"></span> Your Name. Built with care.</p>
+        </div>
+    </footer>
+</body>
+</html>
