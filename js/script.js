@@ -45,6 +45,11 @@
     });
   });
 
+  // Open external links in a new tab safely (whatsapp/github/linkedin targets already set in markup)
+  document.querySelectorAll('a[target="_blank"]').forEach(a=>{
+    a.setAttribute('rel','noopener');
+  });
+
   // Contact form (client-side only)
   form && form.addEventListener('submit', function(e){
     e.preventDefault();
