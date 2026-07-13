@@ -1,6 +1,6 @@
 /* -------------------------------------------
 
-Name: 		Ruizarch
+Name: 		tanjil
 Version:    1.0
 Developer:	Nazar Miller (millerDigitalDesign)
 Portfolio:  https://themeforest.net/user/millerdigitaldesign/portfolio?ref=MillerDigitalDesign
@@ -18,13 +18,14 @@ $(function () {
     swup
 
     ***************************/
-    const options = {
-        containers: ['#swupMain', '#swupMenu'],
-        animateHistoryBrowsing: true,
-        linkSelector: 'a:not([data-no-swup])',
-        animationSelector: '[class="mil-main-transition"]'
-    };
-    const swup = new Swup(options);
+    // Swup page transition disabled for single-page layout
+    // const options = {
+    //     containers: ['#swupMain', '#swupMenu'],
+    //     animateHistoryBrowsing: true,
+    //     linkSelector: 'a:not([data-no-swup])',
+    //     animationSelector: '[class="mil-main-transition"]'
+    // };
+    // const swup = new Swup(options);
 
     /***************************
 
