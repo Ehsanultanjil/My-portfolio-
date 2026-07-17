@@ -74,3 +74,38 @@ if (links.length > 0) {
     setActiveLink(activeLink);
     setTimeout(() => moveIndicator(activeLink), 100);
 }
+
+// Mobile menu
+const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+
+if (mobileMenuBtn && mobileMenu) {
+    const menuIcon = mobileMenuBtn.querySelector('.material-symbols-outlined');
+
+    function closeMobileMenu() {
+        mobileMenu.classList.add('hidden');
+        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        menuIcon.textContent = 'menu';
+    }
+
+    function openMobileMenu() {
+        mobileMenu.classList.remove('hidden');
+        mobileMenuBtn.setAttribute('aria-expanded', 'true');
+        menuIcon.textContent = 'close';
+    }
+
+    mobileMenuBtn.addEventListener('click', () => {
+        const isOpen = mobileMenuBtn.getAttribute('aria-expanded') === 'true';
+        isOpen ? closeMobileMenu() : openMobileMenu();
+    });
+
+    mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', closeMobileMenu);
+    });
+
+    document.addEventListener('click', (e) => {
+        if (mobileMenuBtn.getAttribute('aria-expanded') !== 'true') return;
+        if (mobileMenu.contains(e.target) || mobileMenuBtn.contains(e.target)) return;
+        closeMobileMenu();
+    });
+}

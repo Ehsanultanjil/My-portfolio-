@@ -29,11 +29,24 @@
 <a class="font-body-md text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-3 py-1 rounded-full transition-all duration-300" href="#contact">Contact</a>
 </div>
 <a href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer"
-    class="bg-primary-container text-on-primary-container px-6 py-2 font-bold bounce-feedback transition-transform hover:brightness-110 relative z-10 rounded-full">
+    class="hidden md:inline-block bg-primary-container text-on-primary-container px-6 py-2 font-bold bounce-feedback transition-transform hover:brightness-110 relative z-10 rounded-full">
         Hire Me
     </a>
-<div class="absolute bg-primary-container/20 rounded-full transition-all duration-300 ease-out pointer-events-none shadow-[0_0_15px_rgba(0,240,255,0.3)] border border-primary-container/30" id="nav-indicator" style="height: 32px; top: 50%; transform: translateY(-50%); z-index: 0; width: 39.125px; left: 243.328px; opacity: 1;"></div>
+<button id="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false" class="md:hidden w-10 h-10 flex items-center justify-center relative z-10 bounce-feedback">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="absolute bg-primary-container/20 rounded-full transition-all duration-300 ease-out pointer-events-none shadow-[0_0_15px_rgba(0,240,255,0.3)] border border-primary-container/30 hidden md:block" id="nav-indicator" style="height: 32px; top: 50%; transform: translateY(-50%); z-index: 0; width: 39.125px; left: 243.328px; opacity: 1;"></div>
 </nav>
+<!-- Mobile Menu -->
+<div id="mobile-menu" class="hidden md:hidden fixed top-24 left-6 right-6 z-40 liquid-glass-refractive rounded-3xl p-4 flex flex-col gap-1 shadow-2xl">
+<a class="font-body-md text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-4 py-3 rounded-2xl transition-all duration-300" href="#work">Work</a>
+<a class="font-body-md text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-4 py-3 rounded-2xl transition-all duration-300" href="#skills">Skills</a>
+<a class="font-body-md text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-4 py-3 rounded-2xl transition-all duration-300" href="#about">About</a>
+<a class="font-body-md text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-4 py-3 rounded-2xl transition-all duration-300" href="#contact">Contact</a>
+<a href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer" class="mt-2 text-center bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl">
+    Hire Me
+</a>
+</div>
 <main class="relative pt-40 px-gutter space-y-32 max-w-7xl mx-auto mb-32">
 <!-- Hero Section -->
 <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[60vh]" id="about">
@@ -56,18 +69,81 @@
 </a>
 </div>
 </div>
-<div class="relative group">
+<div class="relative group max-w-[260px] sm:max-w-[340px] lg:max-w-none mx-auto lg:mx-0">
 <div class="absolute -inset-4 bg-primary-container/20 blur-3xl rounded-full transition-opacity group-hover:opacity-60 opacity-30"></div>
-<!-- TODO: swap in a real photo of Tanjil -->
-<div class="relative aspect-square overflow-hidden liquid-glass-refractive p-2 transform rotate-1 hover:rotate-0 transition-transform duration-500 rounded-4xl flex items-center justify-center">
-<span class="material-symbols-outlined text-primary-container" style="font-size: 96px;">person</span>
+<div class="relative aspect-square overflow-hidden liquid-glass-refractive p-2 transform rotate-1 hover:rotate-0 transition-transform duration-500 rounded-4xl">
+<img src="assets/images/myphoto.jpg" alt="Ehsanul Karim Tanjil" class="w-full h-full object-cover rounded-[32px]">
 </div>
 </div>
 </section>
-<!-- Engineering Work Slider -->
-<section class="space-y-12" id="work">
-<div class="flex justify-between items-end">
-<h2 class="font-headline-lg text-headline-lg">Engineering Work</h2>
+<!-- Skills Marquee -->
+<div class="relative w-screen left-1/2 -translate-x-1/2 overflow-hidden" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
+<div class="flex animate-marquee whitespace-nowrap w-max px-8 py-8">
+<div class="flex gap-6 shrink-0 mr-6">
+<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-body-md text-body-md">React.js</span>
+</div>
+<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-body-md text-body-md">Next.js</span>
+</div>
+<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-body-md text-body-md">Tailwind CSS</span>
+</div>
+<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-body-md text-body-md">Node.js</span>
+</div>
+<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-body-md text-body-md">TypeScript</span>
+</div>
+<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-body-md text-body-md">PostgreSQL</span>
+</div>
+</div>
+<!-- Set 2 -->
+<div class="flex gap-6 shrink-0 mr-6">
+<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-body-md text-body-md">React.js</span>
+</div>
+<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-body-md text-body-md">Next.js</span>
+</div>
+<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-body-md text-body-md">Tailwind CSS</span>
+</div>
+<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-body-md text-body-md">Node.js</span>
+</div>
+<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-body-md text-body-md">TypeScript</span>
+</div>
+<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-body-md text-body-md">PostgreSQL</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Work Section -->
+<section class="space-y-8" id="work">
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
+<div class="space-y-4">
+<h2 class="font-headline-lg text-headline-lg">My Work</h2>
+<div class="inline-flex liquid-glass-refractive rounded-full p-1 gap-1" id="work-tabs">
+<button class="work-tab px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 bg-primary-container text-on-primary-container" data-tab="projects">Engineering Work</button>
+<button class="work-tab px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 text-on-surface-variant" data-tab="community">Community Work</button>
+</div>
+</div>
 <div class="flex gap-4">
 <button class="w-14 h-14 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback" style="will-change: transform;">
 <span class="material-symbols-outlined">chevron_left</span>
@@ -77,52 +153,88 @@
 </button>
 </div>
 </div>
-<div class="flex gap-8 overflow-x-auto pb-8 custom-scrollbar scroll-smooth px-8 py-6">
+<div class="work-panel transition-opacity duration-300" data-panel="projects">
+<div class="flex gap-6 overflow-x-auto pb-8 custom-scrollbar scroll-smooth px-8 py-6">
 <!-- TODO: replace with a real project -->
-<div class="min-w-[400px] liquid-glass-refractive p-6 flex flex-col group liquid-glass-interactive bounce-feedback rounded-4xl" style="will-change: transform;">
-<div class="relative h-60 rounded-3xl overflow-hidden mb-6 border border-white/5 border-dashed flex items-center justify-center">
-<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 48px;">image</span>
+<div class="min-w-[88vw] sm:min-w-[440px] liquid-glass-refractive liquid-glass-interactive bounce-feedback rounded-4xl p-4 flex gap-4" style="will-change: transform;">
+<div class="w-28 sm:w-32 shrink-0 rounded-2xl border border-white/10 border-dashed bg-white/[0.02] flex items-center justify-center" style="aspect-ratio: 3/4;">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 36px;">image</span>
 </div>
-<div class="space-y-4">
-<div class="flex gap-2">
-<span class="px-3 py-1 rounded-full liquid-glass-refractive text-[10px] font-bold">COMING SOON</span>
-</div>
-<h3 class="font-headline-lg text-2xl">Project Title</h3>
-<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 brightness-110">Short project description goes here.</p>
-<div class="inline-flex items-center gap-2 text-on-surface-variant font-bold text-sm opacity-50">
-                        View Project <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</div>
-</div>
-</div>
-<!-- TODO: replace with a real project -->
-<div class="min-w-[400px] liquid-glass-refractive p-6 flex flex-col group liquid-glass-interactive bounce-feedback rounded-4xl" style="will-change: transform;">
-<div class="relative h-60 rounded-3xl overflow-hidden mb-6 border border-white/5 border-dashed flex items-center justify-center">
-<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 48px;">image</span>
-</div>
-<div class="space-y-4">
-<div class="flex gap-2">
-<span class="px-3 py-1 rounded-full liquid-glass-refractive text-[10px] font-bold">COMING SOON</span>
-</div>
-<h3 class="font-headline-lg text-2xl">Project Title</h3>
-<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 brightness-110">Short project description goes here.</p>
-<div class="inline-flex items-center gap-2 text-on-surface-variant font-bold text-sm opacity-50">
-                        View Project <span class="material-symbols-outlined text-sm">arrow_forward</span>
+<div class="flex flex-col flex-1 min-w-0 py-1">
+<span class="px-3 py-1 rounded-full liquid-glass-refractive text-[10px] font-bold self-start mb-2">COMING SOON</span>
+<h3 class="font-headline-lg text-lg mb-2">Project Title</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant brightness-110 leading-relaxed line-clamp-3 mb-3">Short project description goes here.</p>
+<div class="mt-auto flex items-center justify-end gap-3 text-on-surface-variant opacity-40">
+<span class="material-symbols-outlined text-lg">open_in_new</span>
 </div>
 </div>
 </div>
 <!-- TODO: replace with a real project -->
-<div class="min-w-[400px] liquid-glass-refractive p-6 flex flex-col group liquid-glass-interactive bounce-feedback rounded-4xl" style="will-change: transform;">
-<div class="relative h-60 rounded-3xl overflow-hidden mb-6 border border-white/5 border-dashed flex items-center justify-center">
-<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 48px;">image</span>
+<div class="min-w-[88vw] sm:min-w-[440px] liquid-glass-refractive liquid-glass-interactive bounce-feedback rounded-4xl p-4 flex gap-4" style="will-change: transform;">
+<div class="w-28 sm:w-32 shrink-0 rounded-2xl border border-white/10 border-dashed bg-white/[0.02] flex items-center justify-center" style="aspect-ratio: 3/4;">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 36px;">image</span>
 </div>
-<div class="space-y-4">
-<div class="flex gap-2">
-<span class="px-3 py-1 rounded-full liquid-glass-refractive text-[10px] font-bold">COMING SOON</span>
+<div class="flex flex-col flex-1 min-w-0 py-1">
+<span class="px-3 py-1 rounded-full liquid-glass-refractive text-[10px] font-bold self-start mb-2">COMING SOON</span>
+<h3 class="font-headline-lg text-lg mb-2">Project Title</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant brightness-110 leading-relaxed line-clamp-3 mb-3">Short project description goes here.</p>
+<div class="mt-auto flex items-center justify-end gap-3 text-on-surface-variant opacity-40">
+<span class="material-symbols-outlined text-lg">open_in_new</span>
 </div>
-<h3 class="font-headline-lg text-2xl">Project Title</h3>
-<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 brightness-110">Short project description goes here.</p>
-<div class="inline-flex items-center gap-2 text-on-surface-variant font-bold text-sm opacity-50">
-                        View Project <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</div>
+</div>
+<!-- TODO: replace with a real project -->
+<div class="min-w-[88vw] sm:min-w-[440px] liquid-glass-refractive liquid-glass-interactive bounce-feedback rounded-4xl p-4 flex gap-4" style="will-change: transform;">
+<div class="w-28 sm:w-32 shrink-0 rounded-2xl border border-white/10 border-dashed bg-white/[0.02] flex items-center justify-center" style="aspect-ratio: 3/4;">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 36px;">image</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0 py-1">
+<span class="px-3 py-1 rounded-full liquid-glass-refractive text-[10px] font-bold self-start mb-2">COMING SOON</span>
+<h3 class="font-headline-lg text-lg mb-2">Project Title</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant brightness-110 leading-relaxed line-clamp-3 mb-3">Short project description goes here.</p>
+<div class="mt-auto flex items-center justify-end gap-3 text-on-surface-variant opacity-40">
+<span class="material-symbols-outlined text-lg">open_in_new</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="work-panel hidden transition-opacity duration-300" data-panel="community">
+<div class="flex gap-6 overflow-x-auto pb-8 custom-scrollbar scroll-smooth px-8 py-6">
+<div class="min-w-[88vw] sm:min-w-[440px] liquid-glass-refractive liquid-glass-interactive bounce-feedback rounded-4xl p-4 flex gap-4" style="will-change: transform;">
+<div class="w-28 sm:w-32 shrink-0 rounded-2xl bg-primary-container/10 flex items-center justify-center" style="aspect-ratio: 3/4;">
+<span class="material-symbols-outlined text-primary-container text-3xl" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0 py-1">
+<h4 class="font-headline-lg text-lg mb-2">Moderation &amp; Safety</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant brightness-110 leading-relaxed line-clamp-3 mb-3">Keeping Telegram communities safe, active, and spam-free with hands-on, responsive moderation.</p>
+<a href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer" class="mt-auto flex items-center justify-end gap-3 text-primary-container transition-transform hover:brightness-125">
+<span class="material-symbols-outlined text-lg">open_in_new</span>
+</a>
+</div>
+</div>
+<div class="min-w-[88vw] sm:min-w-[440px] liquid-glass-refractive liquid-glass-interactive bounce-feedback rounded-4xl p-4 flex gap-4" style="will-change: transform;">
+<div class="w-28 sm:w-32 shrink-0 rounded-2xl bg-primary-container/10 flex items-center justify-center" style="aspect-ratio: 3/4;">
+<span class="material-symbols-outlined text-primary-container text-3xl" style="font-variation-settings: 'FILL' 1;">forum</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0 py-1">
+<h4 class="font-headline-lg text-lg mb-2">Member Engagement</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant brightness-110 leading-relaxed line-clamp-3 mb-3">Growing engagement and retention through active, day-to-day community management.</p>
+<a href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer" class="mt-auto flex items-center justify-end gap-3 text-primary-container transition-transform hover:brightness-125">
+<span class="material-symbols-outlined text-lg">open_in_new</span>
+</a>
+</div>
+</div>
+<div class="min-w-[88vw] sm:min-w-[440px] liquid-glass-refractive liquid-glass-interactive bounce-feedback rounded-4xl p-4 flex gap-4" style="will-change: transform;">
+<div class="w-28 sm:w-32 shrink-0 rounded-2xl bg-primary-container/10 flex items-center justify-center" style="aspect-ratio: 3/4;">
+<span class="material-symbols-outlined text-primary-container text-3xl" style="font-variation-settings: 'FILL' 1;">support_agent</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0 py-1">
+<h4 class="font-headline-lg text-lg mb-2">Client Support</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant brightness-110 leading-relaxed line-clamp-3 mb-3">Fiverr Level 2 Seller with 65+ reviews and a 4.9★ rating for reliable, responsive service.</p>
+<a href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer" class="mt-auto flex items-center justify-end gap-3 text-primary-container transition-transform hover:brightness-125">
+<span class="material-symbols-outlined text-lg">open_in_new</span>
+</a>
 </div>
 </div>
 </div>
@@ -191,42 +303,9 @@
 </div>
 </div>
 </section>
-<!-- Telegram Moderation Service -->
-<section class="space-y-12 pb-20">
-<h2 class="font-headline-lg text-headline-lg">Telegram Moderation &amp; Community Management</h2>
-<div class="flex gap-8 overflow-x-auto pb-8 custom-scrollbar scroll-smooth px-8 py-6">
-<div class="min-w-[340px] liquid-glass-refractive p-8 flex flex-col gap-6 liquid-glass-interactive bounce-feedback rounded-4xl" style="will-change: transform;">
-<div class="w-16 h-16 liquid-glass-refractive flex items-center justify-center rounded-3xl">
-<span class="material-symbols-outlined text-primary-container text-3xl" style="font-variation-settings: 'FILL' 1;">shield</span>
-</div>
-<div class="space-y-3">
-<h4 class="font-headline-lg text-xl">Moderation &amp; Safety</h4>
-<p class="font-body-sm text-body-sm text-on-surface-variant brightness-110 leading-relaxed">Keeping Telegram communities safe, active, and spam-free with hands-on, responsive moderation.</p>
-</div>
-</div>
-<div class="min-w-[340px] liquid-glass-refractive p-8 flex flex-col gap-6 liquid-glass-interactive bounce-feedback rounded-4xl" style="will-change: transform;">
-<div class="w-16 h-16 liquid-glass-refractive flex items-center justify-center rounded-3xl">
-<span class="material-symbols-outlined text-primary-container text-3xl" style="font-variation-settings: 'FILL' 1;">forum</span>
-</div>
-<div class="space-y-3">
-<h4 class="font-headline-lg text-xl">Member Engagement</h4>
-<p class="font-body-sm text-body-sm text-on-surface-variant brightness-110 leading-relaxed">Growing engagement and retention through active, day-to-day community management.</p>
-</div>
-</div>
-<div class="min-w-[340px] liquid-glass-refractive p-8 flex flex-col gap-6 liquid-glass-interactive bounce-feedback rounded-4xl" style="will-change: transform;">
-<div class="w-16 h-16 liquid-glass-refractive flex items-center justify-center rounded-3xl">
-<span class="material-symbols-outlined text-primary-container text-3xl" style="font-variation-settings: 'FILL' 1;">support_agent</span>
-</div>
-<div class="space-y-3">
-<h4 class="font-headline-lg text-xl">Client Support</h4>
-<p class="font-body-sm text-body-sm text-on-surface-variant brightness-110 leading-relaxed">Fiverr Level 2 Seller with 65+ reviews and a 4.9★ rating for reliable, responsive service.</p>
-</div>
-</div>
-</div>
-</section>
 <!-- Contact -->
 <section class="space-y-8 pb-12" id="contact">
-<div class="liquid-glass-refractive rounded-4xl p-12 flex flex-col items-center text-center gap-6">
+<div class="liquid-glass-refractive rounded-4xl p-6 sm:p-12 flex flex-col items-center text-center gap-6">
 <h2 class="font-headline-lg text-headline-lg">Get In Touch</h2>
 <p class="font-body-md text-body-md text-on-surface-variant max-w-lg leading-relaxed brightness-125">Have a project in mind or need a Telegram community managed? Send an email — I read every message.</p>
 <a href="mailto:ehsanultanjil@gmail.com" class="px-8 py-4 bg-primary-container text-on-primary-container font-bold bounce-feedback transition-transform hover:brightness-110 rounded-full">
@@ -254,6 +333,7 @@
 </div>
 </footer>
 <script src="assets/js/nav.js"></script>
+<script src="assets/js/work-tabs.js"></script>
 <script src="assets/js/ambient-glow.js"></script>
 <script src="assets/js/preloader.js"></script>
 </body></html>
