@@ -1,0 +1,99 @@
+.liquid-glass-refractive {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(0, 219, 233, 0.35);
+    box-shadow:
+        inset 0 0 20px rgba(0, 219, 233, 0.1),
+        0 12px 40px -10px rgba(0, 0, 0, 0.8),
+        0 0 1px 1px rgba(0, 219, 233, 0.1);
+    position: relative;
+}
+.liquid-glass-refractive::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 40%, transparent 60%, rgba(0,219,233,0.4) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+.liquid-glass-interactive {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.liquid-glass-interactive:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(0, 219, 233, 0.6);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow:
+        inset 0 0 30px rgba(0, 219, 233, 0.2),
+        0 20px 50px -12px rgba(0, 0, 0, 0.9),
+        0 0 4px 1px rgba(0, 219, 233, 0.3);
+}
+.bounce-feedback:active {
+    transform: scale(0.92);
+}
+.custom-scrollbar::-webkit-scrollbar {
+    height: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 219, 233, 0.2);
+    border-radius: 10px;
+}
+.ambient-glow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(0, 219, 233, 0.12) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: -1;
+}
+.preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000000;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+.preloader.preloader-exit {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+.preloader-words {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem 1.5rem;
+    padding: 0 1.5rem;
+}
+.preloader-word {
+    font-family: "Outfit", sans-serif;
+    font-size: clamp(20px, 4vw, 32px);
+    font-weight: 500;
+    color: #dbfcff;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: preloader-word-in 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+.preloader-word-thin {
+    font-weight: 100;
+}
+@keyframes preloader-word-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

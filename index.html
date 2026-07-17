@@ -1,1137 +1,259 @@
-<!DOCTYPE html>
-<html lang="zxx">
-
-<head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-    <!-- bootstrap grid css -->
-    <link rel="stylesheet" href="css/plugins/bootstrap-grid.css">
-    <!-- font awesome css -->
-    <link rel="stylesheet" href="css/plugins/font-awesome.min.css">
-    <!-- swiper css -->
-    <link rel="stylesheet" href="css/plugins/swiper.min.css">
-    <!-- fancybox css -->
-    <link rel="stylesheet" href="css/plugins/fancybox.min.css">
-    <!-- Tanjil scss -->
-    <link rel="stylesheet" href="css/style.css">
-    <!-- page name -->
-    <title>Tanjil</title>
-
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Tanjil</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;500&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="assets/js/tailwind-config.js"></script>
+<link rel="stylesheet" href="assets/css/styles.css">
 </head>
-
-<body>
-
-    <!-- wrapper -->
-    <div class="mil-wrapper" id="top">
-
-        <!-- cursor -->
-        <div class="mil-ball">
-            <span class="mil-icon-1">
-                <svg viewBox="0 0 128 128">
-                    <path
-                        d="M106.1,41.9c-1.2-1.2-3.1-1.2-4.2,0c-1.2,1.2-1.2,3.1,0,4.2L116.8,61H11.2l14.9-14.9c1.2-1.2,1.2-3.1,0-4.2	c-1.2-1.2-3.1-1.2-4.2,0l-20,20c-1.2,1.2-1.2,3.1,0,4.2l20,20c0.6,0.6,1.4,0.9,2.1,0.9s1.5-0.3,2.1-0.9c1.2-1.2,1.2-3.1,0-4.2	L11.2,67h105.5l-14.9,14.9c-1.2,1.2-1.2,3.1,0,4.2c0.6,0.6,1.4,0.9,2.1,0.9s1.5-0.3,2.1-0.9l20-20c1.2-1.2,1.2-3.1,0-4.2L106.1,41.9	z" />
-                </svg>
-            </span>
-            <div class="mil-more-text">More</div>
-            <div class="mil-choose-text">Сhoose</div>
-        </div>
-        <!-- cursor end -->
-
-        <!-- preloader -->
-        <div class="mil-preloader">
-            <div class="mil-preloader-animation">
-                <div class="mil-pos-abs mil-animation-1">
-                    <p class="mil-h3 mil-muted mil-thin">Subhanallah</p>
-                    <p class="mil-h3 mil-muted">Alhamdulillah</p>
-                    <p class="mil-h3 mil-muted mil-thin">Allahu-Akbar</p>
-                </div>
-                <div class="mil-pos-abs mil-animation-2">
-                    <div class="mil-reveal-frame">
-                        <p class="mil-reveal-box"></p>
-                        <p class="mil-h3 mil-muted mil-thin">لَا إِلَٰهَ إِلَّا ٱللَّٰهُ مُحَمَّدٌ رَسُولُ ٱللَّٰهِ</p>
-                    </div>
-                </div>
+<body class="text-on-surface overflow-x-hidden bg-background">
+<!-- Preloader -->
+<div class="preloader" id="preloader">
+<div class="preloader-words">
+<span class="preloader-word preloader-word-thin" style="animation-delay: 0.2s;">Subhanallah</span>
+<span class="preloader-word" style="animation-delay: 0.9s;">Alhamdulillah</span>
+<span class="preloader-word preloader-word-thin" style="animation-delay: 1.6s;">Allahu-Akbar</span>
+</div>
+</div>
+<!-- Preloader end -->
+<div class="ambient-glow" style="--x: 22.734375%; --y: 56.29577956051622%;"></div>
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 left-0 right-0 z-50 flex items-center px-6 py-2 gap-component-gap mt-6 mx-auto max-w-fit liquid-glass-refractive rounded-full shadow-2xl bounce-feedback">
+<div class="font-headline-lg text-headline-lg font-bold text-primary mr-4">Tanjil</div>
+<div class="hidden md:flex gap-6 items-center px-4 relative z-10" id="nav-links">
+<a class="font-body-md text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-3 py-1 rounded-full transition-all duration-300" href="#work">Work</a>
+<a class="font-body-md text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-3 py-1 rounded-full transition-all duration-300" href="#skills">Skills</a>
+<a class="font-body-md text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-3 py-1 rounded-full transition-all duration-300" href="#about">About</a>
+<a class="font-body-md text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-3 py-1 rounded-full transition-all duration-300" href="#contact">Contact</a>
+</div>
+<a href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer"
+    class="bg-primary-container text-on-primary-container px-6 py-2 font-bold bounce-feedback transition-transform hover:brightness-110 relative z-10 rounded-full">
+        Hire Me
+    </a>
+<div class="absolute bg-primary-container/20 rounded-full transition-all duration-300 ease-out pointer-events-none shadow-[0_0_15px_rgba(0,240,255,0.3)] border border-primary-container/30" id="nav-indicator" style="height: 32px; top: 50%; transform: translateY(-50%); z-index: 0; width: 39.125px; left: 243.328px; opacity: 1;"></div>
+</nav>
+<main class="relative pt-40 px-gutter space-y-32 max-w-7xl mx-auto mb-32">
+<!-- Hero Section -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[60vh]" id="about">
+<div class="space-y-6">
+<div class="inline-block px-4 py-1 liquid-glass-refractive text-primary font-label-md text-label-md uppercase tracking-widest rounded-full">
+                Available for hire
             </div>
-        </div>
-        <!-- preloader end -->
-
-        <!-- scrollbar progress -->
-        <div class="mil-progress-track">
-            <div class="mil-progress"></div>
-        </div>
-        <!-- scrollbar progress end -->
-
-        <!-- menu -->
-        <div class="mil-menu-frame">
-            <!-- frame clone -->
-            <div class="mil-frame-top">
-                <a href="#home" class="mil-logo">tanjil</a>
-                <div class="mil-menu-btn">
-                    <span></span>
-                </div>
-            </div>
-            <!-- frame clone end -->
-            <div class="container">
-                <div class="mil-menu-content">
-                    <div class="row">
-                        <div class="col-xl-5">
-
-                            <nav class="mil-main-menu" id="swupMenu">
-                                <ul>
-                                    <li class="mil-has-children mil-active">
-                                        <a href="#.">Homepage</a>
-                                        <ul>
-                                            <li><a href="#home">Landing page</a></li>
-                                            <li><a href="#home">Personal</a></li>
-                                            <li><a href="#portfolio">Portfolio slider</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="mil-has-children">
-                                        <a href="#.">Portfolio</a>
-                                        <ul>
-                                            <li><a href="#portfolio">Grid type 1</a></li>
-                                            <li><a href="#portfolio">Grid type 2</a></li>
-                                            <li><a href="#portfolio">Slider</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="mil-has-children">
-                                        <a href="#.">Services</a>
-                                        <ul>
-                                            <li><a href="#services">Services List</a></li>
-                                            <li><a href="#service">Single service</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="mil-has-children">
-                                        <a href="#.">Newsletter</a>
-                                        <ul>
-                                            <li><a href="blog.html">Blog List</a></li>
-                                            <li><a href="publication.html">Publication</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="mil-has-children">
-                                        <a href="#.">Other pages</a>
-                                        <ul>
-                                            <li><a href="#home">Home</a></li>
-                                            <li class="mil-active"><a href="#portfolio">Portfolio</a></li>
-                                            <li><a href="#contact">Contact</a></li>
-                                            <li><a href="404.html">404</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </nav>
-
-                        </div>
-                        <div class="col-xl-7">
-
-                            <div class="mil-menu-right-frame">
-                                <div class="mil-animation-in">
-                                    <div class="mil-animation-frame">
-                                        <div class="mil-animation mil-position-1 mil-scale" data-value-1="2"
-                                            data-value-2="2"></div>
-                                    </div>
-                                </div>
-                                <div class="mil-menu-right">
-                                    <div class="row">
-                                        <div class="col-lg-8 mil-mb-60">
-
-                                            <h6 class="mil-muted mil-mb-30">Projects</h6>
-
-                                            <ul class="mil-menu-list">
-                                                <li><a href="#contact" class="mil-light-soft">Interior design
-                                                        studio</a></li>
-                                                <li><a href="#contact" class="mil-light-soft">Home Security
-                                                        Camera</a></li>
-                                                <li><a href="#contact" class="mil-light-soft">Kemia Honest
-                                                        Skincare</a></li>
-                                                <li><a href="#contact" class="mil-light-soft">Cascade of Lava</a>
-                                                </li>
-                                                <li><a href="#contact" class="mil-light-soft">Air Pro by
-                                                        Molekule</a></li>
-                                                <li><a href="#contact" class="mil-light-soft">Tony's
-                                                        Chocolonely</a></li>
-                                            </ul>
-
-                                        </div>
-                                        <div class="col-lg-4 mil-mb-60">
-
-                                            <h6 class="mil-muted mil-mb-30">Useful links</h6>
-
-                                            <ul class="mil-menu-list">
-                                                <li><a href="#." class="mil-light-soft">Privacy Policy</a></li>
-                                                <li><a href="#." class="mil-light-soft">Terms and conditions</a></li>
-                                                <li><a href="#." class="mil-light-soft">Cookie Policy</a></li>
-                                                <li><a href="#." class="mil-light-soft">Careers</a></li>
-                                            </ul>
-
-                                        </div>
-                                    </div>
-                                    <div class="mil-divider mil-mb-60"></div>
-                                    <div class="row justify-content-between">
-
-                                        <div class="col-lg-4 mil-mb-60">
-
-                                            <h6 class="mil-muted mil-mb-30">Canada</h6>
-
-                                            <p class="mil-light-soft mil-up">71 South Los Carneros Road, California
-                                                <span class="mil-no-wrap">+51 174 705 812</span>
-                                            </p>
-
-                                        </div>
-                                        <div class="col-lg-4 mil-mb-60">
-
-                                            <h6 class="mil-muted mil-mb-30">Germany</h6>
-
-                                            <p class="mil-light-soft">Leehove 40, 2678 MC De Lier, Netherlands <span
-                                                    class="mil-no-wrap">+31 174 705 811</span></p>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- menu -->
-
-        <!-- curtain -->
-        <div class="mil-curtain"></div>
-        <!-- curtain end -->
-
-        <!-- frame -->
-        <div class="mil-frame">
-            <div class="mil-frame-top">
-                <a href="#home" class="mil-logo"></a>
-                <div class="mil-menu-btn">
-                    <span></span>
-                </div>
-            </div>
-            <div class="mil-frame-bottom">
-                <div class="mil-current-page"></div>
-                <div class="mil-back-to-top">
-                    <a href="#top" class="mil-link mil-dark mil-arrow-place">
-                        <span>Back to top</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <!-- frame end -->
-
-        <!-- content -->
-        <div class="mil-content">
-            <div id="swupMain" class="mil-main-transition">
-
-                <!-- banner -->
-                <section id="home" class="mil-banner mil-dark-bg">
-                    <div class="mi-invert-fix">
-                        <div class="mil-animation-frame">
-                            <div class="mil-animation mil-position-1 mil-scale" data-value-1="7" data-value-2="1.6">
-                            </div>
-                            <div class="mil-animation mil-position-2 mil-scale" data-value-1="4" data-value-2="1"></div>
-                            <div class="mil-animation mil-position-3 mil-scale" data-value-1="1.2" data-value-2=".1">
-                            </div>
-                        </div>
-
-                        <div class="mil-gradient"></div>
-
-                        <div class="container">
-                            <div class="mil-banner-content mil-up">
-
-                                <h1 class="mil-muted mil-mb-60">Frontend <span class="mil-thin">Developer &</span><br>
-                                    <span class="mil-thin">Professional</span> TelegramModerator
-                                </h1>
-                                <div class="row">
-                                    <div class="col-md-7 col-lg-5">
-
-                                        <p class="mil-light-soft mil-mb-60">I am a Frontend Developer specializing in
-                                            modern web and mobile applications. I've worked with 57+ clients worldwide
-                                            and leverage AI-powered development tools to deliver high-quality solutions
-                                            efficiently. I'm also a Fiverr Level 2 Seller with 65+ reviews and a 4.9★
-                                            rating, specializing in Telegram moderation and community management.
-
-                                    </div>
-                                </div>
-
-                                <a href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer"
-                                    class="mil-button mil-arrow-place mil-btn-space">
-                                    <span>Hire me on Fiverr</span>
-                                </a>
-
-                                <a href="#portfolio" class="mil-link mil-muted mil-arrow-place">
-                                    <span>View works</span>
-                                </a>
-
-                                <div class="mil-circle-text">
-                                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 300 300"
-                                        enable-background="new 0 0 300 300" xml:space="preserve"
-                                        class="mil-ct-svg mil-rotate" data-value="360">
-                                        <defs>
-                                            <path id="circlePath"
-                                                d="M 150, 150 m -60, 0 a 60,60 0 0,1 120,0 a 60,60 0 0,1 -120,0 " />
-                                        </defs>
-                                        <circle cx="150" cy="100" r="75" fill="none" />
-                                        <g>
-                                            <use xlink:href="#circlePath" fill="none" />
-                                            <text style="letter-spacing: 6.5px">
-                                                <!-- circle text -->
-                                                <textPath xlink:href="#circlePath">Scroll down - Scroll down -
-                                                </textPath>
-                                            </text>
-                                        </g>
-                                    </svg>
-                                    <a href="#about"
-                                        class="mil-button mil-arrow-place mil-icon-button mil-arrow-down"></a>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <!-- banner end -->
-
-                <!-- about -->
-                <section id="about">
-                    <div class="container mil-p-120-30">
-                        <div class="row justify-content-between align-items-center">
-                            <div class="col-lg-6 col-xl-5">
-
-                                <div class="mil-mb-90">
-                                    <h2 class="mil-up mil-mb-30">Discover <br>About <span class="mil-thin">Me</span>
-                                    </h2>
-                                    <p class="mil-up mil-mb-20">
-
-                                        I'm Ehsanul Karim Tanjil, a Computer Science and Engineering (CSE) student at
-                                        Bangladesh University of Business and Technology (BUBT) who loves building
-                                        modern web and mobile applications.</p>
-
-                                    <p class="mil-up mil-mb-20">I enjoy turning ideas into clean, responsive, and
-                                        user-friendly digital
-                                        experiences. My development workflow is powered by AI tools like Claude,
-                                        ChatGPT, and Cursor, allowing me to prototype faster, solve problems
-                                        efficiently, and focus on delivering high-quality products. I believe AI doesn't
-                                        replace developers—it empowers them to build smarter.</p>
-                                    <p class="mil-up mil-mb-20">When I'm not coding, I'm working with clients as a
-                                        Fiverr Level 2 Seller,managing Telegram communities and collaborating with
-                                        people from around the
-                                        world. Every project is an opportunity to learn something new, refine my skills,
-                                        and create experiences that people genuinely enjoy using.</p>
-
-                                    <div class="mil-about-quote">
-                                        <div class="mil-avatar mil-up">
-                                            <img src="img/faces/customers/profilepicturee.jpg" alt="Founder">
-                                        </div>
-                                        <h6 class="mil-quote mil-up">
-                                            Ehsanul Karim Tanjil<br>
-                                            <span class="mil-thin">
-                                                Frontend Developer & CSE Student<br>
-                                                Bangladesh University of Business and Technology (BUBT)
-                                            </span>
-                                        </h6>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="col-lg-5">
-
-                                <div class="mil-about-photo mil-mb-90">
-                                    <div class="mil-lines-place"></div>
-                                    <div class="mil-up mil-img-frame" style="padding-bottom: 160%;">
-                                        <img src="img/photo/working2.jpg" alt="img" class="mil-scale" data-value-1="1"
-                                            data-value-2="1.2">
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <!-- about end -->
-
-                <!-- services -->
-                <section id="blog" id="services" class="mil-dark-bg">
-                    <div class="mi-invert-fix">
-                        <div class="mil-animation-frame">
-                            <div class="mil-animation mil-position-1 mil-scale" data-value-1="2.4" data-value-2="1.4"
-                                style="top: 300px; right: -100px"></div>
-                            <div class="mil-animation mil-position-2 mil-scale" data-value-1="2" data-value-2="1"
-                                style="left: 150px"></div>
-                        </div>
-                        <div class="container mil-p-120-0">
-
-                            <div class="mil-mb-120">
-                                <div class="row">
-                                    <div class="col-lg-10">
-
-                                        <span
-                                            class="mil-suptitle mil-light-soft mil-suptitle-right mil-up">Professionals
-                                            focused on helping your brand<br> grow and move forward.</span>
-
-                                    </div>
-                                </div>
-
-                                <div class="mil-complex-text justify-content-center mil-up mil-mb-15">
-
-                                    <span class="mil-text-image"><img src="img/photo/2.jpg" alt="team"></span>
-                                    <h2 class="mil-h1 mil-muted mil-center">Unique <span class="mil-thin">Ideas</span>
-                                    </h2>
-
-                                </div>
-                                <div class="mil-complex-text justify-content-center mil-up">
-
-                                    <h2 class="mil-h1 mil-muted mil-center">For Your <span
-                                            class="mil-thin">Business.</span></h2>
-                                    <a href="#services"
-                                        class="mil-services-button mil-button mil-arrow-place"><span>What we
-                                            do</span></a>
-
-                                </div>
-                            </div>
-
-                            <div class="row mil-services-grid m-0">
-                                <div class="col-md-6 col-lg-3 mil-services-grid-item p-0">
-
-                                    <a href="service.html" class="mil-service-card-sm mil-up">
-                                        <h5 class="mil-muted mil-mb-30">Branding and <br>Identity Design</h5>
-                                        <p class="mil-light-soft mil-mb-30">Our creative agency is a team of
-                                            professionals focused on helping your brand grow.</p>
-                                        <div class="mil-button mil-icon-button-sm mil-arrow-place"></div>
-                                    </a>
-
-                                </div>
-                                <div class="col-md-6 col-lg-3 mil-services-grid-item p-0">
-
-                                    <a href="service.html" class="mil-service-card-sm mil-up">
-                                        <h5 class="mil-muted mil-mb-30">Website Design <br>and Development</h5>
-                                        <p class="mil-light-soft mil-mb-30">Our creative agency is a team of
-                                            professionals focused on helping your brand grow.</p>
-                                        <div class="mil-button mil-icon-button-sm mil-arrow-place"></div>
-                                    </a>
-
-                                </div>
-                                <div class="col-md-6 col-lg-3 mil-services-grid-item p-0">
-
-                                    <a href="service.html" class="mil-service-card-sm mil-up">
-                                        <h5 class="mil-muted mil-mb-30">Advertising and <br>Marketing Campaigns</h5>
-                                        <p class="mil-light-soft mil-mb-30">Our creative agency is a team of
-                                            professionals focused on helping your brand grow.</p>
-                                        <div class="mil-button mil-icon-button-sm mil-arrow-place"></div>
-                                    </a>
-
-                                </div>
-                                <div class="col-md-6 col-lg-3 mil-services-grid-item p-0">
-
-                                    <a href="service.html" class="mil-service-card-sm mil-up">
-                                        <h5 class="mil-muted mil-mb-30">Creative Consulting <br>and Development</h5>
-                                        <p class="mil-light-soft mil-mb-30">Our creative agency is a team of
-                                            professionals focused on helping your brand grow.</p>
-                                        <div class="mil-button mil-icon-button-sm mil-arrow-place"></div>
-                                    </a>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <!-- services end -->
-                <!-- blog end -->
-                <section id="publication" class="mil-section">
-                    <!-- Placeholder for Publication content -->
-                </section>
-
-                <!-- portfolio slider -->
-                <section id="portfolio" class="mil-portfolio-slider-frame">
-                    <div class="mil-animation-frame">
-                        <div class="mil-animation mil-position-4 mil-dark mil-scale" data-value-1="1" data-value-2="2"
-                            style="top: -60px; right: -4px;"></div>
-                    </div>
-                    <div class="container">
-                        <div class="row align-items-end">
-                            <div class="col-lg-9">
-                                <div class="swiper-container mil-portfolio-slider mil-up">
-                                    <div class="swiper-wrapper">
-                                        <div class="swiper-slide">
-                                            <div class="mil-portfolio-item mil-slider-item" data-swiper-parallax="-30">
-                                                <div class="mil-cover-frame mil-drag">
-                                                    <div class="mil-cover" data-swiper-parallax-scale="1.3">
-                                                        <img src="img/works/1.jpg" alt="Interior design studio">
-                                                    </div>
-                                                </div>
-                                                <div class="mil-descr" data-swiper-parallax-x="104%"
-                                                    data-swiper-parallax-opacity="0">
-                                                    <div class="mil-descr-text" data-swiper-parallax-y="100%"
-                                                        data-swiper-parallax-opacity="0">
-                                                        <div class="mil-labels mil-mb-15">
-                                                            <div class="mil-label mil-upper mil-accent">DESIGN</div>
-                                                            <div class="mil-label mil-upper">May 24 2023</div>
-                                                        </div>
-                                                        <h5>Interior Design Studio</h5>
-                                                    </div>
-                                                    <div data-swiper-parallax-y="120" data-swiper-parallax-opacity="0">
-                                                        <a href="project.html"
-                                                            class="mil-button mil-arrow-place"><span>View
-                                                                Project</span></a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Additional slides omitted for brevity -->
-                                    </div>
-                                    <div class="mil-portfolio-nav">
-                                        <div class="mil-portfolio-btns-frame">
-                                            <div class="swiper-portfolio-pagination"></div>
-                                            <div class="mil-slider-nav">
-                                                <div
-                                                    class="mil-slider-arrow mil-prev mil-portfolio-prev mil-arrow-place">
-                                                </div>
-                                                <div class="mil-slider-arrow mil-portfolio-next mil-arrow-place"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <!-- portfolio slider end -->
-
-                <!-- team -->
-                <section>
-                    <div class="container mil-p-120-30">
-                        <div class="row justify-content-between align-items-center">
-                            <div class="col-lg-5 col-xl-4">
-
-                                <div class="mil-mb-90">
-                                    <h2 class="mil-up mil-mb-60">Meet <br>Our Team</h2>
-                                    <p class="mil-up mil-mb-30">We are talented individuals who are passionate about
-                                        bringing ideas to life. With a diverse range of backgrounds and skill sets, we
-                                        collaborate to produce effective solutions for our clients.</p>
-
-                                    <p class="mil-up mil-mb-60">Together, our creative team is committed to delivering
-                                        impactful work that exceeds expectations.</p>
-
-                                    <div class="mil-up"><a href="team.html"
-                                            class="mil-button mil-arrow-place mil-mb-60"><span>Read more</span></a>
-                                    </div>
-
-                                    <h4 class="mil-up"><span class="mil-thin">We</span> delivering <br><span
-                                            class="mil-thin">exceptional</span> results.</h4>
-                                </div>
-
-                            </div>
-                            <div class="col-lg-6">
-
-                                <div class="mil-team-list">
-                                    <div class="mil-lines-place"></div>
-
-                                    <div class="row mil-mb-60">
-                                        <div class="col-sm-6">
-
-                                            <div class="mil-team-card mil-up mil-mb-30">
-                                                <img src="img/faces/1.jpg" alt="Team member">
-                                                <div class="mil-description">
-                                                    <div class="mil-secrc-text">
-                                                        <h5 class="mil-muted mil-mb-5"><a href="home-2.html">Anna
-                                                                Oldman</a></h5>
-                                                        <p class="mil-link mil-light-soft mil-mb-10">Art Director</p>
-                                                        <ul class="mil-social-icons mil-center">
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-behance"></i></a></li>
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-dribbble"></i></a></li>
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-twitter"></i></a></li>
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-github"></i></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="mil-team-card mil-up mil-mb-30">
-                                                <img src="img/faces/3.jpg" alt="Team member">
-                                                <div class="mil-description">
-                                                    <div class="mil-secrc-text">
-                                                        <h5 class="mil-muted mil-mb-5"><a href="home-2.html">Oscar
-                                                                Freeman</a></h5>
-                                                        <p class="mil-link mil-light-soft mil-mb-10">Frontend Dev</p>
-                                                        <ul class="mil-social-icons mil-center">
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-behance"></i></a></li>
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-dribbble"></i></a></li>
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-twitter"></i></a></li>
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-github"></i></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                        <div class="col-sm-6">
-
-                                            <p class="mil-mobile-hidden mil-text-sm mil-mb-30" style="height: 30px;">
-                                                <span class="mil-accent">*</span> The founders of our agency
-                                            </p>
-
-                                            <div class="mil-team-card mil-up mil-mb-30">
-                                                <img src="img/faces/2.jpg" alt="Team member">
-                                                <div class="mil-description">
-                                                    <div class="mil-secrc-text">
-                                                        <h5 class="mil-muted mil-mb-5"><a href="home-2.html">Emma
-                                                                Newman</a></h5>
-                                                        <p class="mil-link mil-light-soft mil-mb-10">Founder</p>
-                                                        <ul class="mil-social-icons mil-center">
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-behance"></i></a></li>
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-dribbble"></i></a></li>
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-twitter"></i></a></li>
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-github"></i></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="mil-team-card mil-up mil-mb-30">
-                                                <img src="img/faces/4.jpg" alt="Team member">
-                                                <div class="mil-description">
-                                                    <div class="mil-secrc-text">
-                                                        <h5 class="mil-muted mil-mb-5"><a href="home-2.html">Lisa
-                                                                Trueman</a></h5>
-                                                        <p class="mil-link mil-light-soft mil-mb-10">UI/UX Designer</p>
-                                                        <ul class="mil-social-icons mil-center">
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-behance"></i></a></li>
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-dribbble"></i></a></li>
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-twitter"></i></a></li>
-                                                            <li><a href="#." target="_blank" class="social-icon"> <i
-                                                                        class="fab fa-github"></i></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <!-- team end -->
-
-                <!-- contact section -->
-                <section id="contact" class="mil-dark-bg">
-                    <div class="container mil-p-120-30">
-                        <h2 class="mil-up">Contact Me</h2>
-                        <p class="mil-up">Feel free to reach out via email at <a
-                                href="mailto:example@example.com">example@example.com</a> or through the form below.</p>
-                        <form class="mil-up" action="#" method="post">
-                            <input type="text" name="name" placeholder="Your Name" required />
-                            <input type="email" name="email" placeholder="Your Email" required />
-                            <textarea name="message" placeholder="Your Message" rows="4" required></textarea>
-                            <button type="submit" class="mil-button mil-arrow-place"><span>Send Message</span></button>
-                        </form>
-                    </div>
-                </section>
-                <!-- contact end -->
-                <!-- reviews -->
-                <section class="mil-soft-bg">
-                    <div class="container mil-p-120-120">
-
-                        <div class="row">
-                            <div class="col-lg-10">
-
-                                <span class="mil-suptitle mil-suptitle-right mil-suptitle-dark mil-up">Customer reviews
-                                    are a valuable source <br>of information for both businesses and consumers.</span>
-
-                            </div>
-                        </div>
-
-                        <h2 class="mil-center mil-up mil-mb-60">Customer <span class="mil-thin">Voices:</span> <br>Hear
-                            What <span class="mil-thin">They Say!</span></h2>
-
-                        <div class="mil-revi-pagination mil-up mil-mb-60"></div>
-
-                        <div class="row mil-relative justify-content-center">
-                            <div class="col-lg-8">
-
-                                <div class="mil-slider-nav mil-soft mil-reviews-nav mil-up">
-                                    <div class="mil-slider-arrow mil-prev mil-revi-prev mil-arrow-place"></div>
-                                    <div class="mil-slider-arrow mil-revi-next mil-arrow-place"></div>
-                                </div>
-
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"
-                                    class="mil-quote-icon mil-up">
-                                    <path
-                                        d="M 13.5 10 A 8.5 8.5 0 0 0 13.5 27 A 8.5 8.5 0 0 0 18.291016 25.519531 C 17.422273 29.222843 15.877848 31.803343 14.357422 33.589844 C 12.068414 36.279429 9.9433594 37.107422 9.9433594 37.107422 A 1.50015 1.50015 0 1 0 11.056641 39.892578 C 11.056641 39.892578 13.931586 38.720571 16.642578 35.535156 C 19.35357 32.349741 22 27.072581 22 19 A 1.50015 1.50015 0 0 0 21.984375 18.78125 A 8.5 8.5 0 0 0 13.5 10 z M 34.5 10 A 8.5 8.5 0 0 0 34.5 27 A 8.5 8.5 0 0 0 39.291016 25.519531 C 38.422273 29.222843 36.877848 31.803343 35.357422 33.589844 C 33.068414 36.279429 30.943359 37.107422 30.943359 37.107422 A 1.50015 1.50015 0 1 0 32.056641 39.892578 C 32.056641 39.892578 34.931586 38.720571 37.642578 35.535156 C 40.35357 32.349741 43 27.072581 43 19 A 1.50015 1.50015 0 0 0 42.984375 18.78125 A 8.5 8.5 0 0 0 34.5 10 z"
-                                        fill="#000000" />
-                                </svg>
-
-                                <div class="swiper-container mil-reviews-slider">
-                                    <div class="swiper-wrapper">
-                                        <div class="swiper-slide">
-                                            <div class="mil-review-frame mil-center" data-swiper-parallax="-200"
-                                                data-swiper-parallax-opacity="0">
-                                                <h5 class="mil-up mil-mb-10">Sarah Newman</h5>
-                                                <p class="mil-mb-5 mil-upper mil-up mil-mb-30">Envato market</p>
-                                                <p class="mil-text-xl mil-up">This creative agency stands out with their
-                                                    exceptional talent and expertise. Their ability to think outside the
-                                                    box and bring unique ideas to life is truly impressive. With
-                                                    meticulous attention to detail, they consistently deliver visually
-                                                    stunning and impactful work.</p>
-                                            </div>
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <div class="mil-review-frame mil-center" data-swiper-parallax="-200"
-                                                data-swiper-parallax-opacity="0">
-                                                <h5 class="mil-up mil-mb-10">Emma Trueman</h5>
-                                                <p class="mil-mb-5 mil-upper mil-up mil-mb-30">Envato market</p>
-                                                <p class="mil-text-xl mil-up">I had the pleasure of working with this
-                                                    creative agency, and I must say, they truly impressed me. They
-                                                    consistently think outside the box, resulting in impressive and
-                                                    impactful work. I highly recommend this agency for their consistent
-                                                    delivery of exceptional creative solutions.</p>
-                                            </div>
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <div class="mil-review-frame mil-center" data-swiper-parallax="-200"
-                                                data-swiper-parallax-opacity="0">
-                                                <h5 class="mil-up mil-mb-10">Sarah Newman</h5>
-                                                <p class="mil-mb-5 mil-upper mil-up mil-mb-30">Envato market</p>
-                                                <p class="mil-text-xl mil-up">This creative agency stands out with their
-                                                    exceptional talent and expertise. Their ability to think outside the
-                                                    box and bring unique ideas to life is truly impressive. With
-                                                    meticulous attention to detail, they consistently deliver visually
-                                                    stunning and impactful work.</p>
-                                            </div>
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <div class="mil-review-frame mil-center" data-swiper-parallax="-200"
-                                                data-swiper-parallax-opacity="0">
-                                                <h5 class="mil-up mil-mb-10">Emma Trueman</h5>
-                                                <p class="mil-mb-5 mil-upper mil-up mil-mb-30">Envato market</p>
-                                                <p class="mil-text-xl mil-up">I had the pleasure of working with this
-                                                    creative agency, and I must say, they truly impressed me. They
-                                                    consistently think outside the box, resulting in impressive and
-                                                    impactful work. I highly recommend this agency for their consistent
-                                                    delivery of exceptional creative solutions.</p>
-                                            </div>
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <div class="mil-review-frame mil-center" data-swiper-parallax="-200"
-                                                data-swiper-parallax-opacity="0">
-                                                <h5 class="mil-up mil-mb-10">Sarah Newman</h5>
-                                                <p class="mil-mb-5 mil-upper mil-up mil-mb-30">Envato market</p>
-                                                <p class="mil-text-xl mil-up">This creative agency stands out with their
-                                                    exceptional talent and expertise. Their ability to think outside the
-                                                    box and bring unique ideas to life is truly impressive. With
-                                                    meticulous attention to detail, they consistently deliver visually
-                                                    stunning and impactful work.</p>
-                                            </div>
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <div class="mil-review-frame mil-center" data-swiper-parallax="-200"
-                                                data-swiper-parallax-opacity="0">
-                                                <h5 class="mil-up mil-mb-10">Emma Trueman</h5>
-                                                <p class="mil-mb-5 mil-upper mil-up mil-mb-30">Envato market</p>
-                                                <p class="mil-text-xl mil-up">I had the pleasure of working with this
-                                                    creative agency, and I must say, they truly impressed me. They
-                                                    consistently think outside the box, resulting in impressive and
-                                                    impactful work. I highly recommend this agency for their consistent
-                                                    delivery of exceptional creative solutions.</p>
-                                            </div>
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <div class="mil-review-frame mil-center" data-swiper-parallax="-200"
-                                                data-swiper-parallax-opacity="0">
-                                                <h5 class="mil-up mil-mb-10">Sarah Newman</h5>
-                                                <p class="mil-mb-5 mil-upper mil-up mil-mb-30">Envato market</p>
-                                                <p class="mil-text-xl mil-up">This creative agency stands out with their
-                                                    exceptional talent and expertise. Their ability to think outside the
-                                                    box and bring unique ideas to life is truly impressive. With
-                                                    meticulous attention to detail, they consistently deliver visually
-                                                    stunning and impactful work.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
-                </section>
-                <!-- reviews end -->
-
-                <!-- partners -->
-                <div class="mil-soft-bg">
-                    <div class="container mil-p-0-120">
-
-                        <div class="swiper-container mil-infinite-show mil-up">
-                            <div class="swiper-wrapper">
-                                <div class="swiper-slide">
-                                    <a href="#." class="mil-partner-frame" style="width: 60px;"><img
-                                            src="img/partners/1.svg" alt="logo"></a>
-                                </div>
-                                <div class="swiper-slide">
-                                    <a href="#." class="mil-partner-frame" style="width: 100px;"><img
-                                            src="img/partners/2.svg" alt="logo"></a>
-                                </div>
-                                <div class="swiper-slide">
-                                    <a href="#." class="mil-partner-frame" style="width: 60px;"><img
-                                            src="img/partners/1.svg" alt="logo"></a>
-                                </div>
-                                <div class="swiper-slide">
-                                    <a href="#." class="mil-partner-frame" style="width: 100px;"><img
-                                            src="img/partners/2.svg" alt="logo"></a>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                <!-- partners end -->
-
-                <!-- blog -->
-                <section>
-                    <div class="container mil-p-120-60">
-                        <div class="row align-items-center mil-mb-30">
-                            <div class="col-lg-6 mil-mb-30">
-                                <h3 class="mil-up">Popular Publications:</h3>
-                            </div>
-                            <div class="col-lg-6 mil-mb-30">
-                                <div class="mil-adaptive-right mil-up">
-                                    <a href="#contact" class="mil-link mil-dark mil-arrow-place">
-                                        <span>View all</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-6">
-
-                                <a href="publication.html" class="mil-blog-card mil-mb-60">
-                                    <div class="mil-cover-frame mil-up">
-                                        <img src="img/blog/1.jpg" alt="cover">
-                                    </div>
-                                    <div class="mil-post-descr">
-                                        <div class="mil-labels mil-up mil-mb-30">
-                                            <div class="mil-label mil-upper mil-accent">TECHNOLOGY</div>
-                                            <div class="mil-label mil-upper">may 24 2023</div>
-                                        </div>
-                                        <h4 class="mil-up mil-mb-30">How to Become a Graphic Designer in 10 Simple Steps
-                                        </h4>
-                                        <p class="mil-post-text mil-up mil-mb-30">Lorem ipsum dolor sit amet,
-                                            consectetur adipisicing elit. Eius sequi commodi dignissimos optio, beatae,
-                                            eos necessitatibus nisi. Nam cupiditate consectetur nostrum qui! Repellat
-                                            natus nulla, nisi aliquid, asperiores impedit tempora sequi est
-                                            reprehenderit cumque explicabo, dicta. Rem nihil ullam totam ea voluptas
-                                            quibusdam repudiandae id ut at iure! Totam, a!</p>
-                                        <div class="mil-link mil-dark mil-arrow-place mil-up">
-                                            <span>Read more</span>
-                                        </div>
-                                    </div>
-                                </a>
-
-                            </div>
-                            <div class="col-lg-6">
-
-                                <a href="publication.html" class="mil-blog-card mil-mb-60">
-                                    <div class="mil-cover-frame mil-up">
-                                        <img src="img/blog/2.jpg" alt="cover">
-                                    </div>
-                                    <div class="mil-post-descr">
-                                        <div class="mil-labels mil-up mil-mb-30">
-                                            <div class="mil-label mil-upper mil-accent">TECHNOLOGY</div>
-                                            <div class="mil-label mil-upper">may 24 2023</div>
-                                        </div>
-                                        <h4 class="mil-up mil-mb-30">16 Best Graphic Design Online and Offline Courses
-                                        </h4>
-                                        <p class="mil-post-text mil-up mil-mb-30">Lorem ipsum dolor sit amet,
-                                            consectetur adipisicing elit. Eius sequi commodi dignissimos optio, beatae,
-                                            eos necessitatibus nisi. Nam cupiditate consectetur nostrum qui! Repellat
-                                            natus nulla, nisi aliquid, asperiores impedit tempora sequi est
-                                            reprehenderit cumque explicabo, dicta. Rem nihil ullam totam ea voluptas
-                                            quibusdam repudiandae id ut at iure! Totam, a!</p>
-                                        <div class="mil-link mil-dark mil-arrow-place mil-up">
-                                            <span>Read more</span>
-                                        </div>
-                                    </div>
-                                </a>
-
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <!-- blog end -->
-
-                <!-- footer -->
-                <footer class="mil-dark-bg">
-                    <div class="mi-invert-fix">
-                        <div class="container mil-p-120-60">
-                            <div class="row justify-content-between">
-                                <div class="col-md-4 col-lg-4 mil-mb-60">
-
-                                    <div class="mil-muted mil-logo mil-up mil-mb-30">Ashley.</div>
-
-                                    <p class="mil-light-soft mil-up mil-mb-30">Subscribe our newsletter:</p>
-
-                                    <form class="mil-subscribe-form mil-up">
-                                        <input type="text" placeholder="Enter our email">
-                                        <button type="submit"
-                                            class="mil-button mil-icon-button-sm mil-arrow-place"></button>
-                                    </form>
-
-                                </div>
-                                <div class="col-md-7 col-lg-6">
-                                    <div class="row justify-content-end">
-                                        <div class="col-md-6 col-lg-7">
-
-                                            <nav class="mil-footer-menu mil-mb-60">
-                                                <ul>
-                                                    <li class="mil-up mil-active">
-                                                        <a href="#home">Home</a>
-                                                    </li>
-                                                    <li class="mil-up">
-                                                        <a href="#portfolio">Portfolio</a>
-                                                    </li>
-                                                    <li class="mil-up">
-                                                        <a href="#services">Services</a>
-                                                    </li>
-                                                    <li class="mil-up">
-                                                        <a href="#contact">Contact</a>
-                                                    </li>
-                                                    <li class="mil-up">
-                                                        <a href="#blog">Blog</a>
-                                                    </li>
-                                                </ul>
-                                            </nav>
-
-                                        </div>
-                                        <div class="col-md-6 col-lg-5">
-
-                                            <ul class="mil-menu-list mil-up mil-mb-60">
-                                                <li><a href="#." class="mil-light-soft">Privacy Policy</a></li>
-                                                <li><a href="#." class="mil-light-soft">Terms and conditions</a></li>
-                                                <li><a href="#." class="mil-light-soft">Cookie Policy</a></li>
-                                                <li><a href="#." class="mil-light-soft">Careers</a></li>
-                                            </ul>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row justify-content-between flex-sm-row-reverse">
-                                <div class="col-md-7 col-lg-6">
-
-                                    <div class="row justify-content-between">
-
-                                        <div class="col-md-6 col-lg-5 mil-mb-60">
-
-                                            <h6 class="mil-muted mil-up mil-mb-30">Canada</h6>
-
-                                            <p class="mil-light-soft mil-up">71 South Los Carneros Road, California
-                                                <span class="mil-no-wrap">+51 174 705 812</span>
-                                            </p>
-
-                                        </div>
-                                        <div class="col-md-6 col-lg-5 mil-mb-60">
-
-                                            <h6 class="mil-muted mil-up mil-mb-30">Germany</h6>
-
-                                            <p class="mil-light-soft mil-up">Leehove 40, 2678 MC De Lier, Netherlands
-                                                <span class="mil-no-wrap">+31 174 705 811</span>
-                                            </p>
-
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div class="col-md-4 col-lg-6 mil-mb-60">
-
-                                    <div class="mil-vert-between">
-                                        <div class="mil-mb-30">
-                                            <ul class="mil-social-icons mil-up">
-                                                <li><a href="#." target="_blank" class="social-icon"> <i
-                                                            class="far fa-circle"></i></a></li>
-                                                <li><a href="#." target="_blank" class="social-icon"> <i
-                                                            class="far fa-circle"></i></a></li>
-                                                <li><a href="#." target="_blank" class="social-icon"> <i
-                                                            class="far fa-circle"></i></a></li>
-                                                <li><a href="#." target="_blank" class="social-icon"> <i
-                                                            class="far fa-circle"></i></a></li>
-                                            </ul>
-                                        </div>
-                                        <p class="mil-light-soft mil-up">© Copyright 2023 - Mil. All Rights Reserved.
-                                        </p>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
-                <!-- footer end -->
-
-                <!-- hidden elements -->
-                <div class="mil-hidden-elements">
-                    <div class="mil-dodecahedron">
-                        <div class="mil-pentagon">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                        <div class="mil-pentagon">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                        <div class="mil-pentagon">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                        <div class="mil-pentagon">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                        <div class="mil-pentagon">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                        <div class="mil-pentagon">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                        <div class="mil-pentagon">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                        <div class="mil-pentagon">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                        <div class="mil-pentagon">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                        <div class="mil-pentagon">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                        <div class="mil-pentagon">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                        <div class="mil-pentagon">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                    </div>
-
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="mil-arrow">
-                        <path
-                            d="M 14 5.3417969 C 13.744125 5.3417969 13.487969 5.4412187 13.292969 5.6367188 L 13.207031 5.7226562 C 12.816031 6.1136563 12.816031 6.7467188 13.207031 7.1367188 L 17.070312 11 L 4 11 C 3.448 11 3 11.448 3 12 C 3 12.552 3.448 13 4 13 L 17.070312 13 L 13.207031 16.863281 C 12.816031 17.254281 12.816031 17.887344 13.207031 18.277344 L 13.292969 18.363281 C 13.683969 18.754281 14.317031 18.754281 14.707031 18.363281 L 20.363281 12.707031 C 20.754281 12.316031 20.754281 11.682969 20.363281 11.292969 L 14.707031 5.6367188 C 14.511531 5.4412187 14.255875 5.3417969 14 5.3417969 z" />
-                    </svg>
-
-                    <svg width="250" viewBox="0 0 300 1404" fill="none" xmlns="http://www.w3.org/2000/svg"
-                        class="mil-lines">
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M1 892L1 941H299V892C299 809.71 232.29 743 150 743C67.7096 743 1 809.71 1 892ZM0 942H300V892C300 809.157 232.843 742 150 742C67.1573 742 0 809.157 0 892L0 942Z"
-                            class="mil-move" />
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M299 146V97L1 97V146C1 228.29 67.7096 295 150 295C232.29 295 299 228.29 299 146ZM300 96L0 96V146C0 228.843 67.1573 296 150 296C232.843 296 300 228.843 300 146V96Z"
-                            class="mil-move" />
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M299 1H1V1403H299V1ZM0 0V1404H300V0H0Z" />
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M150 -4.37115e-08L150 1404L149 1404L149 0L150 -4.37115e-08Z" />
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M150 1324C232.29 1324 299 1257.29 299 1175C299 1092.71 232.29 1026 150 1026C67.7096 1026 1 1092.71 1 1175C1 1257.29 67.7096 1324 150 1324ZM150 1325C232.843 1325 300 1257.84 300 1175C300 1092.16 232.843 1025 150 1025C67.1573 1025 0 1092.16 0 1175C0 1257.84 67.1573 1325 150 1325Z"
-                            class="mil-move" />
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M300 1175H0V1174H300V1175Z" class="mil-move" />
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M150 678C232.29 678 299 611.29 299 529C299 446.71 232.29 380 150 380C67.7096 380 1 446.71 1 529C1 611.29 67.7096 678 150 678ZM150 679C232.843 679 300 611.843 300 529C300 446.157 232.843 379 150 379C67.1573 379 0 446.157 0 529C0 611.843 67.1573 679 150 679Z"
-                            class="mil-move" />
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M299 380H1V678H299V380ZM0 379V679H300V379H0Z"
-                            class="mil-move" />
-                    </svg>
-                </div>
-                <!-- hidden elements end -->
-
-            </div>
-        </div>
-        <!-- content -->
-    </div>
-    <!-- wrapper end -->
-
-    <!-- jQuery js -->
-    <script src="js/plugins/jquery.min.js"></script>
-    <!-- swup js -->
-    <script src="js/plugins/swup.min.js"></script>
-    <!-- swiper js -->
-    <script src="js/plugins/swiper.min.js"></script>
-    <!-- fancybox js -->
-    <script src="js/plugins/fancybox.min.js"></script>
-    <!-- gsap js -->
-    <script src="js/plugins/gsap.min.js"></script>
-    <!-- scroll smoother -->
-    <script src="js/plugins/smooth-scroll.js"></script>
-    <!-- scroll trigger js -->
-    <script src="js/plugins/ScrollTrigger.min.js"></script>
-    <!-- scroll to js -->
-    <script src="js/plugins/ScrollTo.min.js"></script>
-    <!-- ashley js -->
-    <script src="js/main.js"></script>
-
-</body>
-
-</html>
+<h1 class="font-headline-xl text-headline-xl lg:text-7xl leading-tight">
+                Building Fast, Reliable <span class="text-primary-container">Web Experiences.</span>
+            </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-lg leading-relaxed brightness-125">
+                Frontend Developer specializing in modern web and mobile applications, and a Fiverr Level 2 Seller providing professional Telegram moderation and community management. I use an AI-assisted workflow — Claude, ChatGPT, and Cursor — to build and ship faster.
+            </p>
+<div class="flex gap-4">
+<button onclick="document.getElementById('work').scrollIntoView({behavior: 'smooth'})" class="px-8 py-4 liquid-glass-refractive liquid-glass-interactive font-bold flex items-center gap-2 bounce-feedback rounded-full">
+                    View Projects <span class="material-symbols-outlined">arrow_downward</span>
+</button>
+<a href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer" class="w-14 h-14 liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback rounded-full" aria-label="View Fiverr profile">
+<span class="material-symbols-outlined">storefront</span>
+</a>
+</div>
+</div>
+<div class="relative group">
+<div class="absolute -inset-4 bg-primary-container/20 blur-3xl rounded-full transition-opacity group-hover:opacity-60 opacity-30"></div>
+<!-- TODO: swap in a real photo of Tanjil -->
+<div class="relative aspect-square overflow-hidden liquid-glass-refractive p-2 transform rotate-1 hover:rotate-0 transition-transform duration-500 rounded-4xl flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container" style="font-size: 96px;">person</span>
+</div>
+</div>
+</section>
+<!-- Engineering Work Slider -->
+<section class="space-y-12" id="work">
+<div class="flex justify-between items-end">
+<h2 class="font-headline-lg text-headline-lg">Engineering Work</h2>
+<div class="flex gap-4">
+<button class="w-14 h-14 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback" style="will-change: transform;">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-14 h-14 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback" style="will-change: transform;">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="flex gap-8 overflow-x-auto pb-8 custom-scrollbar scroll-smooth px-8 py-6">
+<!-- TODO: replace with a real project -->
+<div class="min-w-[400px] liquid-glass-refractive p-6 flex flex-col group liquid-glass-interactive bounce-feedback rounded-4xl" style="will-change: transform;">
+<div class="relative h-60 rounded-3xl overflow-hidden mb-6 border border-white/5 border-dashed flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 48px;">image</span>
+</div>
+<div class="space-y-4">
+<div class="flex gap-2">
+<span class="px-3 py-1 rounded-full liquid-glass-refractive text-[10px] font-bold">COMING SOON</span>
+</div>
+<h3 class="font-headline-lg text-2xl">Project Title</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 brightness-110">Short project description goes here.</p>
+<div class="inline-flex items-center gap-2 text-on-surface-variant font-bold text-sm opacity-50">
+                        View Project <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- TODO: replace with a real project -->
+<div class="min-w-[400px] liquid-glass-refractive p-6 flex flex-col group liquid-glass-interactive bounce-feedback rounded-4xl" style="will-change: transform;">
+<div class="relative h-60 rounded-3xl overflow-hidden mb-6 border border-white/5 border-dashed flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 48px;">image</span>
+</div>
+<div class="space-y-4">
+<div class="flex gap-2">
+<span class="px-3 py-1 rounded-full liquid-glass-refractive text-[10px] font-bold">COMING SOON</span>
+</div>
+<h3 class="font-headline-lg text-2xl">Project Title</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 brightness-110">Short project description goes here.</p>
+<div class="inline-flex items-center gap-2 text-on-surface-variant font-bold text-sm opacity-50">
+                        View Project <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- TODO: replace with a real project -->
+<div class="min-w-[400px] liquid-glass-refractive p-6 flex flex-col group liquid-glass-interactive bounce-feedback rounded-4xl" style="will-change: transform;">
+<div class="relative h-60 rounded-3xl overflow-hidden mb-6 border border-white/5 border-dashed flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 48px;">image</span>
+</div>
+<div class="space-y-4">
+<div class="flex gap-2">
+<span class="px-3 py-1 rounded-full liquid-glass-refractive text-[10px] font-bold">COMING SOON</span>
+</div>
+<h3 class="font-headline-lg text-2xl">Project Title</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 brightness-110">Short project description goes here.</p>
+<div class="inline-flex items-center gap-2 text-on-surface-variant font-bold text-sm opacity-50">
+                        View Project <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Skills Section -->
+<section class="space-y-12" id="skills">
+<div class="flex flex-col items-center text-center space-y-4">
+<div class="flex items-center gap-4">
+<div class="w-8 h-px bg-primary-container"></div>
+<span class="font-label-md text-label-md text-primary-container uppercase tracking-widest">Skills</span>
+<div class="w-8 h-px bg-primary-container"></div>
+</div>
+<h2 class="font-headline-lg text-headline-lg lg:text-5xl">Tools &amp; Technologies I <span class="text-primary-container">Use</span></h2>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="liquid-glass-refractive liquid-glass-interactive p-6 rounded-4xl" style="will-change: transform;">
+<div class="w-12 h-12 rounded-2xl bg-primary-container/10 flex items-center justify-center mb-5">
+<span class="material-symbols-outlined text-primary-container">code</span>
+</div>
+<h3 class="font-headline-lg text-lg mb-4">Development</h3>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">Claude</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">ChatGPT</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">Cursor</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">React.js</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">Next.js</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">TypeScript</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">Tailwind CSS</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">Node.js</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">PostgreSQL</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">Git &amp; GitHub</span>
+</div>
+</div>
+<div class="liquid-glass-refractive liquid-glass-interactive p-6 rounded-4xl" style="will-change: transform;">
+<div class="w-12 h-12 rounded-2xl bg-primary-container/10 flex items-center justify-center mb-5">
+<span class="material-symbols-outlined text-primary-container">palette</span>
+</div>
+<h3 class="font-headline-lg text-lg mb-4">Design</h3>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">Figma</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">Adobe Photoshop</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">UI/UX Design</span>
+</div>
+</div>
+<div class="liquid-glass-refractive liquid-glass-interactive p-6 rounded-4xl" style="will-change: transform;">
+<div class="w-12 h-12 rounded-2xl bg-primary-container/10 flex items-center justify-center mb-5">
+<span class="material-symbols-outlined text-primary-container">movie</span>
+</div>
+<h3 class="font-headline-lg text-lg mb-4">Video Editing</h3>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">Premiere Pro</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">After Effects</span>
+</div>
+</div>
+<div class="liquid-glass-refractive liquid-glass-interactive p-6 rounded-4xl" style="will-change: transform;">
+<div class="w-12 h-12 rounded-2xl bg-primary-container/10 flex items-center justify-center mb-5">
+<span class="material-symbols-outlined text-primary-container">groups</span>
+</div>
+<h3 class="font-headline-lg text-lg mb-4">Community &amp; Client Work</h3>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">Telegram Moderation</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">Community Management</span>
+<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">Fiverr Freelancing</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Telegram Moderation Service -->
+<section class="space-y-12 pb-20">
+<h2 class="font-headline-lg text-headline-lg">Telegram Moderation &amp; Community Management</h2>
+<div class="flex gap-8 overflow-x-auto pb-8 custom-scrollbar scroll-smooth px-8 py-6">
+<div class="min-w-[340px] liquid-glass-refractive p-8 flex flex-col gap-6 liquid-glass-interactive bounce-feedback rounded-4xl" style="will-change: transform;">
+<div class="w-16 h-16 liquid-glass-refractive flex items-center justify-center rounded-3xl">
+<span class="material-symbols-outlined text-primary-container text-3xl" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<div class="space-y-3">
+<h4 class="font-headline-lg text-xl">Moderation &amp; Safety</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant brightness-110 leading-relaxed">Keeping Telegram communities safe, active, and spam-free with hands-on, responsive moderation.</p>
+</div>
+</div>
+<div class="min-w-[340px] liquid-glass-refractive p-8 flex flex-col gap-6 liquid-glass-interactive bounce-feedback rounded-4xl" style="will-change: transform;">
+<div class="w-16 h-16 liquid-glass-refractive flex items-center justify-center rounded-3xl">
+<span class="material-symbols-outlined text-primary-container text-3xl" style="font-variation-settings: 'FILL' 1;">forum</span>
+</div>
+<div class="space-y-3">
+<h4 class="font-headline-lg text-xl">Member Engagement</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant brightness-110 leading-relaxed">Growing engagement and retention through active, day-to-day community management.</p>
+</div>
+</div>
+<div class="min-w-[340px] liquid-glass-refractive p-8 flex flex-col gap-6 liquid-glass-interactive bounce-feedback rounded-4xl" style="will-change: transform;">
+<div class="w-16 h-16 liquid-glass-refractive flex items-center justify-center rounded-3xl">
+<span class="material-symbols-outlined text-primary-container text-3xl" style="font-variation-settings: 'FILL' 1;">support_agent</span>
+</div>
+<div class="space-y-3">
+<h4 class="font-headline-lg text-xl">Client Support</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant brightness-110 leading-relaxed">Fiverr Level 2 Seller with 65+ reviews and a 4.9★ rating for reliable, responsive service.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Contact -->
+<section class="space-y-8 pb-12" id="contact">
+<div class="liquid-glass-refractive rounded-4xl p-12 flex flex-col items-center text-center gap-6">
+<h2 class="font-headline-lg text-headline-lg">Get In Touch</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-lg leading-relaxed brightness-125">Have a project in mind or need a Telegram community managed? Send an email — I read every message.</p>
+<a href="mailto:ehsanultanjil@gmail.com" class="px-8 py-4 bg-primary-container text-on-primary-container font-bold bounce-feedback transition-transform hover:brightness-110 rounded-full">
+                ehsanultanjil@gmail.com
+            </a>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-16 px-gutter flex flex-col md:flex-row justify-between items-center gap-component-gap bg-white/[0.03] border-t border-white/10 backdrop-blur-xl">
+<div class="flex flex-col gap-2">
+<div class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Tanjil</div>
+<p class="font-label-md text-label-md text-on-surface-variant opacity-80 brightness-110">© 2026 Ehsanul Karim Tanjil.</p>
+</div>
+<div class="flex gap-8">
+<!-- TODO: add real GitHub/LinkedIn URLs -->
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors opacity-80 hover:opacity-100 brightness-110" href="#">GitHub</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors opacity-80 hover:opacity-100 brightness-110" href="#">LinkedIn</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors opacity-80 hover:opacity-100 brightness-110" href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer">Fiverr</a>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 liquid-glass-refractive flex items-center justify-center cursor-pointer hover:bg-white/15 transition-all bounce-feedback rounded-full" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+<span class="material-symbols-outlined text-xl">arrow_upward</span>
+</div>
+</div>
+</footer>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/ambient-glow.js"></script>
+<script src="assets/js/preloader.js"></script>
+</body></html>
