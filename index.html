@@ -4,6 +4,7 @@
 <title>Tanjil</title>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;500&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="assets/js/tailwind-config.js"></script>
 <link rel="stylesheet" href="assets/css/styles.css">
@@ -29,8 +30,8 @@
 <a class="font-body-md text-[11px] sm:text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-2 sm:px-3 py-1 rounded-full transition-all duration-300" href="#contact">Contact</a>
 </div>
 <a id="nav-hire-link" href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer"
-    class="inline-block bg-primary-container text-on-primary-container text-[11px] sm:text-body-md px-3 sm:px-6 py-1.5 sm:py-2 font-bold bounce-feedback transition-transform hover:brightness-110 relative z-10 rounded-full whitespace-nowrap">
-        Hire Me
+    class="inline-flex items-center bg-primary-container text-on-primary-container text-[11px] sm:text-body-md px-3 sm:px-6 py-1.5 sm:py-2 font-bold bounce-feedback transition-transform hover:brightness-110 relative z-10 rounded-full whitespace-nowrap">
+<span id="nav-hire-text">Hire Me</span>
     </a>
 <div class="absolute bg-primary-container/20 rounded-full transition-all duration-300 ease-out pointer-events-none shadow-[0_0_15px_rgba(0,240,255,0.3)] border border-primary-container/30 hidden md:block" id="nav-indicator" style="height: 32px; top: 50%; transform: translateY(-50%); z-index: 0; width: 39.125px; left: 243.328px; opacity: 1;"></div>
 </nav>
@@ -56,11 +57,15 @@
 </a>
 </div>
 </div>
-<div class="relative group max-w-[200px] sm:max-w-[340px] md:max-w-[440px] lg:max-w-none mx-auto lg:mx-0">
+<div class="group flex flex-col lg:flex-row items-center gap-4 mx-auto lg:mx-0">
+<div class="relative max-w-[200px] sm:max-w-[340px] md:max-w-[440px] lg:max-w-none w-full lg:flex-1 lg:min-w-0">
 <div class="absolute -inset-4 bg-primary-container/20 blur-3xl rounded-full transition-opacity group-hover:opacity-60 opacity-30"></div>
-<div class="relative aspect-square overflow-hidden liquid-glass-refractive p-2 transform rotate-1 hover:rotate-0 transition-transform duration-500 rounded-4xl">
+<div class="relative aspect-square overflow-hidden liquid-glass-refractive p-2 transform rotate-1 group-hover:rotate-0 transition-transform duration-500 rounded-4xl">
 <img src="assets/images/myprofile.png" alt="Ehsanul Karim Tanjil" class="w-full h-full object-cover rounded-[32px]">
 </div>
+</div>
+<!-- Populated at runtime by assets/js/render-content.js from the same Social Links you manage in admin.html -->
+<div id="hero-social-icons" class="flex flex-col justify-center gap-3 shrink-0 transition-transform duration-500 group-hover:-translate-y-1 lg:group-hover:translate-x-1"></div>
 </div>
 </section>
 <!-- Skills Marquee -->

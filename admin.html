@@ -154,6 +154,13 @@
 <input type="hidden" id="sc-resume_url">
 </div>
 <input type="url" id="sc-primary_cta_link" placeholder="Hire Me / storefront link URL" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<div>
+<label for="sc-hire-image-file" class="block text-sm text-on-surface-variant mb-1">Hire Me button image (optional — replaces the "Hire Me" text in the nav with this image)</label>
+<input type="file" id="sc-hire-image-file" accept="image/*" class="w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary-container file:text-on-primary-container file:font-bold">
+<img id="sc-hire-image-preview" class="hidden mt-2 h-8 w-auto object-contain">
+<button type="button" id="sc-hire-image-clear" class="hidden text-xs text-on-surface-variant underline mt-1">Remove image, use text instead</button>
+<input type="hidden" id="sc-hire_button_image_url">
+</div>
 
 <p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-3">About Me</p>
 <input type="text" id="sc-about_eyebrow" placeholder="Eyebrow label (e.g. About)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">

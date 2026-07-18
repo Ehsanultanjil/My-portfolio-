@@ -157,6 +157,7 @@ ${g.names.map((n) => `<span class="px-3 py-1 rounded-full bg-white/5 text-on-sur
         hero_bio: { selector: '#hero-bio', mode: 'text' },
         hero_button_text: { selector: '#hero-button-text', mode: 'text' },
         primary_cta_link: { selector: '#nav-hire-link, #hero-cta-link', mode: 'href' },
+        hire_button_image_url: { selector: '#nav-hire-link', mode: 'image' },
         resume_url: { selector: '#hero-resume-link', mode: 'resume' },
         about_eyebrow: { selector: '#about-eyebrow', mode: 'text' },
         about_heading: { selector: '#about-heading', mode: 'text' },
@@ -192,6 +193,10 @@ ${g.names.map((n) => `<span class="px-3 py-1 rounded-full bg-white/5 text-on-sur
                     el.setAttribute('href', value);
                     el.setAttribute('target', '_blank');
                     el.setAttribute('rel', 'noopener noreferrer');
+                } else if (target.mode === 'image') {
+                    el.classList.remove('px-3', 'sm:px-6', 'py-1.5', 'sm:py-2', 'whitespace-nowrap');
+                    el.classList.add('overflow-hidden', 'p-0', 'w-20', 'h-8', 'sm:w-28', 'sm:h-9');
+                    el.innerHTML = `<img src="${escapeHtml(value)}" alt="Hire Me" class="w-full h-full object-cover">`;
                 }
             });
         });
@@ -201,6 +206,50 @@ ${g.names.map((n) => `<span class="px-3 py-1 rounded-full bg-white/5 text-on-sur
         const container = document.getElementById('footer-social-links');
         if (!container || !rows || !rows.length) return;
         container.innerHTML = rows.map((s) => `<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors opacity-80 hover:opacity-100 brightness-110" href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.label)}</a>`).join('');
+    }
+
+    // Picks a real brand icon (Font Awesome Brands) based on the link's label --
+    // no extra admin field needed, just matches common platform names
+    // (case-insensitive). Platforms with no official Font Awesome brand icon
+    // (Fiverr) fall back to a generic Material Symbols glyph.
+    const SOCIAL_ICON_MAP = [
+        [/github/i, { type: 'fa', cls: 'fa-brands fa-github' }],
+        [/linkedin/i, { type: 'fa', cls: 'fa-brands fa-linkedin-in' }],
+        [/twitter|\bx\b/i, { type: 'fa', cls: 'fa-brands fa-x-twitter' }],
+        [/instagram/i, { type: 'fa', cls: 'fa-brands fa-instagram' }],
+        [/facebook/i, { type: 'fa', cls: 'fa-brands fa-facebook-f' }],
+        [/youtube/i, { type: 'fa', cls: 'fa-brands fa-youtube' }],
+        [/telegram/i, { type: 'fa', cls: 'fa-brands fa-telegram' }],
+        [/discord/i, { type: 'fa', cls: 'fa-brands fa-discord' }],
+        [/whatsapp/i, { type: 'fa', cls: 'fa-brands fa-whatsapp' }],
+        [/fiverr/i, { type: 'material', name: 'storefront' }],
+        [/mail|email/i, { type: 'material', name: 'mail' }],
+    ];
+
+    function iconForLabel(label) {
+        const match = SOCIAL_ICON_MAP.find(([re]) => re.test(label || ''));
+        return match ? match[1] : { type: 'material', name: 'language' };
+    }
+
+    // Hero photo icon rail -- same Social Links rows as the footer, rendered
+    // as small icon buttons instead of text.
+    function renderHeroSocialIcons(rows) {
+        const container = document.getElementById('hero-social-icons');
+        if (!container) return;
+        if (!rows || !rows.length) {
+            container.innerHTML = '';
+            return;
+        }
+
+        container.innerHTML = rows.map((s) => {
+            const icon = iconForLabel(s.label);
+            const iconHtml = icon.type === 'fa'
+                ? `<i class="${icon.cls}"></i>`
+                : `<span class="material-symbols-outlined text-lg">${icon.name}</span>`;
+            return `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(s.label)}" class="w-10 h-10 liquid-glass-refractive liquid-glass-interactive bounce-feedback flex items-center justify-center rounded-full transition-transform hover:brightness-125">
+${iconHtml}
+</a>`;
+        }).join('');
     }
 
     // ---------- Experience (same card style as Work, with a photo) ----------
@@ -437,6 +486,7 @@ ${row.description ? `<p class="text-white/60 text-xs leading-relaxed mt-3 pt-3" 
 
         applySiteContent(siteContent.data);
         renderSocialLinks(socialLinks.data);
+        renderHeroSocialIcons(socialLinks.data);
         renderExperience(experience.data);
         renderEducationOrbital(education.data);
         renderTestimonials(testimonials.data);

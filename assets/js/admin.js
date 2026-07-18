@@ -410,7 +410,7 @@ ${thumb}
     // ---------- Site Text (single key/value fields, one save-all form) ----------
 
     const CONTENT_KEYS = [
-        'hero_badge', 'hero_heading', 'hero_heading_highlight', 'hero_bio', 'hero_button_text', 'resume_url', 'primary_cta_link',
+        'hero_badge', 'hero_heading', 'hero_heading_highlight', 'hero_bio', 'hero_button_text', 'resume_url', 'primary_cta_link', 'hire_button_image_url',
         'about_eyebrow', 'about_heading', 'about_text',
         'work_heading', 'skills_eyebrow', 'skills_heading', 'skills_heading_highlight',
         'experience_heading', 'testimonials_heading',
@@ -423,6 +423,25 @@ ${thumb}
     const contentSuccess = document.getElementById('content-success');
     const resumeFileInput = document.getElementById('sc-resume-file');
     const resumeCurrentLink = document.getElementById('sc-resume-current');
+    const hireImageFileInput = document.getElementById('sc-hire-image-file');
+    const hireImagePreview = document.getElementById('sc-hire-image-preview');
+    const hireImageClearBtn = document.getElementById('sc-hire-image-clear');
+
+    hireImageFileInput.addEventListener('change', () => {
+        const file = hireImageFileInput.files[0];
+        if (!file) return;
+        hireImagePreview.src = URL.createObjectURL(file);
+        hireImagePreview.classList.remove('hidden');
+        hireImageClearBtn.classList.remove('hidden');
+    });
+
+    hireImageClearBtn.addEventListener('click', () => {
+        hireImageFileInput.value = '';
+        hireImagePreview.classList.add('hidden');
+        hireImagePreview.src = '';
+        hireImageClearBtn.classList.add('hidden');
+        document.getElementById('sc-hire_button_image_url').value = '';
+    });
 
     async function loadContent() {
         const { data, error } = await client.from('site_content').select('*');
@@ -438,6 +457,14 @@ ${thumb}
             resumeCurrentLink.classList.remove('hidden');
         } else {
             resumeCurrentLink.classList.add('hidden');
+        }
+        if (byKey.hire_button_image_url) {
+            hireImagePreview.src = byKey.hire_button_image_url;
+            hireImagePreview.classList.remove('hidden');
+            hireImageClearBtn.classList.remove('hidden');
+        } else {
+            hireImagePreview.classList.add('hidden');
+            hireImageClearBtn.classList.add('hidden');
         }
     }
 
@@ -459,6 +486,15 @@ ${thumb}
                 document.getElementById('sc-resume_url').value = url;
             }
 
+            const hireImageFile = hireImageFileInput.files[0];
+            if (hireImageFile) {
+                const path = `${Date.now()}-${hireImageFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                const { error: uploadError } = await client.storage.from('project-images').upload(path, hireImageFile, { upsert: true });
+                if (uploadError) throw uploadError;
+                const url = client.storage.from('project-images').getPublicUrl(path).data.publicUrl;
+                document.getElementById('sc-hire_button_image_url').value = url;
+            }
+
             const rows = CONTENT_KEYS.map((key) => ({
                 key,
                 value: document.getElementById(`sc-${key}`).value.trim(),
@@ -472,6 +508,7 @@ ${thumb}
                 resumeCurrentLink.href = document.getElementById('sc-resume_url').value;
                 resumeCurrentLink.classList.remove('hidden');
             }
+            hireImageFileInput.value = '';
             contentSuccess.classList.remove('hidden');
         } catch (err) {
             contentError.textContent = err.message || String(err);

@@ -29,6 +29,7 @@ insert into site_content (key, value) values
     ('hero_button_text', 'Download Resume'),
     ('primary_cta_link', 'https://www.fiverr.com/rafikhand1'),
     ('resume_url', ''),
+    ('hire_button_image_url', ''),
     ('about_eyebrow', 'About'),
     ('about_heading', 'Who I Am'),
     ('about_text', 'I''m Ehsanul Karim Tanjil, a Computer Science & Engineering student at BUBT and a Fiverr Level 2 Seller with 65+ reviews and a 4.9★ rating. I build fast, reliable web experiences using an AI-assisted workflow, and manage Telegram communities with a focus on safety and engagement.'),
