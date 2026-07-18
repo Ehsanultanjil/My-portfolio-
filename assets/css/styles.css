@@ -1,3 +1,10 @@
+html {
+    /* Anchor-scrolling (nav links, "View Projects" scrollIntoView) needs to
+       stop short of the fixed nav bar's height, or it lands right underneath
+       it and the top of the section gets covered. */
+    scroll-padding-top: 110px;
+}
+
 .liquid-glass-refractive {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
     backdrop-filter: blur(24px) saturate(180%);
