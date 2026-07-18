@@ -1,0 +1,102 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin — Tanjil</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;500&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="assets/js/tailwind-config.js"></script>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="text-on-surface overflow-x-hidden bg-background">
+<div class="ambient-glow" style="--x: 50%; --y: 30%;"></div>
+
+<div class="max-w-3xl mx-auto px-gutter py-16">
+
+<!-- Shown if assets/js/supabase-client.js still has placeholder values -->
+<div id="not-configured-view" class="hidden max-w-lg mx-auto mt-24 liquid-glass-refractive rounded-4xl p-8 text-center space-y-4">
+<h1 class="font-headline-lg text-headline-lg">Not set up yet</h1>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">Supabase isn't configured. Run <code class="bg-white/10 px-2 py-1 rounded">supabase/setup.sql</code> in your Supabase project, then paste your Project URL and anon key into <code class="bg-white/10 px-2 py-1 rounded">assets/js/supabase-client.js</code>.</p>
+</div>
+
+<!-- Login view -->
+<div id="login-view" class="hidden max-w-sm mx-auto mt-24">
+<h1 class="font-headline-lg text-headline-lg mb-8 text-center">Admin Login</h1>
+<form id="login-form" class="liquid-glass-refractive rounded-4xl p-8 flex flex-col gap-4">
+<input type="email" id="login-email" placeholder="Email" required autocomplete="username" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="password" id="login-password" placeholder="Password" required autocomplete="current-password" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110">Log In</button>
+<p id="login-error" class="text-sm hidden" style="color: #ff8a80;"></p>
+</form>
+</div>
+
+<!-- Dashboard view (hidden until logged in) -->
+<div id="dashboard-view" class="hidden">
+<div class="flex justify-between items-center mb-12">
+<h1 class="font-headline-lg text-headline-lg">Admin</h1>
+<button id="logout-btn" class="liquid-glass-refractive liquid-glass-interactive px-5 py-2 rounded-full text-sm font-bold bounce-feedback">Log Out</button>
+</div>
+
+<!-- Projects -->
+<section class="mb-16">
+<h2 class="font-headline-lg text-lg mb-6">Projects</h2>
+<div id="projects-admin-list" class="flex flex-col gap-4 mb-6"></div>
+<form id="project-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
+<input type="hidden" id="project-id">
+<input type="hidden" id="project-existing-image">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Add / Edit Project</p>
+<div>
+<label for="project-section" class="block text-sm text-on-surface-variant mb-1">Which tab does this belong to?</label>
+<select id="project-section" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-container">
+<option value="engineering">Engineering Work</option>
+<option value="community">Community Work</option>
+</select>
+</div>
+<input type="text" id="project-title" placeholder="Title" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<textarea id="project-description" placeholder="Description" rows="2" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container"></textarea>
+<div>
+<label for="project-image" class="block text-sm text-on-surface-variant mb-1">Photo (optional — shows a placeholder icon until you add one)</label>
+<input type="file" id="project-image" accept="image/*" class="w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary-container file:text-on-primary-container file:font-bold">
+<img id="project-image-preview" class="hidden mt-2 w-24 rounded-xl" style="aspect-ratio: 3/4; object-fit: cover;">
+</div>
+<input type="text" id="project-link" placeholder="Link URL (optional, leave blank while unfinished)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="project-tag" placeholder="Tag (small label on the card, e.g. REACT, COMING SOON — leave blank for none)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<div>
+<label for="project-sort" class="block text-sm text-on-surface-variant mb-1">Position among other cards in this tab (1 = shows first, 2 = second, and so on)</label>
+<input type="number" id="project-sort" placeholder="1" value="1" min="1" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+</div>
+<div class="flex gap-3">
+<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110">Save Project</button>
+<button type="button" id="project-cancel" class="hidden liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel Edit</button>
+</div>
+<p id="project-error" class="text-sm hidden" style="color: #ff8a80;"></p>
+</form>
+</section>
+
+<!-- Skills -->
+<section>
+<h2 class="font-headline-lg text-lg mb-6">Skills</h2>
+<div id="skills-admin-list" class="flex flex-col gap-4 mb-6"></div>
+<form id="skill-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
+<input type="hidden" id="skill-id">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Add / Edit Skill</p>
+<input type="text" id="skill-category" placeholder="Category (e.g. Development)" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="skill-icon" placeholder="Icon name (Material Symbols, e.g. code, palette, movie, groups)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="skill-name" placeholder="Skill name" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="number" id="skill-sort" placeholder="Sort order" value="0" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<div class="flex gap-3">
+<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110">Save Skill</button>
+<button type="button" id="skill-cancel" class="hidden liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel Edit</button>
+</div>
+<p id="skill-error" class="text-sm hidden" style="color: #ff8a80;"></p>
+</form>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/admin.js"></script>
+</body></html>
