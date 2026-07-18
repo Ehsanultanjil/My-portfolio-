@@ -719,6 +719,7 @@ ${thumb}
                 if (!row) return;
                 educationIdField.value = row.id;
                 document.getElementById('education-degree').value = row.degree || '';
+                document.getElementById('education-short-name').value = row.short_name || '';
                 document.getElementById('education-institution').value = row.institution || '';
                 document.getElementById('education-start').value = row.start_date || '';
                 document.getElementById('education-end').value = row.end_date || '';
@@ -756,6 +757,7 @@ ${thumb}
 
         const row = {
             degree: document.getElementById('education-degree').value.trim(),
+            short_name: document.getElementById('education-short-name').value.trim(),
             institution: document.getElementById('education-institution').value.trim(),
             start_date: document.getElementById('education-start').value.trim(),
             end_date: document.getElementById('education-end').value.trim(),

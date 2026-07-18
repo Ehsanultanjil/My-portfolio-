@@ -273,18 +273,21 @@ ${x.description ? `<p class="font-body-sm text-body-sm text-on-surface-variant b
 
         const nodes = rows.map((row) => {
             const range = [row.start_date, row.end_date].filter(Boolean).join(' — ');
+            const isInProgress = !row.end_date;
+            const statusLabel = isInProgress ? 'IN PROGRESS' : 'COMPLETED';
+            const statusColor = isInProgress ? '#60a5fa' : '#4ade80';
             const wrapEl = document.createElement('div');
             wrapEl.className = 'absolute left-1/2 top-1/2';
             wrapEl.innerHTML = `
 <button type="button" class="orbital-btn w-12 h-12 -ml-6 -mt-6 rounded-full flex items-center justify-center border-2 bg-black text-white border-white/40" style="transition: background-color 0.3s, border-color 0.3s, color 0.3s, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;">
-<span class="material-symbols-outlined text-2xl">school</span>
+${row.short_name ? `<span class="text-[11px] font-bold tracking-tight">${escapeHtml(row.short_name)}</span>` : `<span class="material-symbols-outlined text-2xl">school</span>`}
 </button>
 <div class="orbital-label absolute top-9 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold uppercase tracking-wide text-white/70 transition-all duration-300">${escapeHtml(row.degree)}</div>
 <div class="orbital-card hidden absolute top-16 left-1/2 -translate-x-1/2 w-64 rounded-lg overflow-visible text-left" style="background: rgba(0,0,0,0.9); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 0 15px rgba(255,255,255,0.1);">
 <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3" style="background: rgba(255,255,255,0.5);"></div>
 <div class="p-4">
 <div class="flex justify-between items-center mb-2">
-<span class="px-2 text-[10px] font-bold border" style="color:#fff; background:#000; border-color:#fff;">EDUCATION</span>
+<span class="px-2 text-[10px] font-bold border" style="color:${statusColor}; background:#000; border-color:${statusColor};">${statusLabel}</span>
 ${range ? `<span class="text-[11px] text-white/50" style="font-family: ui-monospace, monospace;">${escapeHtml(range)}</span>` : ''}
 </div>
 <p class="font-bold text-sm text-white mt-1">${escapeHtml(row.degree)}</p>
@@ -334,12 +337,10 @@ ${row.description ? `<p class="text-white/60 text-xs leading-relaxed mt-3 pt-3" 
                 const x = radius * Math.cos(rad);
                 const y = radius * Math.sin(rad);
                 const isExpanded = expandedId === n.row.id;
-                const opacity = isExpanded ? 1 : Math.max(0.4, Math.min(1, 0.4 + 0.6 * ((1 + Math.sin(rad)) / 2)));
                 const z = isExpanded ? 50 : Math.round(10 + 10 * Math.cos(rad));
 
                 n.wrapEl.style.transform = `translate(${x}px, ${y}px)`;
                 n.wrapEl.style.zIndex = z;
-                n.wrapEl.style.opacity = opacity;
                 n.btn.classList.toggle('bg-white', isExpanded);
                 n.btn.classList.toggle('text-black', isExpanded);
                 n.btn.classList.toggle('border-white', isExpanded);
