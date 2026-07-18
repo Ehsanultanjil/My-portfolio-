@@ -79,60 +79,10 @@
 </section>
 <!-- Skills Marquee -->
 <div class="relative w-screen left-1/2 -translate-x-1/2 overflow-hidden" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
+<!-- Populated at runtime by assets/js/render-content.js (same skills you manage in admin.html) -->
 <div class="flex animate-marquee whitespace-nowrap w-max px-8 py-8">
-<div class="flex gap-6 shrink-0 mr-6">
-<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span>
-<span class="font-body-md text-body-md">React.js</span>
-</div>
-<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span>
-<span class="font-body-md text-body-md">Next.js</span>
-</div>
-<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span>
-<span class="font-body-md text-body-md">Tailwind CSS</span>
-</div>
-<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span>
-<span class="font-body-md text-body-md">Node.js</span>
-</div>
-<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span>
-<span class="font-body-md text-body-md">TypeScript</span>
-</div>
-<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span>
-<span class="font-body-md text-body-md">PostgreSQL</span>
-</div>
-</div>
-<!-- Set 2 -->
-<div class="flex gap-6 shrink-0 mr-6">
-<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span>
-<span class="font-body-md text-body-md">React.js</span>
-</div>
-<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span>
-<span class="font-body-md text-body-md">Next.js</span>
-</div>
-<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span>
-<span class="font-body-md text-body-md">Tailwind CSS</span>
-</div>
-<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span>
-<span class="font-body-md text-body-md">Node.js</span>
-</div>
-<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span>
-<span class="font-body-md text-body-md">TypeScript</span>
-</div>
-<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span>
-<span class="font-body-md text-body-md">PostgreSQL</span>
-</div>
-</div>
+<div class="flex gap-6 shrink-0 mr-6" id="marquee-set-1"></div>
+<div class="flex gap-6 shrink-0 mr-6" id="marquee-set-2"></div>
 </div>
 </div>
 <!-- Work Section -->
@@ -174,7 +124,7 @@
 <h2 class="font-headline-lg text-headline-lg lg:text-5xl">Tools &amp; Technologies I <span class="text-primary-container">Use</span></h2>
 </div>
 <!-- Populated at runtime by assets/js/render-content.js (Supabase, falls back to placeholder cards if not configured) -->
-<div id="skills-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+<div id="skills-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start"></div>
 </section>
 <!-- Contact -->
 <section class="space-y-8 pb-12" id="contact">

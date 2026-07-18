@@ -33,14 +33,48 @@
 
 <!-- Dashboard view (hidden until logged in) -->
 <div id="dashboard-view" class="hidden">
-<div class="flex justify-between items-center mb-12">
+<div class="flex justify-between items-center mb-8">
 <h1 class="font-headline-lg text-headline-lg">Admin</h1>
 <button id="logout-btn" class="liquid-glass-refractive liquid-glass-interactive px-5 py-2 rounded-full text-sm font-bold bounce-feedback">Log Out</button>
 </div>
 
+<!-- Status -->
+<div class="flex items-center gap-2 mb-10">
+<span class="w-2.5 h-2.5 rounded-full" style="background: #4ade80; box-shadow: 0 0 8px #4ade80;"></span>
+<span class="font-body-md text-body-md">Website Online</span>
+</div>
+
+<!-- Stats -->
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+<div class="liquid-glass-refractive rounded-3xl p-5 text-center">
+<p id="stat-projects" class="font-headline-lg text-3xl text-primary-container">—</p>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-1">Projects</p>
+</div>
+<div class="liquid-glass-refractive rounded-3xl p-5 text-center">
+<p id="stat-skills" class="font-headline-lg text-3xl text-primary-container">—</p>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-1">Skills</p>
+</div>
+<div class="liquid-glass-refractive rounded-3xl p-5 text-center">
+<p id="stat-visitors" class="font-headline-lg text-3xl text-primary-container">—</p>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-1">Visitors</p>
+</div>
+</div>
+<!-- No "Messages" stat here: Contact is a plain mailto: link, not a form
+     that saves anywhere, so there's genuinely nothing to count yet. -->
+
+<!-- Quick actions -->
+<div class="flex gap-3 mb-16">
+<button id="quick-add-project" class="liquid-glass-refractive liquid-glass-interactive px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2"><span class="material-symbols-outlined text-lg">add</span>Add Project</button>
+<button id="quick-add-skill" class="liquid-glass-refractive liquid-glass-interactive px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2"><span class="material-symbols-outlined text-lg">add</span>Add Skill</button>
+</div>
+
 <!-- Projects -->
-<section class="mb-16">
-<h2 class="font-headline-lg text-lg mb-6">Projects</h2>
+<section class="mb-6">
+<button type="button" class="accordion-toggle w-full flex items-center justify-between mb-6" data-accordion="projects" aria-expanded="false">
+<h2 class="font-headline-lg text-lg">Projects</h2>
+<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
+</button>
+<div class="accordion-panel hidden" data-panel="projects">
 <div id="projects-admin-list" class="flex flex-col gap-4 mb-6"></div>
 <form id="project-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
 <input type="hidden" id="project-id">
@@ -72,11 +106,16 @@
 </div>
 <p id="project-error" class="text-sm hidden" style="color: #ff8a80;"></p>
 </form>
+</div>
 </section>
 
 <!-- Skills -->
 <section>
-<h2 class="font-headline-lg text-lg mb-6">Skills</h2>
+<button type="button" class="accordion-toggle w-full flex items-center justify-between mb-6" data-accordion="skills" aria-expanded="false">
+<h2 class="font-headline-lg text-lg">Skills</h2>
+<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
+</button>
+<div class="accordion-panel hidden" data-panel="skills">
 <div id="skills-admin-list" class="flex flex-col gap-4 mb-6"></div>
 <form id="skill-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
 <input type="hidden" id="skill-id">
@@ -91,6 +130,7 @@
 </div>
 <p id="skill-error" class="text-sm hidden" style="color: #ff8a80;"></p>
 </form>
+</div>
 </section>
 
 </div>

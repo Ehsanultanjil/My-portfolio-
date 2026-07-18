@@ -62,6 +62,37 @@ ${linkHtml}
         }).join('');
     }
 
+    // The floating marquee pulls every skill name across all categories (not
+    // just one group) so the loop is long and varied instead of visibly
+    // repeating every few seconds. Both halves get identical content -- that
+    // duplication is what makes the CSS animation loop seamlessly.
+    // Categories are otherwise ordered alphabetically (see the Supabase query
+    // below), which buried the recognizable tech-stack names under
+    // "Community & Client Work" / "Design". Lead with Development instead so
+    // the familiar names show up immediately, not partway through the loop.
+    const MARQUEE_CATEGORY_PRIORITY = ['Development', 'Design', 'Video Editing', 'Community & Client Work'];
+
+    function renderMarquee(groups) {
+        const set1 = document.getElementById('marquee-set-1');
+        const set2 = document.getElementById('marquee-set-2');
+        if (!set1 || !set2) return;
+
+        const ordered = [...groups].sort((a, b) => {
+            const ai = MARQUEE_CATEGORY_PRIORITY.indexOf(a.category);
+            const bi = MARQUEE_CATEGORY_PRIORITY.indexOf(b.category);
+            return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+        });
+
+        const allNames = ordered.flatMap((g) => g.names);
+        const pillsHtml = allNames.map((n) => `<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-body-md text-body-md">${escapeHtml(n)}</span>
+</div>`).join('');
+
+        set1.innerHTML = pillsHtml;
+        set2.innerHTML = pillsHtml;
+    }
+
     function renderSkills(groups) {
         const container = document.getElementById('skills-list');
         if (!container) return;
@@ -115,15 +146,24 @@ ${g.names.map((n) => `<span class="px-3 py-1 rounded-full bg-white/5 text-on-sur
         }
     }
 
+    // Real visitor count for the admin dashboard -- one row per page load.
+    // Fire-and-forget: never blocks rendering, and a failure here (e.g. the
+    // page_views table not migrated yet) is silently ignored.
+    if (window.supabaseClient) {
+        window.supabaseClient.from('page_views').insert({}).then(() => {}).catch(() => {});
+    }
+
     loadFromSupabase().then((data) => {
         if (data) {
             renderCards('projects-list', data.engineering.length ? data.engineering : FALLBACK_ENGINEERING);
             renderCards('community-list', data.community.length ? data.community : FALLBACK_COMMUNITY);
             renderSkills(data.skills);
+            renderMarquee(data.skills);
         } else {
             renderCards('projects-list', FALLBACK_ENGINEERING);
             renderCards('community-list', FALLBACK_COMMUNITY);
             renderSkills(FALLBACK_SKILLS);
+            renderMarquee(FALLBACK_SKILLS);
         }
     });
 })();

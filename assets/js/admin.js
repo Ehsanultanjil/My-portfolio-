@@ -22,7 +22,72 @@
         dashboardView.classList.remove('hidden');
         loadProjects();
         loadSkills();
+        loadStats();
     }
+
+    // ---------- Stats ----------
+
+    async function loadStats() {
+        const [projectsCount, skillsCount, viewsCount] = await Promise.all([
+            client.from('projects').select('*', { count: 'exact', head: true }),
+            client.from('skills').select('*', { count: 'exact', head: true }),
+            client.from('page_views').select('*', { count: 'exact', head: true }),
+        ]);
+
+        // count comes back null (not just .error set) when a table doesn't
+        // exist yet -- e.g. page_views before migration_3 has been run --
+        // so check both, or "0 projects" and "not migrated yet" look identical.
+        const displayCount = (result) => (result.error || result.count == null) ? '—' : result.count;
+
+        document.getElementById('stat-projects').textContent = displayCount(projectsCount);
+        document.getElementById('stat-skills').textContent = displayCount(skillsCount);
+        document.getElementById('stat-visitors').textContent = displayCount(viewsCount);
+    }
+
+    // ---------- Accordion (Projects / Skills sections) ----------
+    // Only one section open at a time; clicking the open one closes it.
+
+    const accordionToggles = document.querySelectorAll('.accordion-toggle');
+
+    function openAccordion(name) {
+        accordionToggles.forEach((toggle) => {
+            const isTarget = toggle.dataset.accordion === name;
+            const panel = document.querySelector(`.accordion-panel[data-panel="${toggle.dataset.accordion}"]`);
+            const chevron = toggle.querySelector('.material-symbols-outlined');
+            panel.classList.toggle('hidden', !isTarget);
+            toggle.setAttribute('aria-expanded', String(isTarget));
+            chevron.style.transform = isTarget ? 'rotate(180deg)' : 'rotate(0deg)';
+        });
+    }
+
+    function closeAllAccordions() {
+        accordionToggles.forEach((toggle) => {
+            const panel = document.querySelector(`.accordion-panel[data-panel="${toggle.dataset.accordion}"]`);
+            panel.classList.add('hidden');
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.querySelector('.material-symbols-outlined').style.transform = 'rotate(0deg)';
+        });
+    }
+
+    accordionToggles.forEach((toggle) => {
+        toggle.addEventListener('click', () => {
+            const name = toggle.dataset.accordion;
+            const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+            isOpen ? closeAllAccordions() : openAccordion(name);
+        });
+    });
+
+    document.getElementById('quick-add-project').addEventListener('click', () => {
+        openAccordion('projects');
+        document.getElementById('project-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('project-title').focus();
+    });
+
+    document.getElementById('quick-add-skill').addEventListener('click', () => {
+        openAccordion('skills');
+        document.getElementById('skill-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('skill-category').focus();
+    });
 
     client.auth.getSession().then(({ data }) => {
         if (data.session) {
@@ -161,6 +226,7 @@ ${thumb}
                     projectImagePreview.classList.add('hidden');
                 }
                 projectCancelBtn.classList.remove('hidden');
+                openAccordion('projects');
                 projectForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
             });
         });
@@ -174,6 +240,7 @@ ${thumb}
                     return;
                 }
                 loadProjects();
+                loadStats();
             });
         });
     }
@@ -228,6 +295,7 @@ ${thumb}
 
             resetProjectForm();
             loadProjects();
+            loadStats();
         } catch (err) {
             projectError.textContent = err.message || String(err);
             projectError.classList.remove('hidden');
@@ -278,6 +346,7 @@ ${thumb}
                 document.getElementById('skill-name').value = skill.name || '';
                 document.getElementById('skill-sort').value = skill.sort_order || 0;
                 skillCancelBtn.classList.remove('hidden');
+                openAccordion('skills');
                 skillForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
             });
         });
@@ -291,6 +360,7 @@ ${thumb}
                     return;
                 }
                 loadSkills();
+                loadStats();
             });
         });
     }
@@ -329,5 +399,6 @@ ${thumb}
 
         resetSkillForm();
         loadSkills();
+        loadStats();
     });
 })();
