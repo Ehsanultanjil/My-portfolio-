@@ -104,3 +104,189 @@ html {
         transform: translateY(0);
     }
 }
+
+/* ==================== Admin panel v2 ==================== */
+
+.admin-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+.admin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.admin-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 219, 233, 0.25);
+    border-radius: 10px;
+}
+
+/* Toggle switch (visibility, feature flags) */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+    flex-shrink: 0;
+}
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.toggle-switch .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.25s ease, border-color 0.25s ease;
+}
+.toggle-switch .toggle-track::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 2px;
+    top: 2px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.toggle-switch input:checked + .toggle-track {
+    background: rgba(0, 219, 233, 0.55);
+    border-color: rgba(0, 219, 233, 0.8);
+    box-shadow: 0 0 10px rgba(0, 219, 233, 0.4);
+}
+.toggle-switch input:checked + .toggle-track::before {
+    transform: translateX(18px);
+}
+
+/* Modal / drawer overlay */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+.modal-overlay.modal-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+.modal-panel {
+    transform: translateY(24px) scale(0.97);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+}
+.modal-overlay.modal-open .modal-panel {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+.drawer-panel {
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-overlay.modal-open .drawer-panel {
+    transform: translateX(0);
+}
+
+/* Toasts */
+#toast-stack {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+.toast {
+    pointer-events: auto;
+    min-width: 240px;
+    max-width: 360px;
+    transform: translateX(120%);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+.toast.toast-in {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Skeleton loading shimmer */
+.skeleton {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.06);
+}
+.skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Drag-and-drop reorder */
+.drag-handle {
+    cursor: grab;
+    touch-action: none;
+}
+.drag-handle:active {
+    cursor: grabbing;
+}
+[draggable="true"].dragging {
+    opacity: 0.4;
+}
+.drag-over-top {
+    box-shadow: inset 0 2px 0 0 rgba(0, 219, 233, 0.8);
+}
+.drag-over-bottom {
+    box-shadow: inset 0 -2px 0 0 rgba(0, 219, 233, 0.8);
+}
+
+/* Sidebar nav item active state */
+.admin-nav-item {
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.admin-nav-item.active {
+    background: rgba(0, 219, 233, 0.12);
+    color: #7cf3ff;
+    box-shadow: inset 3px 0 0 0 #00dbe9;
+}
+
+/* Mobile sidebar drawer */
+#admin-sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    background: rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+#admin-sidebar-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+@media (max-width: 1023px) {
+    #admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 160;
+        transform: translateX(-100%);
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #admin-sidebar.open {
+        transform: translateX(0);
+    }
+}

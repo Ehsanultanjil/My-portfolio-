@@ -10,6 +10,14 @@
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body class="text-on-surface overflow-x-hidden bg-background">
+<!-- Populated at runtime by render-content.js if maintenance_mode is on -->
+<div id="maintenance-overlay" class="hidden fixed inset-0 z-[999] bg-background flex items-center justify-center p-6 text-center">
+<div class="liquid-glass-refractive rounded-4xl p-10 max-w-md">
+<span class="material-symbols-outlined text-4xl text-primary-container">build</span>
+<h1 class="font-headline-lg text-headline-lg mt-4 mb-2">Down for maintenance</h1>
+<p class="text-on-surface-variant">Be back shortly — thanks for your patience.</p>
+</div>
+</div>
 <!-- Preloader -->
 <div class="preloader" id="preloader">
 <div class="preloader-words">
@@ -23,6 +31,8 @@
 <div class="ambient-glow" style="--x: 22.734375%; --y: 56.29577956051622%;"></div>
 <!-- Top Navigation Bar -->
 <nav class="fixed top-0 left-0 right-0 z-50 flex items-center px-2 sm:px-6 py-2 gap-1 sm:gap-component-gap mt-6 mx-auto max-w-fit liquid-glass-refractive rounded-full shadow-2xl bounce-feedback">
+<!-- Populated at runtime by render-content.js only if a logo is set in Website Settings -->
+<img id="nav-logo" class="hidden h-7 w-auto object-contain ml-1 mr-1" alt="Logo">
 <div class="flex gap-0.5 sm:gap-6 items-center px-1 sm:px-4 relative z-10" id="nav-links">
 <a class="font-body-md text-[11px] sm:text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-2 sm:px-3 py-1 rounded-full transition-all duration-300" href="#work">Work</a>
 <a class="font-body-md text-[11px] sm:text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-2 sm:px-3 py-1 rounded-full transition-all duration-300" href="#skills">Skills</a>
@@ -59,9 +69,11 @@
 </div>
 <div class="group flex flex-col lg:flex-row items-center gap-4 mx-auto lg:mx-0">
 <div class="relative max-w-[200px] sm:max-w-[340px] md:max-w-[440px] lg:max-w-none w-full lg:flex-1 lg:min-w-0">
-<div class="absolute -inset-4 bg-primary-container/20 blur-3xl rounded-full transition-opacity group-hover:opacity-60 opacity-30"></div>
+<!-- Populated at runtime by render-content.js only if a Hero Background Image is set -->
+<div id="hero-bg-layer" class="hidden absolute -inset-6 -z-10 bg-cover bg-center rounded-4xl opacity-25 blur-sm"></div>
+<div id="hero-glow" class="absolute -inset-4 bg-primary-container/20 blur-3xl rounded-full transition-opacity group-hover:opacity-60 opacity-30"></div>
 <div class="relative aspect-square overflow-hidden liquid-glass-refractive p-2 transform rotate-1 group-hover:rotate-0 transition-transform duration-500 rounded-4xl">
-<img src="assets/images/myprofile.png" alt="Ehsanul Karim Tanjil" class="w-full h-full object-cover rounded-[32px]">
+<img id="hero-photo-img" src="assets/images/myprofile.png" alt="Ehsanul Karim Tanjil" class="w-full h-full object-cover rounded-[32px]">
 </div>
 </div>
 <!-- Populated at runtime by assets/js/render-content.js from the same Social Links you manage in admin.html -->
@@ -166,6 +178,8 @@
 <a id="contact-email-link" href="mailto:ehsanultanjil@gmail.com" class="px-8 py-4 bg-primary-container text-on-primary-container font-bold bounce-feedback transition-transform hover:brightness-110 rounded-full">
                 ehsanultanjil@gmail.com
             </a>
+<!-- Populated at runtime by render-content.js, only shown if set in admin -->
+<div id="contact-extra" class="flex flex-wrap justify-center gap-3 text-sm text-on-surface-variant"></div>
 </div>
 </section>
 </main>

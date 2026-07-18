@@ -40,8 +40,11 @@
                 ? 'w-28 sm:w-32 shrink-0 rounded-2xl overflow-hidden flex items-center justify-center'
                 : 'w-28 sm:w-32 shrink-0 rounded-2xl border border-white/10 border-dashed bg-white/[0.02] flex items-center justify-center';
 
-            const linkHtml = p.link_url
-                ? `<div class="mt-auto flex justify-end"><a href="${escapeHtml(p.link_url)}" target="_blank" rel="noopener noreferrer" aria-label="Visit ${escapeHtml(p.title)}" class="liquid-glass-refractive liquid-glass-interactive bounce-feedback w-10 h-10 rounded-full flex items-center justify-center text-primary-container transition-transform hover:brightness-125"><span class="material-symbols-outlined text-lg">open_in_new</span></a></div>`
+            const linkButtons = [];
+            if (p.link_url) linkButtons.push(`<a href="${escapeHtml(p.link_url)}" target="_blank" rel="noopener noreferrer" aria-label="Visit ${escapeHtml(p.title)}" class="liquid-glass-refractive liquid-glass-interactive bounce-feedback w-10 h-10 rounded-full flex items-center justify-center text-primary-container transition-transform hover:brightness-125"><span class="material-symbols-outlined text-lg">open_in_new</span></a>`);
+            if (p.github_url) linkButtons.push(`<a href="${escapeHtml(p.github_url)}" target="_blank" rel="noopener noreferrer" aria-label="View source of ${escapeHtml(p.title)}" class="liquid-glass-refractive liquid-glass-interactive bounce-feedback w-10 h-10 rounded-full flex items-center justify-center text-primary-container transition-transform hover:brightness-125"><i class="fa-brands fa-github"></i></a>`);
+            const linkHtml = linkButtons.length
+                ? `<div class="mt-auto flex justify-end gap-2">${linkButtons.join('')}</div>`
                 : `<div class="mt-auto flex justify-end"><div class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant opacity-40"><span class="material-symbols-outlined text-lg">open_in_new</span></div></div>`;
 
             const tagHtml = p.tag
@@ -137,8 +140,9 @@ ${g.names.map((n) => `<span class="px-3 py-1 rounded-full bg-white/5 text-on-sur
                 return null;
             }
 
-            const engineering = projects.filter((p) => p.section !== 'community');
-            const community = projects.filter((p) => p.section === 'community');
+            const visibleProjects = projects.filter((p) => p.visible !== false);
+            const engineering = visibleProjects.filter((p) => p.section !== 'community');
+            const community = visibleProjects.filter((p) => p.section === 'community');
 
             return { engineering, community, skills: groupSkills(skills) };
         } catch (e) {
@@ -159,6 +163,7 @@ ${g.names.map((n) => `<span class="px-3 py-1 rounded-full bg-white/5 text-on-sur
         primary_cta_link: { selector: '#nav-hire-link, #hero-cta-link', mode: 'href' },
         hire_button_image_url: { selector: '#nav-hire-link', mode: 'image' },
         resume_url: { selector: '#hero-resume-link', mode: 'resume' },
+        hero_photo_url: { selector: '#hero-photo-img', mode: 'src' },
         about_eyebrow: { selector: '#about-eyebrow', mode: 'text' },
         about_heading: { selector: '#about-heading', mode: 'text' },
         about_text: { selector: '#about-text', mode: 'text' },
@@ -197,15 +202,126 @@ ${g.names.map((n) => `<span class="px-3 py-1 rounded-full bg-white/5 text-on-sur
                     el.classList.remove('px-3', 'sm:px-6', 'py-1.5', 'sm:py-2', 'whitespace-nowrap');
                     el.classList.add('overflow-hidden', 'p-0', 'w-20', 'h-8', 'sm:w-28', 'sm:h-9');
                     el.innerHTML = `<img src="${escapeHtml(value)}" alt="Hire Me" class="w-full h-full object-cover">`;
+                } else if (target.mode === 'src') {
+                    el.setAttribute('src', value);
                 }
             });
         });
     }
 
+    // Settings that don't map cleanly onto a single "find element(s), set an
+    // attribute" rule -- document head tags, feature toggles, the nav logo
+    // slot, and the maintenance overlay. All optional/no-op if unset.
+    function applySiteExtras(byKey) {
+        if (byKey.seo_title) document.title = byKey.seo_title;
+
+        if (byKey.seo_description) {
+            let meta = document.querySelector('meta[name="description"]');
+            if (!meta) {
+                meta = document.createElement('meta');
+                meta.setAttribute('name', 'description');
+                document.head.appendChild(meta);
+            }
+            meta.setAttribute('content', byKey.seo_description);
+        }
+
+        if (byKey.favicon_url) {
+            let link = document.querySelector('link[rel="icon"]');
+            if (!link) {
+                link = document.createElement('link');
+                link.setAttribute('rel', 'icon');
+                document.head.appendChild(link);
+            }
+            link.setAttribute('href', byKey.favicon_url);
+        }
+
+        if (byKey.logo_url) {
+            const logo = document.getElementById('nav-logo');
+            if (logo) {
+                logo.src = byKey.logo_url;
+                logo.classList.remove('hidden');
+            }
+        }
+
+        if (byKey.hero_bg_image_url) {
+            const layer = document.getElementById('hero-bg-layer');
+            if (layer) {
+                layer.style.backgroundImage = `url('${byKey.hero_bg_image_url}')`;
+                layer.classList.remove('hidden');
+            }
+        }
+
+        if (byKey.hero_glow_enabled === 'false') {
+            const glow = document.getElementById('hero-glow');
+            if (glow) glow.style.display = 'none';
+        }
+
+        if (byKey.particles_enabled === 'false') {
+            const particles = document.getElementById('site-particles');
+            if (particles) particles.innerHTML = '';
+        }
+
+        if (byKey.cursor_light_enabled === 'false') {
+            document.querySelectorAll('.ambient-glow').forEach((el) => { el.style.display = 'none'; });
+        }
+
+        if (byKey.preloader_enabled === 'false') {
+            const preloader = document.getElementById('preloader');
+            if (preloader) preloader.classList.add('preloader-exit');
+        }
+
+        if (byKey.ga_id) {
+            const s1 = document.createElement('script');
+            s1.async = true;
+            s1.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(byKey.ga_id)}`;
+            document.head.appendChild(s1);
+            const s2 = document.createElement('script');
+            s2.textContent = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${byKey.ga_id.replace(/'/g, '')}');`;
+            document.head.appendChild(s2);
+        }
+
+        if (byKey.gsc_verification) {
+            const meta = document.createElement('meta');
+            meta.setAttribute('name', 'google-site-verification');
+            meta.setAttribute('content', byKey.gsc_verification);
+            document.head.appendChild(meta);
+        }
+
+        if (byKey.maintenance_mode === 'true') {
+            const overlay = document.getElementById('maintenance-overlay');
+            if (overlay) overlay.classList.remove('hidden');
+        }
+
+        const extraContact = document.getElementById('contact-extra');
+        if (extraContact) {
+            const pills = [];
+            if (byKey.contact_phone) pills.push(`<a href="tel:${escapeHtml(byKey.contact_phone.replace(/[^0-9+]/g, ''))}" class="liquid-glass-refractive rounded-full px-4 py-2 hover:text-primary-container transition-colors">${escapeHtml(byKey.contact_phone)}</a>`);
+            if (byKey.contact_whatsapp) pills.push(`<a href="https://wa.me/${escapeHtml(byKey.contact_whatsapp.replace(/[^0-9]/g, ''))}" target="_blank" rel="noopener noreferrer" class="liquid-glass-refractive rounded-full px-4 py-2 hover:text-primary-container transition-colors">WhatsApp</a>`);
+            if (byKey.contact_address) pills.push(`<span class="liquid-glass-refractive rounded-full px-4 py-2">${escapeHtml(byKey.contact_address)}</span>`);
+            extraContact.innerHTML = pills.join('');
+        }
+
+        return { orbitEnabled: byKey.orbit_enabled !== 'false' };
+    }
+
+    // Real "resume download" count for the admin dashboard -- only counted
+    // when the button actually points at an uploaded resume, not the
+    // scroll-to-Work fallback.
+    function wireResumeClickTracking() {
+        const link = document.getElementById('hero-resume-link');
+        if (!link) return;
+        link.addEventListener('click', () => {
+            if (link.getAttribute('href') === '#work') return;
+            if (window.supabaseClient) window.supabaseClient.from('resume_clicks').insert({}).then(() => {}).catch(() => {});
+        });
+    }
+
     function renderSocialLinks(rows) {
         const container = document.getElementById('footer-social-links');
-        if (!container || !rows || !rows.length) return;
-        container.innerHTML = rows.map((s) => `<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors opacity-80 hover:opacity-100 brightness-110" href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.label)}</a>`).join('');
+        if (!container) return;
+        const visible = (rows || []).filter((s) => s.visible !== false);
+        if (!visible.length) return;
+        container.innerHTML = visible.map((s) => `<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors opacity-80 hover:opacity-100 brightness-110" href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.label)}</a>`).join('');
     }
 
     // Picks a real brand icon (Font Awesome Brands) based on the link's label --
@@ -236,12 +352,13 @@ ${g.names.map((n) => `<span class="px-3 py-1 rounded-full bg-white/5 text-on-sur
     function renderHeroSocialIcons(rows) {
         const container = document.getElementById('hero-social-icons');
         if (!container) return;
-        if (!rows || !rows.length) {
+        const visible = (rows || []).filter((s) => s.visible !== false);
+        if (!visible.length) {
             container.innerHTML = '';
             return;
         }
 
-        container.innerHTML = rows.map((s) => {
+        container.innerHTML = visible.map((s) => {
             const icon = iconForLabel(s.label);
             const iconHtml = icon.type === 'fa'
                 ? `<i class="${icon.cls}"></i>`
@@ -292,7 +409,7 @@ ${x.description ? `<p class="font-body-sm text-body-sm text-on-surface-variant b
     // click one to expand its details). Lives in the right column of About Me.
     let orbitalTimer = null;
 
-    function renderEducationOrbital(rows) {
+    function renderEducationOrbital(rows, orbitEnabled) {
         const wrap = document.getElementById('orbital-timeline-wrap');
         const container = document.getElementById('orbital-timeline');
         if (!wrap || !container) return;
@@ -341,7 +458,7 @@ ${x.description ? `<p class="font-body-sm text-body-sm text-on-surface-variant b
         const total = rows.length;
         const radius = container.clientWidth ? container.clientWidth / 2 : 175;
         let angle = 0;
-        let autoRotate = true;
+        let autoRotate = orbitEnabled !== false;
         let expandedId = null;
 
         const nodes = rows.map((row) => {
@@ -365,6 +482,7 @@ ${range ? `<span class="text-[11px] text-white/50" style="font-family: ui-monosp
 </div>
 <p class="font-bold text-sm text-white mt-1">${escapeHtml(row.degree)}</p>
 ${row.institution ? `<p class="text-white/80 text-xs mt-1">${escapeHtml(row.institution)}</p>` : ''}
+${row.grade ? `<p class="text-white/60 text-xs mt-1">Grade: ${escapeHtml(row.grade)}</p>` : ''}
 ${row.description ? `<p class="text-white/60 text-xs leading-relaxed mt-3 pt-3" style="border-top: 1px solid rgba(255,255,255,0.1);">${escapeHtml(row.description)}</p>` : ''}
 </div>
 </div>`;
@@ -382,7 +500,7 @@ ${row.description ? `<p class="text-white/60 text-xs leading-relaxed mt-3 pt-3" 
                 e.stopPropagation();
                 const opening = expandedId !== row.id;
                 expandedId = opening ? row.id : null;
-                autoRotate = expandedId === null;
+                autoRotate = expandedId === null && orbitEnabled !== false;
 
                 if (opening) {
                     // Rotate the ring so the clicked node lands at the top,
@@ -439,7 +557,7 @@ ${row.description ? `<p class="text-white/60 text-xs leading-relaxed mt-3 pt-3" 
         container.addEventListener('click', (e) => {
             if (e.target !== container) return;
             expandedId = null;
-            autoRotate = true;
+            autoRotate = orbitEnabled !== false;
             update();
         });
     }
@@ -449,19 +567,30 @@ ${row.description ? `<p class="text-white/60 text-xs leading-relaxed mt-3 pt-3" 
         const section = document.getElementById('testimonials');
         const container = document.getElementById('testimonials-list');
         if (!section || !container) return;
-        if (!rows || !rows.length) {
+        const visible = (rows || []).filter((t) => t.visible !== false);
+        if (!visible.length) {
             section.classList.add('hidden');
             return;
         }
 
         section.classList.remove('hidden');
-        container.innerHTML = rows.map((t) => {
+        container.innerHTML = visible.map((t) => {
             const rating = Math.max(0, Math.min(5, Number(t.rating) || 0));
             const stars = Array.from({ length: 5 }, (_, i) => `<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' ${i < rating ? 1 : 0};">star</span>`).join('');
+            const photo = t.photo_url
+                ? `<img src="${escapeHtml(t.photo_url)}" class="w-10 h-10 rounded-full object-cover">`
+                : `<div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center"><span class="material-symbols-outlined text-on-surface-variant text-lg">person</span></div>`;
+            const roleLine = [t.position, t.company].filter(Boolean).join(' · ');
             return `<div class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
 <div class="flex text-primary-container">${stars}</div>
 <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed flex-1">"${escapeHtml(t.quote)}"</p>
+<div class="flex items-center gap-3">
+${photo}
+<div>
 <p class="font-bold text-sm">${escapeHtml(t.client_name)}</p>
+${roleLine ? `<p class="text-xs text-on-surface-variant">${escapeHtml(roleLine)}</p>` : ''}
+</div>
+</div>
 </div>`;
         }).join('');
     }
@@ -485,10 +614,15 @@ ${row.description ? `<p class="text-white/60 text-xs leading-relaxed mt-3 pt-3" 
         ]);
 
         applySiteContent(siteContent.data);
+
+        const byKey = {};
+        (siteContent.data || []).forEach((r) => { byKey[r.key] = r.value; });
+        const { orbitEnabled } = applySiteExtras(byKey);
+
         renderSocialLinks(socialLinks.data);
         renderHeroSocialIcons(socialLinks.data);
         renderExperience(experience.data);
-        renderEducationOrbital(education.data);
+        renderEducationOrbital(education.data, orbitEnabled);
         renderTestimonials(testimonials.data);
     }
 
@@ -498,6 +632,7 @@ ${row.description ? `<p class="text-white/60 text-xs leading-relaxed mt-3 pt-3" 
     if (window.supabaseClient) {
         window.supabaseClient.from('page_views').insert({}).then(() => {}).catch(() => {});
     }
+    wireResumeClickTracking();
 
     loadFromSupabase().then((data) => {
         if (data) {

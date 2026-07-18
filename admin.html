@@ -12,8 +12,6 @@
 <body class="text-on-surface overflow-x-hidden bg-background">
 <div class="ambient-glow" style="--x: 50%; --y: 30%;"></div>
 
-<div class="max-w-3xl mx-auto px-gutter py-16">
-
 <!-- Shown if assets/js/supabase-client.js still has placeholder values -->
 <div id="not-configured-view" class="hidden max-w-lg mx-auto mt-24 liquid-glass-refractive rounded-4xl p-8 text-center space-y-4">
 <h1 class="font-headline-lg text-headline-lg">Not set up yet</h1>
@@ -21,7 +19,7 @@
 </div>
 
 <!-- Login view -->
-<div id="login-view" class="hidden max-w-sm mx-auto mt-24">
+<div id="login-view" class="hidden max-w-sm mx-auto mt-24 px-6">
 <h1 class="font-headline-lg text-headline-lg mb-8 text-center">Admin Login</h1>
 <form id="login-form" class="liquid-glass-refractive rounded-4xl p-8 flex flex-col gap-4">
 <input type="email" id="login-email" placeholder="Email" required autocomplete="username" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
@@ -31,283 +29,497 @@
 </form>
 </div>
 
-<!-- Dashboard view (hidden until logged in) -->
-<div id="dashboard-view" class="hidden">
-<div class="flex justify-between items-center mb-8">
-<h1 class="font-headline-lg text-headline-lg">Admin</h1>
-<button id="logout-btn" class="liquid-glass-refractive liquid-glass-interactive px-5 py-2 rounded-full text-sm font-bold bounce-feedback">Log Out</button>
+<!-- ================= App shell (shown once logged in) ================= -->
+<div id="dashboard-view" class="hidden lg:flex h-screen overflow-hidden">
+
+<div id="admin-sidebar-overlay"></div>
+
+<!-- Sidebar -->
+<aside id="admin-sidebar" class="w-72 shrink-0 h-screen flex flex-col liquid-glass-refractive border-r border-white/10" style="border-radius:0;">
+<div class="flex items-center justify-between px-6 py-6">
+<div class="font-headline-lg text-lg font-bold text-primary">Tanjil Admin</div>
+<button id="sidebar-close-btn" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10"><span class="material-symbols-outlined text-lg">close</span></button>
+</div>
+<nav class="flex-1 overflow-y-auto admin-scrollbar px-3 space-y-1 pb-6">
+<button class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold" data-page="dashboard"><span class="material-symbols-outlined text-lg">space_dashboard</span>Dashboard</button>
+
+<p class="px-4 pt-5 pb-2 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant opacity-60">Content</p>
+<button class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold" data-page="home"><span class="material-symbols-outlined text-lg">home</span>Home Page</button>
+<button class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold" data-page="projects"><span class="material-symbols-outlined text-lg">work</span>Projects</button>
+<button class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold" data-page="skills"><span class="material-symbols-outlined text-lg">bolt</span>Skills</button>
+<button class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold" data-page="experience"><span class="material-symbols-outlined text-lg">business_center</span>Experience</button>
+<button class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold" data-page="education"><span class="material-symbols-outlined text-lg">school</span>Education</button>
+<button class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold" data-page="testimonials"><span class="material-symbols-outlined text-lg">format_quote</span>Testimonials</button>
+
+<p class="px-4 pt-5 pb-2 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant opacity-60">Communication</p>
+<button class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold" data-page="contact"><span class="material-symbols-outlined text-lg">mail</span>Contact</button>
+<button class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold" data-page="social"><span class="material-symbols-outlined text-lg">share</span>Social Links</button>
+
+<p class="px-4 pt-5 pb-2 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant opacity-60">Settings</p>
+<button class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold" data-page="settings"><span class="material-symbols-outlined text-lg">settings</span>Website Settings</button>
+</nav>
+<div class="p-4 border-t border-white/10">
+<a href="index.html" target="_blank" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-on-surface-variant hover:bg-white/5 mb-1"><span class="material-symbols-outlined text-lg">open_in_new</span>Visit Website</a>
+<button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-on-surface-variant hover:bg-white/5"><span class="material-symbols-outlined text-lg">logout</span>Log Out</button>
+</div>
+</aside>
+
+<!-- Main -->
+<div class="flex-1 h-screen overflow-y-auto admin-scrollbar">
+
+<!-- Top header -->
+<header class="sticky top-0 z-30 flex items-center justify-between gap-4 px-4 sm:px-8 py-4 liquid-glass-refractive border-b border-white/10" style="border-radius:0;">
+<div class="flex items-center gap-3">
+<button id="sidebar-open-btn" class="lg:hidden w-9 h-9 flex items-center justify-center rounded-full hover:bg-white/10"><span class="material-symbols-outlined text-lg">menu</span></button>
+<h1 id="page-title" class="font-headline-lg text-lg sm:text-xl">Dashboard</h1>
+</div>
+<div class="hidden sm:flex items-center gap-4 text-xs text-on-surface-variant">
+<span id="admin-clock" class="font-mono"></span>
+<span class="flex items-center gap-1.5"><span id="site-status-dot" class="w-2 h-2 rounded-full" style="background:#4ade80; box-shadow:0 0 8px #4ade80;"></span><span id="site-status-text">Online</span></span>
+</div>
+</header>
+
+<main class="p-4 sm:p-8 max-w-6xl mx-auto">
+
+<!-- ============ DASHBOARD ============ -->
+<section class="admin-page" data-page="dashboard">
+<div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 mb-8">
+<div class="liquid-glass-refractive rounded-3xl p-4 text-center"><p id="stat-projects" class="font-headline-lg text-2xl text-primary-container">—</p><p class="font-label-md text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Projects</p></div>
+<div class="liquid-glass-refractive rounded-3xl p-4 text-center"><p id="stat-skills" class="font-headline-lg text-2xl text-primary-container">—</p><p class="font-label-md text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Skills</p></div>
+<div class="liquid-glass-refractive rounded-3xl p-4 text-center"><p id="stat-experience" class="font-headline-lg text-2xl text-primary-container">—</p><p class="font-label-md text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Experience</p></div>
+<div class="liquid-glass-refractive rounded-3xl p-4 text-center"><p id="stat-education" class="font-headline-lg text-2xl text-primary-container">—</p><p class="font-label-md text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Education</p></div>
+<div class="liquid-glass-refractive rounded-3xl p-4 text-center"><p id="stat-testimonials" class="font-headline-lg text-2xl text-primary-container">—</p><p class="font-label-md text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Testimonials</p></div>
+<div class="liquid-glass-refractive rounded-3xl p-4 text-center"><p id="stat-visitors" class="font-headline-lg text-2xl text-primary-container">—</p><p class="font-label-md text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Visitors</p></div>
+<div class="liquid-glass-refractive rounded-3xl p-4 text-center"><p id="stat-downloads" class="font-headline-lg text-2xl text-primary-container">—</p><p class="font-label-md text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Resume DLs</p></div>
 </div>
 
-<!-- Status -->
-<div class="flex items-center gap-2 mb-10">
-<span class="w-2.5 h-2.5 rounded-full" style="background: #4ade80; box-shadow: 0 0 8px #4ade80;"></span>
-<span class="font-body-md text-body-md">Website Online</span>
+<h2 class="font-headline-lg text-base mb-3">Quick Actions</h2>
+<div class="flex flex-wrap gap-3 mb-10">
+<button class="quick-add liquid-glass-refractive liquid-glass-interactive px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2" data-open-modal="project-modal"><span class="material-symbols-outlined text-lg">add</span>Add Project</button>
+<button class="quick-add liquid-glass-refractive liquid-glass-interactive px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2" data-open-modal="skill-modal"><span class="material-symbols-outlined text-lg">add</span>Add Skill</button>
+<button class="quick-add liquid-glass-refractive liquid-glass-interactive px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2" data-open-modal="experience-modal"><span class="material-symbols-outlined text-lg">add</span>Add Experience</button>
+<button class="quick-add liquid-glass-refractive liquid-glass-interactive px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2" data-open-modal="education-modal"><span class="material-symbols-outlined text-lg">add</span>Add Education</button>
+<button class="quick-add liquid-glass-refractive liquid-glass-interactive px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2" data-open-modal="testimonial-modal"><span class="material-symbols-outlined text-lg">add</span>Add Testimonial</button>
 </div>
 
-<!-- Stats -->
-<div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-<div class="liquid-glass-refractive rounded-3xl p-5 text-center">
-<p id="stat-projects" class="font-headline-lg text-3xl text-primary-container">—</p>
-<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-1">Projects</p>
-</div>
-<div class="liquid-glass-refractive rounded-3xl p-5 text-center">
-<p id="stat-skills" class="font-headline-lg text-3xl text-primary-container">—</p>
-<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-1">Skills</p>
-</div>
-<div class="liquid-glass-refractive rounded-3xl p-5 text-center">
-<p id="stat-visitors" class="font-headline-lg text-3xl text-primary-container">—</p>
-<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-1">Visitors</p>
-</div>
-</div>
-<!-- No "Messages" stat here: Contact is a plain mailto: link, not a form
-     that saves anywhere, so there's genuinely nothing to count yet. -->
-
-<!-- Quick actions -->
-<div class="flex gap-3 mb-16">
-<button id="quick-add-project" class="liquid-glass-refractive liquid-glass-interactive px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2"><span class="material-symbols-outlined text-lg">add</span>Add Project</button>
-<button id="quick-add-skill" class="liquid-glass-refractive liquid-glass-interactive px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2"><span class="material-symbols-outlined text-lg">add</span>Add Skill</button>
-</div>
-
-<!-- Projects -->
-<section class="mb-6">
-<button type="button" class="accordion-toggle w-full flex items-center justify-between mb-6" data-accordion="projects" aria-expanded="false">
-<h2 class="font-headline-lg text-lg">Projects</h2>
-<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
-</button>
-<div class="accordion-panel hidden" data-panel="projects">
-<div id="projects-admin-list" class="flex flex-col gap-4 mb-6"></div>
-<form id="project-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
-<input type="hidden" id="project-id">
-<input type="hidden" id="project-existing-image">
-<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Add / Edit Project</p>
-<div>
-<label for="project-section" class="block text-sm text-on-surface-variant mb-1">Which tab does this belong to?</label>
-<select id="project-section" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-container">
-<option value="engineering">Engineering Work</option>
-<option value="community">Community Work</option>
-</select>
-</div>
-<input type="text" id="project-title" placeholder="Title" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<textarea id="project-description" placeholder="Description" rows="2" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container"></textarea>
-<div>
-<label for="project-image" class="block text-sm text-on-surface-variant mb-1">Photo (optional — shows a placeholder icon until you add one)</label>
-<input type="file" id="project-image" accept="image/*" class="w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary-container file:text-on-primary-container file:font-bold">
-<img id="project-image-preview" class="hidden mt-2 w-24 rounded-xl" style="aspect-ratio: 3/4; object-fit: cover;">
-</div>
-<input type="text" id="project-link" placeholder="Link URL (optional, leave blank while unfinished)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="project-tag" placeholder="Tag (small label on the card, e.g. REACT, COMING SOON — leave blank for none)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<div>
-<label for="project-sort" class="block text-sm text-on-surface-variant mb-1">Position among other cards in this tab (1 = shows first, 2 = second, and so on)</label>
-<input type="number" id="project-sort" placeholder="1" value="1" min="1" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-</div>
-<div class="flex gap-3">
-<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110">Save Project</button>
-<button type="button" id="project-cancel" class="hidden liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel Edit</button>
-</div>
-<p id="project-error" class="text-sm hidden" style="color: #ff8a80;"></p>
-</form>
-</div>
+<h2 class="font-headline-lg text-base mb-3">Recent Activity</h2>
+<div id="recent-activity-list" class="flex flex-col gap-3"></div>
 </section>
 
-<!-- Skills -->
-<section class="mb-6">
-<button type="button" class="accordion-toggle w-full flex items-center justify-between mb-6" data-accordion="skills" aria-expanded="false">
-<h2 class="font-headline-lg text-lg">Skills</h2>
-<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
-</button>
-<div class="accordion-panel hidden" data-panel="skills">
-<div id="skills-admin-list" class="flex flex-col gap-4 mb-6"></div>
-<form id="skill-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
-<input type="hidden" id="skill-id">
-<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Add / Edit Skill</p>
-<input type="text" id="skill-category" placeholder="Category (e.g. Development)" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="skill-icon" placeholder="Icon name (Material Symbols, e.g. code, palette, movie, groups)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="skill-name" placeholder="Skill name" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="number" id="skill-sort" placeholder="Sort order" value="0" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<div class="flex gap-3">
-<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110">Save Skill</button>
-<button type="button" id="skill-cancel" class="hidden liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel Edit</button>
-</div>
-<p id="skill-error" class="text-sm hidden" style="color: #ff8a80;"></p>
-</form>
-</div>
-</section>
+<!-- ============ HOME PAGE ============ -->
+<section class="admin-page hidden" data-page="home">
 
-<!-- Site Content: hero text, headings, contact info, footer -->
-<section class="mb-6">
-<button type="button" class="accordion-toggle w-full flex items-center justify-between mb-6" data-accordion="content" aria-expanded="false">
-<h2 class="font-headline-lg text-lg">Site Text</h2>
+<div class="liquid-glass-refractive rounded-4xl mb-5 overflow-hidden">
+<button type="button" class="collapse-toggle w-full flex items-center justify-between px-6 py-5" data-target="home-hero-panel">
+<span class="font-headline-lg text-base">Hero Section</span>
 <span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
 </button>
-<div class="accordion-panel hidden" data-panel="content">
-<form id="content-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
-<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Hero</p>
-<input type="text" id="sc-hero_badge" placeholder="Badge (e.g. Available for hire)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="sc-hero_heading" placeholder="Heading (first part)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="sc-hero_heading_highlight" placeholder="Heading (highlighted part)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<textarea id="sc-hero_bio" placeholder="Bio paragraph" rows="3" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container"></textarea>
-<input type="text" id="sc-hero_button_text" placeholder="Primary button text (e.g. Download Resume)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<div class="collapse-panel hidden px-6 pb-6" id="home-hero-panel">
+<form id="hero-form" class="flex flex-col gap-3">
+<input type="text" id="sc-hero_badge" placeholder="Availability badge (e.g. Available for hire)" class="admin-input">
+<input type="text" id="sc-hero_heading" placeholder="Main heading line 1" class="admin-input">
+<input type="text" id="sc-hero_heading_highlight" placeholder="Main heading line 2 (highlighted)" class="admin-input">
+<textarea id="sc-hero_bio" placeholder="Short description" rows="3" class="admin-input"></textarea>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 <div>
-<label for="sc-resume-file" class="block text-sm text-on-surface-variant mb-1">Resume (PDF) — powers the primary button above</label>
-<input type="file" id="sc-resume-file" accept="application/pdf" class="w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary-container file:text-on-primary-container file:font-bold">
+<label class="block text-sm text-on-surface-variant mb-1">Profile Image</label>
+<input type="file" id="sc-hero-photo-file" accept="image/*" class="admin-file">
+<img id="sc-hero-photo-preview" class="hidden mt-2 w-20 h-20 rounded-xl object-cover">
+<input type="hidden" id="sc-hero_photo_url">
+</div>
+<div>
+<label class="block text-sm text-on-surface-variant mb-1">Resume (PDF)</label>
+<input type="file" id="sc-resume-file" accept="application/pdf" class="admin-file">
 <a id="sc-resume-current" href="#" target="_blank" rel="noopener noreferrer" class="hidden text-primary-container text-xs underline mt-2 inline-block">View current resume</a>
 <input type="hidden" id="sc-resume_url">
 </div>
-<input type="url" id="sc-primary_cta_link" placeholder="Hire Me / storefront link URL" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<input type="text" id="sc-hero_button_text" placeholder="Primary button text" class="admin-input">
+<input type="url" id="sc-primary_cta_link" placeholder="Hire Me / storefront link URL" class="admin-input">
+</div>
 <div>
-<label for="sc-hire-image-file" class="block text-sm text-on-surface-variant mb-1">Hire Me button image (optional — replaces the "Hire Me" text in the nav with this image)</label>
-<input type="file" id="sc-hire-image-file" accept="image/*" class="w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary-container file:text-on-primary-container file:font-bold">
+<label class="block text-sm text-on-surface-variant mb-1">Hire Me Button Image (optional, replaces button text)</label>
+<input type="file" id="sc-hire-image-file" accept="image/*" class="admin-file">
 <img id="sc-hire-image-preview" class="hidden mt-2 h-8 w-auto object-contain">
 <button type="button" id="sc-hire-image-clear" class="hidden text-xs text-on-surface-variant underline mt-1">Remove image, use text instead</button>
 <input type="hidden" id="sc-hire_button_image_url">
 </div>
-
-<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-3">About Me</p>
-<input type="text" id="sc-about_eyebrow" placeholder="Eyebrow label (e.g. About)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="sc-about_heading" placeholder="About heading" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<textarea id="sc-about_text" placeholder="About Me paragraph" rows="4" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container"></textarea>
-
-<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-3">Section Headings</p>
-<input type="text" id="sc-work_heading" placeholder="Work section heading" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="sc-skills_eyebrow" placeholder="Skills eyebrow label" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="sc-skills_heading" placeholder="Skills heading (first part)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="sc-skills_heading_highlight" placeholder="Skills heading (highlighted part)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="sc-experience_heading" placeholder="Experience section heading" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container"><input type="text" id="sc-testimonials_heading" placeholder="Testimonials section heading" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-
-<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-3">Contact</p>
-<input type="text" id="sc-contact_heading" placeholder="Contact heading" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<textarea id="sc-contact_text" placeholder="Contact paragraph" rows="2" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container"></textarea>
-<input type="email" id="sc-contact_email" placeholder="Contact email" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-
-<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-3">Footer</p>
-<input type="text" id="sc-footer_name" placeholder="Footer name" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="sc-footer_copyright" placeholder="Footer copyright line" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-
-<button type="submit" class="mt-2 bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110">Save All Text</button>
-<p id="content-error" class="text-sm hidden" style="color: #ff8a80;"></p>
-<p id="content-success" class="text-sm hidden" style="color: #4ade80;">Saved.</p>
+<div>
+<label class="block text-sm text-on-surface-variant mb-1">Hero Background Image (optional decorative layer)</label>
+<input type="file" id="sc-hero-bg-file" accept="image/*" class="admin-file">
+<img id="sc-hero-bg-preview" class="hidden mt-2 h-16 w-full object-cover rounded-xl">
+<button type="button" id="sc-hero-bg-clear" class="hidden text-xs text-on-surface-variant underline mt-1">Remove background image</button>
+<input type="hidden" id="sc-hero_bg_image_url">
+</div>
+<label class="flex items-center justify-between gap-3 py-1">
+<span class="text-sm">Hero glow effect (ambient blur behind photo)</span>
+<span class="toggle-switch"><input type="checkbox" id="sc-hero_glow_enabled"><span class="toggle-track"></span></span>
+</label>
+<button type="submit" class="mt-2 bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110 self-start">Save Hero Section</button>
 </form>
+</div>
+</div>
+
+<div class="liquid-glass-refractive rounded-4xl mb-5 overflow-hidden">
+<button type="button" class="collapse-toggle w-full flex items-center justify-between px-6 py-5" data-target="home-about-panel">
+<span class="font-headline-lg text-base">About Me</span>
+<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
+</button>
+<div class="collapse-panel hidden px-6 pb-6" id="home-about-panel">
+<form id="about-form" class="flex flex-col gap-3">
+<input type="text" id="sc-about_eyebrow" placeholder="Small label (e.g. About)" class="admin-input">
+<input type="text" id="sc-about_heading" placeholder="Heading" class="admin-input">
+<textarea id="sc-about_text" placeholder="Description" rows="4" class="admin-input"></textarea>
+<p class="text-xs text-on-surface-variant opacity-70 -mt-1">Note: the About section currently has no photo slot in the layout (text on the left, Education orbit on the right) — ask if you want the layout redesigned to fit one.</p>
+<button type="submit" class="mt-2 bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110 self-start">Save About Me</button>
+</form>
+</div>
+</div>
+
+<div class="liquid-glass-refractive rounded-4xl overflow-hidden">
+<button type="button" class="collapse-toggle w-full flex items-center justify-between px-6 py-5" data-target="home-titles-panel">
+<span class="font-headline-lg text-base">Section Titles</span>
+<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
+</button>
+<div class="collapse-panel hidden px-6 pb-6" id="home-titles-panel">
+<form id="titles-form" class="flex flex-col gap-3">
+<input type="text" id="sc-work_heading" placeholder="Work section title" class="admin-input">
+<input type="text" id="sc-skills_heading" placeholder="Skills section title (first part)" class="admin-input">
+<input type="text" id="sc-skills_heading_highlight" placeholder="Skills section title (highlighted part)" class="admin-input">
+<input type="text" id="sc-experience_heading" placeholder="Experience section title" class="admin-input">
+<input type="text" id="sc-testimonials_heading" placeholder="Testimonials section title" class="admin-input">
+<input type="text" id="sc-footer_name" placeholder="Footer name" class="admin-input">
+<p class="text-xs text-on-surface-variant opacity-70 -mt-1">Contact section title is set on the Contact page (Communication → Contact), not here.</p>
+<p class="text-xs text-on-surface-variant opacity-70 -mt-1">No Education title field — the Education orbit timeline has no heading by design (removed per an earlier request).</p>
+<button type="submit" class="mt-2 bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110 self-start">Save Section Titles</button>
+</form>
+</div>
 </div>
 </section>
 
-<!-- Social Links -->
-<section class="mb-6">
-<button type="button" class="accordion-toggle w-full flex items-center justify-between mb-6" data-accordion="social" aria-expanded="false">
-<h2 class="font-headline-lg text-lg">Social Links</h2>
-<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
-</button>
-<div class="accordion-panel hidden" data-panel="social">
-<div id="social-admin-list" class="flex flex-col gap-4 mb-6"></div>
-<form id="social-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
-<input type="hidden" id="social-id">
-<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Add / Edit Link</p>
-<input type="text" id="social-label" placeholder="Label (e.g. GitHub)" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="url" id="social-url" placeholder="URL" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="number" id="social-sort" placeholder="Sort order" value="0" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<div class="flex gap-3">
-<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110">Save Link</button>
-<button type="button" id="social-cancel" class="hidden liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel Edit</button>
+<!-- ============ PROJECTS ============ -->
+<section class="admin-page hidden" data-page="projects">
+<div class="flex flex-col sm:flex-row gap-3 mb-5">
+<input type="text" id="project-search" placeholder="Search projects..." class="admin-input flex-1">
+<select id="project-filter" class="admin-input sm:w-56">
+<option value="">All categories</option>
+<option value="engineering">Engineering Work</option>
+<option value="community">Community Work</option>
+</select>
+<button class="bg-primary-container text-on-primary-container px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2 whitespace-nowrap" data-open-modal="project-modal"><span class="material-symbols-outlined text-lg">add</span>Add Project</button>
 </div>
-<p id="social-error" class="text-sm hidden" style="color: #ff8a80;"></p>
-</form>
-</div>
+<div id="projects-empty" class="hidden empty-state"></div>
+<div id="projects-admin-list" class="flex flex-col gap-3"></div>
 </section>
 
-<!-- Experience -->
-<section class="mb-6">
-<button type="button" class="accordion-toggle w-full flex items-center justify-between mb-6" data-accordion="experience" aria-expanded="false">
-<h2 class="font-headline-lg text-lg">Experience</h2>
-<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
-</button>
-<div class="accordion-panel hidden" data-panel="experience">
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Hidden on the live site until you add at least one entry here.</p>
-<div id="experience-admin-list" class="flex flex-col gap-4 mb-6"></div>
-<form id="experience-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
+<!-- ============ SKILLS ============ -->
+<section class="admin-page hidden" data-page="skills">
+<div class="flex flex-col sm:flex-row gap-3 mb-5">
+<input type="text" id="skill-search" placeholder="Search skills..." class="admin-input flex-1">
+<select id="skill-filter" class="admin-input sm:w-56">
+<option value="">All categories</option>
+</select>
+<button class="bg-primary-container text-on-primary-container px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2 whitespace-nowrap" data-open-modal="skill-modal"><span class="material-symbols-outlined text-lg">add</span>Add Skill</button>
+</div>
+<div id="skills-empty" class="hidden empty-state"></div>
+<div id="skills-admin-list" class="flex flex-col gap-6"></div>
+</section>
+
+<!-- ============ EXPERIENCE ============ -->
+<section class="admin-page hidden" data-page="experience">
+<div class="flex justify-between items-center mb-5">
+<input type="text" id="experience-search" placeholder="Search experience..." class="admin-input flex-1 mr-3">
+<button class="bg-primary-container text-on-primary-container px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2 whitespace-nowrap" data-open-modal="experience-modal"><span class="material-symbols-outlined text-lg">add</span>Add Experience</button>
+</div>
+<div id="experience-empty" class="hidden empty-state"></div>
+<div id="experience-admin-list" class="flex flex-col gap-3"></div>
+</section>
+
+<!-- ============ EDUCATION ============ -->
+<section class="admin-page hidden" data-page="education">
+<div class="flex justify-between items-center mb-5">
+<input type="text" id="education-search" placeholder="Search education..." class="admin-input flex-1 mr-3">
+<button class="bg-primary-container text-on-primary-container px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2 whitespace-nowrap" data-open-modal="education-modal"><span class="material-symbols-outlined text-lg">add</span>Add Education</button>
+</div>
+<div id="education-empty" class="hidden empty-state"></div>
+<div id="education-admin-list" class="flex flex-col gap-3"></div>
+</section>
+
+<!-- ============ TESTIMONIALS ============ -->
+<section class="admin-page hidden" data-page="testimonials">
+<div class="flex justify-between items-center mb-5">
+<input type="text" id="testimonial-search" placeholder="Search testimonials..." class="admin-input flex-1 mr-3">
+<button class="bg-primary-container text-on-primary-container px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2 whitespace-nowrap" data-open-modal="testimonial-modal"><span class="material-symbols-outlined text-lg">add</span>Add Testimonial</button>
+</div>
+<div id="testimonials-empty" class="hidden empty-state"></div>
+<div id="testimonials-admin-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="admin-page hidden" data-page="contact">
+<form id="contact-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3 max-w-xl">
+<input type="text" id="sc-contact_heading" placeholder="Section heading" class="admin-input">
+<textarea id="sc-contact_text" placeholder="Description" rows="2" class="admin-input"></textarea>
+<input type="email" id="sc-contact_email" placeholder="Email" class="admin-input">
+<input type="text" id="sc-contact_phone" placeholder="Phone (optional)" class="admin-input">
+<input type="text" id="sc-contact_address" placeholder="Address (optional)" class="admin-input">
+<input type="text" id="sc-contact_whatsapp" placeholder="WhatsApp number/link (optional)" class="admin-input">
+<input type="email" id="sc-contact_form_email" placeholder="Contact form email (not used yet — site has no form backend, mailto only)" class="admin-input">
+<button type="submit" class="mt-2 bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110 self-start">Save Contact</button>
+</form>
+</section>
+
+<!-- ============ SOCIAL LINKS ============ -->
+<section class="admin-page hidden" data-page="social">
+<div class="flex justify-between items-center mb-5">
+<p class="text-sm text-on-surface-variant">Icon auto-picked from the label (GitHub, LinkedIn, Twitter/X, Instagram, Facebook, YouTube, Telegram, Discord, WhatsApp, Fiverr, Email recognized).</p>
+<button class="bg-primary-container text-on-primary-container px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2 whitespace-nowrap shrink-0 ml-3" data-open-modal="social-modal"><span class="material-symbols-outlined text-lg">add</span>Add Link</button>
+</div>
+<div id="social-empty" class="hidden empty-state"></div>
+<div id="social-admin-list" class="flex flex-col gap-3"></div>
+</section>
+
+<!-- ============ WEBSITE SETTINGS ============ -->
+<section class="admin-page hidden" data-page="settings">
+<form id="settings-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3 max-w-xl">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">SEO</p>
+<input type="text" id="sc-seo_title" placeholder="Website / SEO title" class="admin-input">
+<textarea id="sc-seo_description" placeholder="SEO description" rows="2" class="admin-input"></textarea>
+
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-2">Branding</p>
+<div>
+<label class="block text-sm text-on-surface-variant mb-1">Favicon</label>
+<input type="file" id="sc-favicon-file" accept="image/*" class="admin-file">
+<img id="sc-favicon-preview" class="hidden mt-2 w-8 h-8 rounded object-cover">
+<input type="hidden" id="sc-favicon_url">
+</div>
+<div>
+<label class="block text-sm text-on-surface-variant mb-1">Logo (shows in nav if set — nav is icon-only otherwise)</label>
+<input type="file" id="sc-logo-file" accept="image/*" class="admin-file">
+<img id="sc-logo-preview" class="hidden mt-2 h-8 w-auto object-contain">
+<button type="button" id="sc-logo-clear" class="hidden text-xs text-on-surface-variant underline mt-1">Remove logo</button>
+<input type="hidden" id="sc-logo_url">
+</div>
+
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-2">Status</p>
+<label class="flex items-center justify-between gap-3 py-1">
+<span class="text-sm">Maintenance mode (shows a maintenance page to visitors)</span>
+<span class="toggle-switch"><input type="checkbox" id="sc-maintenance_mode"><span class="toggle-track"></span></span>
+</label>
+
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-2">Analytics</p>
+<input type="text" id="sc-ga_id" placeholder="Google Analytics ID (e.g. G-XXXXXXX)" class="admin-input">
+<input type="text" id="sc-gsc_verification" placeholder="Google Search Console verification code" class="admin-input">
+
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-2">Visual Effects</p>
+<label class="flex items-center justify-between gap-3 py-1"><span class="text-sm">Particle background</span><span class="toggle-switch"><input type="checkbox" id="sc-particles_enabled"><span class="toggle-track"></span></span></label>
+<label class="flex items-center justify-between gap-3 py-1"><span class="text-sm">Cursor light (ambient glow)</span><span class="toggle-switch"><input type="checkbox" id="sc-cursor_light_enabled"><span class="toggle-track"></span></span></label>
+<label class="flex items-center justify-between gap-3 py-1"><span class="text-sm">Education orbit auto-rotation</span><span class="toggle-switch"><input type="checkbox" id="sc-orbit_enabled"><span class="toggle-track"></span></span></label>
+<label class="flex items-center justify-between gap-3 py-1"><span class="text-sm">Preloader</span><span class="toggle-switch"><input type="checkbox" id="sc-preloader_enabled"><span class="toggle-track"></span></span></label>
+<p class="text-xs text-on-surface-variant opacity-70">No "Background Music" toggle — the site has no audio/music feature to control, so this was left out rather than adding a switch that does nothing.</p>
+
+<button type="submit" class="mt-2 bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110 self-start">Save Settings</button>
+<p id="settings-error" class="text-sm hidden" style="color: #ff8a80;"></p>
+</form>
+</section>
+
+</main>
+</div>
+</div>
+
+<!-- ================= Modals ================= -->
+
+<!-- Project modal -->
+<div class="modal-overlay" id="project-modal-overlay" data-modal="project-modal">
+<div class="modal-panel liquid-glass-refractive rounded-4xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto admin-scrollbar">
+<div class="flex justify-between items-center mb-4"><h3 class="font-headline-lg text-lg" id="project-modal-title">Add Project</h3><button class="modal-close w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center"><span class="material-symbols-outlined">close</span></button></div>
+<form id="project-form" class="flex flex-col gap-3">
+<input type="hidden" id="project-id">
+<input type="hidden" id="project-existing-image">
+<select id="project-section" class="admin-input">
+<option value="engineering">Engineering Work</option>
+<option value="community">Community Work</option>
+</select>
+<input type="text" id="project-title" placeholder="Title" required class="admin-input">
+<textarea id="project-description" placeholder="Description" rows="2" class="admin-input"></textarea>
+<div>
+<label class="block text-sm text-on-surface-variant mb-1">Photo</label>
+<input type="file" id="project-image" accept="image/*" class="admin-file">
+<img id="project-image-preview" class="hidden mt-2 w-24 rounded-xl" style="aspect-ratio: 3/4; object-fit: cover;">
+</div>
+<input type="text" id="project-website" placeholder="Website URL" class="admin-input">
+<input type="text" id="project-github" placeholder="GitHub URL" class="admin-input">
+<input type="text" id="project-tag" placeholder="Tag (e.g. REACT, COMING SOON)" class="admin-input">
+<div class="grid grid-cols-2 gap-3">
+<input type="number" id="project-sort" placeholder="Position" value="1" min="1" class="admin-input">
+<label class="flex items-center justify-between gap-2 admin-input"><span class="text-sm">Featured</span><span class="toggle-switch"><input type="checkbox" id="project-featured"><span class="toggle-track"></span></span></label>
+</div>
+<label class="flex items-center justify-between gap-2"><span class="text-sm">Visible on website</span><span class="toggle-switch"><input type="checkbox" id="project-visible" checked><span class="toggle-track"></span></span></label>
+<div class="flex gap-3 mt-2">
+<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback flex-1">Save</button>
+<button type="button" class="modal-close liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel</button>
+</div>
+<p id="project-error" class="text-sm hidden" style="color: #ff8a80;"></p>
+</form>
+</div>
+</div>
+
+<!-- Skill modal -->
+<div class="modal-overlay" id="skill-modal-overlay" data-modal="skill-modal">
+<div class="modal-panel liquid-glass-refractive rounded-4xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto admin-scrollbar">
+<div class="flex justify-between items-center mb-4"><h3 class="font-headline-lg text-lg" id="skill-modal-title">Add Skill</h3><button class="modal-close w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center"><span class="material-symbols-outlined">close</span></button></div>
+<form id="skill-form" class="flex flex-col gap-3">
+<input type="hidden" id="skill-id">
+<input type="text" id="skill-category" placeholder="Category (e.g. Development)" required class="admin-input">
+<input type="text" id="skill-icon" placeholder="Icon name (Material Symbols, e.g. code)" class="admin-input">
+<input type="text" id="skill-name" placeholder="Skill name" required class="admin-input">
+<select id="skill-level" class="admin-input">
+<option value="">No level</option>
+<option value="Beginner">Beginner</option>
+<option value="Intermediate">Intermediate</option>
+<option value="Advanced">Advanced</option>
+<option value="Expert">Expert</option>
+</select>
+<input type="number" id="skill-sort" placeholder="Display order" value="0" class="admin-input">
+<div class="flex gap-3 mt-2">
+<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback flex-1">Save</button>
+<button type="button" class="modal-close liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel</button>
+</div>
+<p id="skill-error" class="text-sm hidden" style="color: #ff8a80;"></p>
+</form>
+</div>
+</div>
+
+<!-- Experience modal -->
+<div class="modal-overlay" id="experience-modal-overlay" data-modal="experience-modal">
+<div class="modal-panel liquid-glass-refractive rounded-4xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto admin-scrollbar">
+<div class="flex justify-between items-center mb-4"><h3 class="font-headline-lg text-lg" id="experience-modal-title">Add Experience</h3><button class="modal-close w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center"><span class="material-symbols-outlined">close</span></button></div>
+<form id="experience-form" class="flex flex-col gap-3">
 <input type="hidden" id="experience-id">
 <input type="hidden" id="experience-existing-image">
-<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Add / Edit Experience</p>
-<input type="text" id="experience-title" placeholder="Job title / role" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="experience-organization" placeholder="Company / client" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="experience-title" placeholder="Position / role" required class="admin-input">
+<input type="text" id="experience-organization" placeholder="Company name" class="admin-input">
 <div>
-<label for="experience-image" class="block text-sm text-on-surface-variant mb-1">Photo (optional — shows a placeholder icon until you add one)</label>
-<input type="file" id="experience-image" accept="image/*" class="w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary-container file:text-on-primary-container file:font-bold">
+<label class="block text-sm text-on-surface-variant mb-1">Company Logo</label>
+<input type="file" id="experience-image" accept="image/*" class="admin-file">
 <img id="experience-image-preview" class="hidden mt-2 w-24 rounded-xl" style="aspect-ratio: 3/4; object-fit: cover;">
 </div>
+<input type="text" id="experience-website" placeholder="Company website (optional)" class="admin-input">
 <div class="flex gap-3">
-<input type="text" id="experience-start" placeholder="Start (e.g. Jan 2024)" class="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="experience-end" placeholder="End (e.g. Present)" class="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="experience-start" placeholder="Start (e.g. Jan 2024)" class="admin-input flex-1">
+<input type="text" id="experience-end" placeholder="End (e.g. Present)" class="admin-input flex-1">
 </div>
-<textarea id="experience-description" placeholder="Description" rows="2" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container"></textarea>
-<input type="number" id="experience-sort" placeholder="Sort order" value="0" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<div class="flex gap-3">
-<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110">Save Experience</button>
-<button type="button" id="experience-cancel" class="hidden liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel Edit</button>
+<textarea id="experience-description" placeholder="Description" rows="2" class="admin-input"></textarea>
+<input type="number" id="experience-sort" placeholder="Display order" value="0" class="admin-input">
+<div class="flex gap-3 mt-2">
+<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback flex-1">Save</button>
+<button type="button" class="modal-close liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel</button>
 </div>
 <p id="experience-error" class="text-sm hidden" style="color: #ff8a80;"></p>
 </form>
 </div>
-</section>
-
-<!-- Education -->
-<section class="mb-6">
-<button type="button" class="accordion-toggle w-full flex items-center justify-between mb-6" data-accordion="education" aria-expanded="false">
-<h2 class="font-headline-lg text-lg">Education</h2>
-<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
-</button>
-<div class="accordion-panel hidden" data-panel="education">
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Hidden on the live site until you add at least one entry here.</p>
-<div id="education-admin-list" class="flex flex-col gap-4 mb-6"></div>
-<form id="education-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
-<input type="hidden" id="education-id">
-<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Add / Edit Education</p>
-<input type="text" id="education-degree" placeholder="Degree / program" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="education-short-name" placeholder="Short form (shown inside the timeline circle, e.g. BSC)" maxlength="6" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="education-institution" placeholder="Institution" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<div class="flex gap-3">
-<input type="text" id="education-start" placeholder="Start (e.g. 2022)" class="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<input type="text" id="education-end" placeholder="End (e.g. Present)" class="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
 </div>
-<textarea id="education-description" placeholder="Description (optional)" rows="2" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container"></textarea>
-<input type="number" id="education-sort" placeholder="Sort order" value="0" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+
+<!-- Education modal -->
+<div class="modal-overlay" id="education-modal-overlay" data-modal="education-modal">
+<div class="modal-panel liquid-glass-refractive rounded-4xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto admin-scrollbar">
+<div class="flex justify-between items-center mb-4"><h3 class="font-headline-lg text-lg" id="education-modal-title">Add Education</h3><button class="modal-close w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center"><span class="material-symbols-outlined">close</span></button></div>
+<form id="education-form" class="flex flex-col gap-3">
+<input type="hidden" id="education-id">
+<input type="text" id="education-degree" placeholder="Degree / program" required class="admin-input">
+<input type="text" id="education-short-name" placeholder="Short form for the orbit circle (e.g. BSC)" maxlength="6" class="admin-input">
+<input type="text" id="education-institution" placeholder="Institution" class="admin-input">
 <div class="flex gap-3">
-<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110">Save Education</button>
-<button type="button" id="education-cancel" class="hidden liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel Edit</button>
+<input type="text" id="education-start" placeholder="Start (e.g. 2022)" class="admin-input flex-1">
+<input type="text" id="education-end" placeholder="End (blank = in progress)" class="admin-input flex-1">
+</div>
+<input type="text" id="education-grade" placeholder="Grade / result (optional)" class="admin-input">
+<textarea id="education-description" placeholder="Description (optional)" rows="2" class="admin-input"></textarea>
+<input type="number" id="education-sort" placeholder="Display order" value="0" class="admin-input">
+<div class="flex gap-3 mt-2">
+<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback flex-1">Save</button>
+<button type="button" class="modal-close liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel</button>
 </div>
 <p id="education-error" class="text-sm hidden" style="color: #ff8a80;"></p>
 </form>
 </div>
-</section>
-
-<!-- Testimonials -->
-<section>
-<button type="button" class="accordion-toggle w-full flex items-center justify-between mb-6" data-accordion="testimonials" aria-expanded="false">
-<h2 class="font-headline-lg text-lg">Testimonials</h2>
-<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
-</button>
-<div class="accordion-panel hidden" data-panel="testimonials">
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Hidden on the live site until you add at least one entry here.</p>
-<div id="testimonials-admin-list" class="flex flex-col gap-4 mb-6"></div>
-<form id="testimonial-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
-<input type="hidden" id="testimonial-id">
-<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Add / Edit Testimonial</p>
-<input type="text" id="testimonial-client" placeholder="Client name" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
-<textarea id="testimonial-quote" placeholder="Quote" rows="2" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container"></textarea>
-<div>
-<label for="testimonial-rating" class="block text-sm text-on-surface-variant mb-1">Rating (1-5)</label>
-<input type="number" id="testimonial-rating" min="1" max="5" value="5" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
 </div>
-<input type="number" id="testimonial-sort" placeholder="Sort order" value="0" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+
+<!-- Testimonial modal -->
+<div class="modal-overlay" id="testimonial-modal-overlay" data-modal="testimonial-modal">
+<div class="modal-panel liquid-glass-refractive rounded-4xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto admin-scrollbar">
+<div class="flex justify-between items-center mb-4"><h3 class="font-headline-lg text-lg" id="testimonial-modal-title">Add Testimonial</h3><button class="modal-close w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center"><span class="material-symbols-outlined">close</span></button></div>
+<form id="testimonial-form" class="flex flex-col gap-3">
+<input type="hidden" id="testimonial-id">
+<input type="hidden" id="testimonial-existing-photo">
+<input type="text" id="testimonial-client" placeholder="Client name" required class="admin-input">
 <div class="flex gap-3">
-<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110">Save Testimonial</button>
-<button type="button" id="testimonial-cancel" class="hidden liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel Edit</button>
+<input type="text" id="testimonial-position" placeholder="Position (optional)" class="admin-input flex-1">
+<input type="text" id="testimonial-company" placeholder="Company (optional)" class="admin-input flex-1">
+</div>
+<div>
+<label class="block text-sm text-on-surface-variant mb-1">Customer Photo</label>
+<input type="file" id="testimonial-photo" accept="image/*" class="admin-file">
+<img id="testimonial-photo-preview" class="hidden mt-2 w-16 h-16 rounded-full object-cover">
+</div>
+<textarea id="testimonial-quote" placeholder="Review" rows="3" required class="admin-input"></textarea>
+<div>
+<label class="block text-sm text-on-surface-variant mb-1">Rating (1-5)</label>
+<input type="number" id="testimonial-rating" min="1" max="5" value="5" class="admin-input">
+</div>
+<input type="number" id="testimonial-sort" placeholder="Display order" value="0" class="admin-input">
+<label class="flex items-center justify-between gap-2"><span class="text-sm">Visible on website</span><span class="toggle-switch"><input type="checkbox" id="testimonial-visible" checked><span class="toggle-track"></span></span></label>
+<div class="flex gap-3 mt-2">
+<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback flex-1">Save</button>
+<button type="button" class="modal-close liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel</button>
 </div>
 <p id="testimonial-error" class="text-sm hidden" style="color: #ff8a80;"></p>
 </form>
 </div>
-</section>
+</div>
 
+<!-- Social link modal -->
+<div class="modal-overlay" id="social-modal-overlay" data-modal="social-modal">
+<div class="modal-panel liquid-glass-refractive rounded-4xl p-6 w-full max-w-md mx-4">
+<div class="flex justify-between items-center mb-4"><h3 class="font-headline-lg text-lg" id="social-modal-title">Add Link</h3><button class="modal-close w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center"><span class="material-symbols-outlined">close</span></button></div>
+<form id="social-form" class="flex flex-col gap-3">
+<input type="hidden" id="social-id">
+<input type="text" id="social-label" placeholder="Label (e.g. GitHub)" required class="admin-input">
+<input type="url" id="social-url" placeholder="URL" required class="admin-input">
+<input type="number" id="social-sort" placeholder="Display order" value="0" class="admin-input">
+<label class="flex items-center justify-between gap-2"><span class="text-sm">Visible</span><span class="toggle-switch"><input type="checkbox" id="social-visible" checked><span class="toggle-track"></span></span></label>
+<div class="flex gap-3 mt-2">
+<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback flex-1">Save</button>
+<button type="button" class="modal-close liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel</button>
+</div>
+<p id="social-error" class="text-sm hidden" style="color: #ff8a80;"></p>
+</form>
 </div>
 </div>
+
+<!-- Confirm-delete modal (generic, reused for every entity) -->
+<div class="modal-overlay" id="confirm-modal-overlay" data-modal="confirm-modal">
+<div class="modal-panel liquid-glass-refractive rounded-4xl p-6 w-full max-w-sm mx-4 text-center">
+<span class="material-symbols-outlined text-4xl" style="color:#ff8a80;">warning</span>
+<h3 class="font-headline-lg text-lg mt-3 mb-2">Delete this?</h3>
+<p id="confirm-modal-text" class="text-sm text-on-surface-variant mb-5">This can't be undone.</p>
+<div class="flex gap-3">
+<button id="confirm-modal-cancel" class="modal-close liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback flex-1">Cancel</button>
+<button id="confirm-modal-ok" class="px-6 py-3 font-bold rounded-2xl bounce-feedback flex-1" style="background:#ff8a80; color:#1a0000;">Delete</button>
+</div>
+</div>
+</div>
+
+<div id="toast-stack"></div>
+
+<style>
+.admin-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 0.75rem 1rem; color: inherit; }
+.admin-input::placeholder { color: var(--tw-color-on-surface-variant, #9aa); opacity: 0.7; }
+.admin-input:focus { outline: none; border-color: rgba(0,219,233,0.6); }
+.admin-file { width: 100%; font-size: 0.875rem; }
+.admin-file::file-selector-button { margin-right: 0.75rem; padding: 0.5rem 1rem; border-radius: 999px; border: 0; background: #00dbe9; color: #00121a; font-weight: bold; }
+</style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase-client.js"></script>
