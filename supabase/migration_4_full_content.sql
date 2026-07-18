@@ -26,8 +26,9 @@ insert into site_content (key, value) values
     ('hero_heading', 'Building Fast, Reliable'),
     ('hero_heading_highlight', 'Web Experiences.'),
     ('hero_bio', 'Frontend Developer specializing in modern web and mobile applications, and a Fiverr Level 2 Seller providing professional Telegram moderation and community management. I use an AI-assisted workflow — Claude, ChatGPT, and Cursor — to build and ship faster.'),
-    ('hero_button_text', 'View Projects'),
+    ('hero_button_text', 'Download Resume'),
     ('primary_cta_link', 'https://www.fiverr.com/rafikhand1'),
+    ('resume_url', ''),
     ('about_eyebrow', 'About'),
     ('about_heading', 'Who I Am'),
     ('about_text', 'I''m Ehsanul Karim Tanjil, a Computer Science & Engineering student at BUBT and a Fiverr Level 2 Seller with 65+ reviews and a 4.9★ rating. I build fast, reliable web experiences using an AI-assisted workflow, and manage Telegram communities with a focus on safety and engagement.'),
@@ -44,6 +45,31 @@ insert into site_content (key, value) values
     ('footer_name', 'Tanjil'),
     ('footer_copyright', '© 2026 Ehsanul Karim Tanjil.')
 on conflict (key) do nothing;
+
+-- ---------- resume file storage (uploaded from admin.html Site Text form) ----------
+insert into storage.buckets (id, name, public)
+values ('resume-files', 'resume-files', true)
+on conflict (id) do nothing;
+
+drop policy if exists "Public can view resume files" on storage.objects;
+create policy "Public can view resume files"
+on storage.objects for select
+using (bucket_id = 'resume-files');
+
+drop policy if exists "Authenticated can upload resume files" on storage.objects;
+create policy "Authenticated can upload resume files"
+on storage.objects for insert
+with check (bucket_id = 'resume-files' and auth.role() = 'authenticated');
+
+drop policy if exists "Authenticated can update resume files" on storage.objects;
+create policy "Authenticated can update resume files"
+on storage.objects for update
+using (bucket_id = 'resume-files' and auth.role() = 'authenticated');
+
+drop policy if exists "Authenticated can delete resume files" on storage.objects;
+create policy "Authenticated can delete resume files"
+on storage.objects for delete
+using (bucket_id = 'resume-files' and auth.role() = 'authenticated');
 
 -- ---------- social_links: footer icon/text row ----------
 create table if not exists social_links (

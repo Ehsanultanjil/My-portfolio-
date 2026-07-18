@@ -157,6 +157,7 @@ ${g.names.map((n) => `<span class="px-3 py-1 rounded-full bg-white/5 text-on-sur
         hero_bio: { selector: '#hero-bio', mode: 'text' },
         hero_button_text: { selector: '#hero-button-text', mode: 'text' },
         primary_cta_link: { selector: '#nav-hire-link, #hero-cta-link', mode: 'href' },
+        resume_url: { selector: '#hero-resume-link', mode: 'resume' },
         about_eyebrow: { selector: '#about-eyebrow', mode: 'text' },
         about_heading: { selector: '#about-heading', mode: 'text' },
         about_text: { selector: '#about-text', mode: 'text' },
@@ -165,7 +166,6 @@ ${g.names.map((n) => `<span class="px-3 py-1 rounded-full bg-white/5 text-on-sur
         skills_heading: { selector: '#skills-heading', mode: 'text' },
         skills_heading_highlight: { selector: '#skills-heading-highlight', mode: 'text' },
         experience_heading: { selector: '#experience-heading', mode: 'text' },
-        education_heading: { selector: '#orbital-heading', mode: 'text' },
         testimonials_heading: { selector: '#testimonials-heading', mode: 'text' },
         contact_heading: { selector: '#contact-heading', mode: 'text' },
         contact_text: { selector: '#contact-text', mode: 'text' },
@@ -188,6 +188,10 @@ ${g.names.map((n) => `<span class="px-3 py-1 rounded-full bg-white/5 text-on-sur
                 else if (target.mode === 'email') {
                     el.setAttribute('href', `mailto:${value}`);
                     el.textContent = value;
+                } else if (target.mode === 'resume') {
+                    el.setAttribute('href', value);
+                    el.setAttribute('target', '_blank');
+                    el.setAttribute('rel', 'noopener noreferrer');
                 }
             });
         });
@@ -257,6 +261,26 @@ ${x.description ? `<p class="font-body-sm text-body-sm text-on-surface-variant b
 
         wrap.classList.remove('hidden');
         wrap.classList.add('flex');
+
+        // Tied directly to scroll position (not a one-shot trigger): fades and
+        // scales in as it's scrolled up into view, and reverses back out if
+        // you scroll back up past it -- same in both directions.
+        if (!wrap.dataset.scrollRevealBound) {
+            wrap.dataset.scrollRevealBound = 'true';
+            const updateReveal = () => {
+                const rect = wrap.getBoundingClientRect();
+                const vh = window.innerHeight;
+                const start = vh; // wrap's top at the bottom edge of the viewport = 0%
+                const end = vh * 0.5; // wrap's top at mid-viewport = 100%
+                const progress = Math.max(0, Math.min(1, (start - rect.top) / (start - end)));
+                wrap.style.opacity = String(progress);
+                wrap.style.transform = `scale(${0.8 + 0.2 * progress})`;
+            };
+            window.addEventListener('scroll', updateReveal, { passive: true });
+            window.addEventListener('resize', updateReveal);
+            updateReveal();
+        }
+
         container.innerHTML = `
 <div class="absolute inset-0 rounded-full border border-white/10 pointer-events-none"></div>
 <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full flex items-center justify-center pointer-events-none" style="background: linear-gradient(135deg, #a855f7, #3b82f6, #14b8a6);">
@@ -283,7 +307,7 @@ ${x.description ? `<p class="font-body-sm text-body-sm text-on-surface-variant b
 ${row.short_name ? `<span class="text-[11px] font-bold tracking-tight">${escapeHtml(row.short_name)}</span>` : `<span class="material-symbols-outlined text-2xl">school</span>`}
 </button>
 <div class="orbital-label absolute top-9 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold uppercase tracking-wide text-white/70 transition-all duration-300">${escapeHtml(row.degree)}</div>
-<div class="orbital-card hidden absolute top-16 left-1/2 -translate-x-1/2 w-64 rounded-lg overflow-visible text-left" style="background: rgba(0,0,0,0.9); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 0 15px rgba(255,255,255,0.1);">
+<div class="orbital-card hidden absolute top-16 left-1/2 -translate-x-1/2 w-64 rounded-lg overflow-visible text-left" style="background: rgba(0,0,0,0.9); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 0 15px ${statusColor}66;">
 <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3" style="background: rgba(255,255,255,0.5);"></div>
 <div class="p-4">
 <div class="flex justify-between items-center mb-2">

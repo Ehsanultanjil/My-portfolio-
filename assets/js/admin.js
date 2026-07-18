@@ -410,10 +410,10 @@ ${thumb}
     // ---------- Site Text (single key/value fields, one save-all form) ----------
 
     const CONTENT_KEYS = [
-        'hero_badge', 'hero_heading', 'hero_heading_highlight', 'hero_bio', 'hero_button_text', 'primary_cta_link',
+        'hero_badge', 'hero_heading', 'hero_heading_highlight', 'hero_bio', 'hero_button_text', 'resume_url', 'primary_cta_link',
         'about_eyebrow', 'about_heading', 'about_text',
         'work_heading', 'skills_eyebrow', 'skills_heading', 'skills_heading_highlight',
-        'experience_heading', 'education_heading', 'testimonials_heading',
+        'experience_heading', 'testimonials_heading',
         'contact_heading', 'contact_text', 'contact_email',
         'footer_name', 'footer_copyright',
     ];
@@ -421,6 +421,8 @@ ${thumb}
     const contentForm = document.getElementById('content-form');
     const contentError = document.getElementById('content-error');
     const contentSuccess = document.getElementById('content-success');
+    const resumeFileInput = document.getElementById('sc-resume-file');
+    const resumeCurrentLink = document.getElementById('sc-resume-current');
 
     async function loadContent() {
         const { data, error } = await client.from('site_content').select('*');
@@ -431,6 +433,12 @@ ${thumb}
             const field = document.getElementById(`sc-${key}`);
             if (field && byKey[key] != null) field.value = byKey[key];
         });
+        if (byKey.resume_url) {
+            resumeCurrentLink.href = byKey.resume_url;
+            resumeCurrentLink.classList.remove('hidden');
+        } else {
+            resumeCurrentLink.classList.add('hidden');
+        }
     }
 
     contentForm.addEventListener('submit', async (e) => {
@@ -438,18 +446,39 @@ ${thumb}
         contentError.classList.add('hidden');
         contentSuccess.classList.add('hidden');
 
-        const rows = CONTENT_KEYS.map((key) => ({
-            key,
-            value: document.getElementById(`sc-${key}`).value.trim(),
-        }));
+        const submitBtn = contentForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
 
-        const { error } = await client.from('site_content').upsert(rows, { onConflict: 'key' });
-        if (error) {
-            contentError.textContent = error.message;
+        try {
+            const resumeFile = resumeFileInput.files[0];
+            if (resumeFile) {
+                const path = `${Date.now()}-${resumeFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                const { error: uploadError } = await client.storage.from('resume-files').upload(path, resumeFile, { upsert: true });
+                if (uploadError) throw uploadError;
+                const url = client.storage.from('resume-files').getPublicUrl(path).data.publicUrl;
+                document.getElementById('sc-resume_url').value = url;
+            }
+
+            const rows = CONTENT_KEYS.map((key) => ({
+                key,
+                value: document.getElementById(`sc-${key}`).value.trim(),
+            }));
+
+            const { error } = await client.from('site_content').upsert(rows, { onConflict: 'key' });
+            if (error) throw error;
+
+            resumeFileInput.value = '';
+            if (document.getElementById('sc-resume_url').value) {
+                resumeCurrentLink.href = document.getElementById('sc-resume_url').value;
+                resumeCurrentLink.classList.remove('hidden');
+            }
+            contentSuccess.classList.remove('hidden');
+        } catch (err) {
+            contentError.textContent = err.message || String(err);
             contentError.classList.remove('hidden');
-            return;
+        } finally {
+            submitBtn.disabled = false;
         }
-        contentSuccess.classList.remove('hidden');
     });
 
     // ---------- Social Links ----------
