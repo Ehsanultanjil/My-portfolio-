@@ -535,24 +535,28 @@
             const thumb = p.image_url
                 ? `<img src="${escapeHtml(p.image_url)}" class="w-14 h-14 rounded-xl object-cover shrink-0">`
                 : `<div class="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-surface-variant">image</span></div>`;
-            return `<div draggable="true" data-id="${p.id}" class="liquid-glass-refractive rounded-3xl p-4 flex items-center gap-4">
-<span class="material-symbols-outlined drag-handle text-on-surface-variant">drag_indicator</span>
+            return `<div draggable="true" data-id="${p.id}" class="liquid-glass-refractive rounded-3xl p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+<div class="flex items-center gap-3 min-w-0 flex-1">
+<span class="material-symbols-outlined drag-handle text-on-surface-variant shrink-0">drag_indicator</span>
 ${thumb}
 <div class="min-w-0 flex-1">
 <div class="flex items-center gap-2 flex-wrap">
-<p class="font-bold truncate">${escapeHtml(p.title)}</p>
-<span class="text-[10px] px-2 py-0.5 rounded-full liquid-glass-refractive uppercase tracking-wide">${escapeHtml(SECTION_LABELS[p.section] || 'Engineering Work')}</span>
-${p.featured ? '<span class="text-[10px] px-2 py-0.5 rounded-full" style="background:rgba(0,219,233,0.15); color:#7cf3ff;">Featured</span>' : ''}
-${p.visible === false ? '<span class="text-[10px] px-2 py-0.5 rounded-full" style="background:rgba(255,138,128,0.15); color:#ff8a80;">Hidden</span>' : ''}
+<p class="font-bold">${escapeHtml(p.title)}</p>
+<span class="text-[10px] px-2 py-0.5 rounded-full liquid-glass-refractive uppercase tracking-wide whitespace-nowrap">${escapeHtml(SECTION_LABELS[p.section] || 'Engineering Work')}</span>
+${p.featured ? '<span class="text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap" style="background:rgba(0,219,233,0.15); color:#7cf3ff;">Featured</span>' : ''}
+${p.visible === false ? '<span class="text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap" style="background:rgba(255,138,128,0.15); color:#ff8a80;">Hidden</span>' : ''}
 </div>
 <p class="text-on-surface-variant text-sm truncate">${escapeHtml(p.description || '')}</p>
 </div>
-<span class="text-xs text-on-surface-variant shrink-0">#${p.sort_order}</span>
-<span class="toggle-switch shrink-0" title="Visible on website"><input type="checkbox" data-toggle-visible="${p.id}" ${p.visible === false ? '' : 'checked'}><span class="toggle-track"></span></span>
-<div class="flex gap-1 shrink-0">
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+<span class="text-xs text-on-surface-variant">#${p.sort_order}</span>
+<span class="toggle-switch" title="Visible on website"><input type="checkbox" data-toggle-visible="${p.id}" ${p.visible === false ? '' : 'checked'}><span class="toggle-track"></span></span>
+<div class="flex gap-1">
 <button data-duplicate="${p.id}" title="Duplicate" class="liquid-glass-refractive liquid-glass-interactive w-9 h-9 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-base">content_copy</span></button>
 <button data-edit="${p.id}" class="liquid-glass-refractive liquid-glass-interactive w-9 h-9 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-base">edit</span></button>
 <button data-delete="${p.id}" class="liquid-glass-refractive liquid-glass-interactive w-9 h-9 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-base">delete</span></button>
+</div>
 </div>
 </div>`;
         }).join('');
@@ -823,14 +827,16 @@ ${s.level ? `<span class="text-[10px] px-2 py-0.5 rounded-full liquid-glass-refr
             const thumb = x.image_url
                 ? `<img src="${escapeHtml(x.image_url)}" class="w-12 h-12 rounded-xl object-cover shrink-0">`
                 : `<div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-surface-variant text-lg">business_center</span></div>`;
-            return `<div draggable="true" data-id="${x.id}" class="liquid-glass-refractive rounded-3xl p-4 flex items-center gap-4">
-<span class="material-symbols-outlined drag-handle text-on-surface-variant">drag_indicator</span>
+            return `<div draggable="true" data-id="${x.id}" class="liquid-glass-refractive rounded-3xl p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+<div class="flex items-center gap-3 min-w-0 flex-1">
+<span class="material-symbols-outlined drag-handle text-on-surface-variant shrink-0">drag_indicator</span>
 ${thumb}
 <div class="min-w-0 flex-1">
 <p class="font-bold truncate">${escapeHtml(x.title)}</p>
 <p class="text-on-surface-variant text-sm truncate">${escapeHtml(x.organization)} · ${escapeHtml([x.start_date, x.end_date].filter(Boolean).join(' — '))}</p>
 </div>
-<div class="flex gap-1 shrink-0">
+</div>
+<div class="flex gap-1 justify-end shrink-0">
 <button data-duplicate="${x.id}" title="Duplicate" class="liquid-glass-refractive liquid-glass-interactive w-9 h-9 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-base">content_copy</span></button>
 <button data-edit="${x.id}" class="liquid-glass-refractive liquid-glass-interactive w-9 h-9 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-base">edit</span></button>
 <button data-delete="${x.id}" class="liquid-glass-refractive liquid-glass-interactive w-9 h-9 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-base">delete</span></button>
@@ -960,14 +966,16 @@ ${thumb}
         }
         empty.classList.add('hidden');
 
-        list.innerHTML = filtered.map((x) => `<div draggable="true" data-id="${x.id}" class="liquid-glass-refractive rounded-3xl p-4 flex items-center gap-4">
-<span class="material-symbols-outlined drag-handle text-on-surface-variant">drag_indicator</span>
+        list.innerHTML = filtered.map((x) => `<div draggable="true" data-id="${x.id}" class="liquid-glass-refractive rounded-3xl p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+<div class="flex items-center gap-3 min-w-0 flex-1">
+<span class="material-symbols-outlined drag-handle text-on-surface-variant shrink-0">drag_indicator</span>
 <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center shrink-0 text-xs font-bold">${escapeHtml(x.short_name || '?')}</div>
 <div class="min-w-0 flex-1">
 <p class="font-bold truncate">${escapeHtml(x.degree)}</p>
 <p class="text-on-surface-variant text-sm truncate">${escapeHtml(x.institution)} · ${escapeHtml([x.start_date, x.end_date].filter(Boolean).join(' — ') || 'In progress')}${x.grade ? ' · ' + escapeHtml(x.grade) : ''}</p>
 </div>
-<div class="flex gap-1 shrink-0">
+</div>
+<div class="flex gap-1 justify-end shrink-0">
 <button data-duplicate="${x.id}" title="Duplicate" class="liquid-glass-refractive liquid-glass-interactive w-9 h-9 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-base">content_copy</span></button>
 <button data-edit="${x.id}" class="liquid-glass-refractive liquid-glass-interactive w-9 h-9 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-base">edit</span></button>
 <button data-delete="${x.id}" class="liquid-glass-refractive liquid-glass-interactive w-9 h-9 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-base">delete</span></button>
@@ -1220,16 +1228,20 @@ ${photo}
             return;
         }
         empty.classList.add('hidden');
-        list.innerHTML = cachedSocial.map((s) => `<div draggable="true" data-id="${s.id}" class="liquid-glass-refractive rounded-3xl p-4 flex items-center gap-4">
-<span class="material-symbols-outlined drag-handle text-on-surface-variant">drag_indicator</span>
+        list.innerHTML = cachedSocial.map((s) => `<div draggable="true" data-id="${s.id}" class="liquid-glass-refractive rounded-3xl p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+<div class="flex items-center gap-3 min-w-0 flex-1">
+<span class="material-symbols-outlined drag-handle text-on-surface-variant shrink-0">drag_indicator</span>
 <div class="min-w-0 flex-1">
 <p class="font-bold">${escapeHtml(s.label)}</p>
 <p class="text-on-surface-variant text-sm truncate">${escapeHtml(s.url)}</p>
 </div>
-<span class="toggle-switch shrink-0" title="Visible"><input type="checkbox" data-toggle-visible="${s.id}" ${s.visible === false ? '' : 'checked'}><span class="toggle-track"></span></span>
-<div class="flex gap-1 shrink-0">
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+<span class="toggle-switch" title="Visible"><input type="checkbox" data-toggle-visible="${s.id}" ${s.visible === false ? '' : 'checked'}><span class="toggle-track"></span></span>
+<div class="flex gap-1">
 <button data-edit="${s.id}" class="liquid-glass-refractive liquid-glass-interactive w-9 h-9 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-base">edit</span></button>
 <button data-delete="${s.id}" class="liquid-glass-refractive liquid-glass-interactive w-9 h-9 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-base">delete</span></button>
+</div>
 </div>
 </div>`).join('');
 
