@@ -28,7 +28,7 @@
 <a class="font-body-md text-[11px] sm:text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-2 sm:px-3 py-1 rounded-full transition-all duration-300" href="#about">About</a>
 <a class="font-body-md text-[11px] sm:text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-2 sm:px-3 py-1 rounded-full transition-all duration-300" href="#contact">Contact</a>
 </div>
-<a href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer"
+<a id="nav-hire-link" href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer"
     class="inline-block bg-primary-container text-on-primary-container text-[11px] sm:text-body-md px-3 sm:px-6 py-1.5 sm:py-2 font-bold bounce-feedback transition-transform hover:brightness-110 relative z-10 rounded-full whitespace-nowrap">
         Hire Me
     </a>
@@ -38,20 +38,20 @@
 <!-- Hero Section -->
 <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-12 items-center min-h-0 lg:min-h-[60vh]" id="about">
 <div class="space-y-4 sm:space-y-6">
-<div class="inline-block px-4 py-1 liquid-glass-refractive text-primary font-label-md text-label-md uppercase tracking-widest rounded-full">
+<div id="hero-badge" class="inline-block px-4 py-1 liquid-glass-refractive text-primary font-label-md text-label-md uppercase tracking-widest rounded-full">
                 Available for hire
             </div>
 <h1 class="font-headline-xl text-4xl sm:text-headline-xl lg:text-7xl leading-tight">
-                Building Fast, Reliable <span class="text-primary-container">Web Experiences.</span>
+<span id="hero-heading">Building Fast, Reliable</span> <span id="hero-heading-highlight" class="text-primary-container">Web Experiences.</span>
             </h1>
-<p class="font-body-md text-body-md text-on-surface-variant max-w-lg leading-relaxed brightness-125">
+<p id="hero-bio" class="font-body-md text-body-md text-on-surface-variant max-w-lg leading-relaxed brightness-125">
                 Frontend Developer specializing in modern web and mobile applications, and a Fiverr Level 2 Seller providing professional Telegram moderation and community management. I use an AI-assisted workflow — Claude, ChatGPT, and Cursor — to build and ship faster.
             </p>
 <div class="flex gap-4">
 <button onclick="document.getElementById('work').scrollIntoView({behavior: 'smooth'})" class="px-8 py-4 liquid-glass-refractive liquid-glass-interactive font-bold flex items-center gap-2 bounce-feedback rounded-full">
-                    View Projects <span class="material-symbols-outlined">arrow_downward</span>
+<span id="hero-button-text">View Projects</span> <span class="material-symbols-outlined">arrow_downward</span>
 </button>
-<a href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer" class="w-14 h-14 liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback rounded-full" aria-label="View Fiverr profile">
+<a id="hero-cta-link" href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer" class="w-14 h-14 liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback rounded-full" aria-label="View Fiverr profile">
 <span class="material-symbols-outlined">storefront</span>
 </a>
 </div>
@@ -71,11 +71,27 @@
 <div class="flex gap-6 shrink-0 mr-6" id="marquee-set-2"></div>
 </div>
 </div>
+<!-- About Me Section -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center" id="about-me">
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="w-8 h-px bg-primary-container"></div>
+<span id="about-eyebrow" class="font-label-md text-label-md text-primary-container uppercase tracking-widest">About</span>
+</div>
+<h2 id="about-heading" class="font-headline-lg text-headline-lg lg:text-5xl">Who I Am</h2>
+<p id="about-text" class="font-body-md text-body-md text-on-surface-variant leading-relaxed brightness-125">I'm Ehsanul Karim Tanjil, a Computer Science &amp; Engineering student at BUBT and a Fiverr Level 2 Seller with 65+ reviews and a 4.9★ rating. I build fast, reliable web experiences using an AI-assisted workflow, and manage Telegram communities with a focus on safety and engagement.</p>
+</div>
+<!-- Education: orbital timeline, populated at runtime by assets/js/render-content.js. Hidden until at least one education entry exists. -->
+<div class="hidden flex-col items-center gap-4" id="orbital-timeline-wrap">
+<span id="orbital-heading" class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest text-center">Education</span>
+<div class="relative w-full max-w-[420px] aspect-square mx-auto" id="orbital-timeline"></div>
+</div>
+</section>
 <!-- Work Section -->
 <section class="space-y-8" id="work">
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
 <div class="space-y-4">
-<h2 class="font-headline-lg text-headline-lg">My Work</h2>
+<h2 id="work-heading" class="font-headline-lg text-headline-lg">My Work</h2>
 <div class="inline-flex liquid-glass-refractive rounded-full p-1 gap-1 max-w-full overflow-x-auto" id="work-tabs">
 <button class="work-tab px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-300 bg-primary-container text-on-primary-container" data-tab="projects">Engineering Work</button>
 <button class="work-tab px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-300 text-on-surface-variant" data-tab="community">Community Work</button>
@@ -104,20 +120,46 @@
 <div class="flex flex-col items-center text-center space-y-4">
 <div class="flex items-center gap-4">
 <div class="w-8 h-px bg-primary-container"></div>
-<span class="font-label-md text-label-md text-primary-container uppercase tracking-widest">Skills</span>
+<span id="skills-eyebrow" class="font-label-md text-label-md text-primary-container uppercase tracking-widest">Skills</span>
 <div class="w-8 h-px bg-primary-container"></div>
 </div>
-<h2 class="font-headline-lg text-headline-lg lg:text-5xl">Tools &amp; Technologies I <span class="text-primary-container">Use</span></h2>
+<h2 class="font-headline-lg text-headline-lg lg:text-5xl"><span id="skills-heading">Tools &amp; Technologies I</span> <span id="skills-heading-highlight" class="text-primary-container">Use</span></h2>
 </div>
 <!-- Populated at runtime by assets/js/render-content.js (Supabase, falls back to placeholder cards if not configured) -->
 <div id="skills-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start"></div>
 </section>
+<!-- Experience Section (hidden until admin adds at least one entry) -->
+<section class="space-y-12 hidden" id="experience">
+<div class="flex flex-col items-center text-center space-y-4">
+<div class="flex items-center gap-4">
+<div class="w-8 h-px bg-primary-container"></div>
+<span class="font-label-md text-label-md text-primary-container uppercase tracking-widest">Experience</span>
+<div class="w-8 h-px bg-primary-container"></div>
+</div>
+<h2 id="experience-heading" class="font-headline-lg text-headline-lg lg:text-5xl">Experience</h2>
+</div>
+<!-- Populated at runtime by assets/js/render-content.js -->
+<div id="experience-list" class="flex gap-6 overflow-x-auto pb-8 custom-scrollbar scroll-smooth px-8 py-6"></div>
+</section>
+<!-- Testimonials Section (hidden until admin adds at least one entry) -->
+<section class="space-y-12 hidden" id="testimonials">
+<div class="flex flex-col items-center text-center space-y-4">
+<div class="flex items-center gap-4">
+<div class="w-8 h-px bg-primary-container"></div>
+<span class="font-label-md text-label-md text-primary-container uppercase tracking-widest">Testimonials</span>
+<div class="w-8 h-px bg-primary-container"></div>
+</div>
+<h2 id="testimonials-heading" class="font-headline-lg text-headline-lg lg:text-5xl">What Clients Say</h2>
+</div>
+<!-- Populated at runtime by assets/js/render-content.js -->
+<div id="testimonials-list" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+</section>
 <!-- Contact -->
 <section class="space-y-8 pb-12" id="contact">
 <div class="liquid-glass-refractive rounded-4xl p-6 sm:p-12 flex flex-col items-center text-center gap-6">
-<h2 class="font-headline-lg text-headline-lg">Get In Touch</h2>
-<p class="font-body-md text-body-md text-on-surface-variant max-w-lg leading-relaxed brightness-125">Have a project in mind or need a Telegram community managed? Send an email — I read every message.</p>
-<a href="mailto:ehsanultanjil@gmail.com" class="px-8 py-4 bg-primary-container text-on-primary-container font-bold bounce-feedback transition-transform hover:brightness-110 rounded-full">
+<h2 id="contact-heading" class="font-headline-lg text-headline-lg">Get In Touch</h2>
+<p id="contact-text" class="font-body-md text-body-md text-on-surface-variant max-w-lg leading-relaxed brightness-125">Have a project in mind or need a Telegram community managed? Send an email — I read every message.</p>
+<a id="contact-email-link" href="mailto:ehsanultanjil@gmail.com" class="px-8 py-4 bg-primary-container text-on-primary-container font-bold bounce-feedback transition-transform hover:brightness-110 rounded-full">
                 ehsanultanjil@gmail.com
             </a>
 </div>
@@ -126,11 +168,11 @@
 <!-- Footer -->
 <footer class="w-full py-16 px-gutter flex flex-col md:flex-row justify-between items-center gap-component-gap bg-white/[0.03] border-t border-white/10 backdrop-blur-xl">
 <div class="flex flex-col gap-2">
-<div class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Tanjil</div>
-<p class="font-label-md text-label-md text-on-surface-variant opacity-80 brightness-110">© 2026 Ehsanul Karim Tanjil.</p>
+<div id="footer-name" class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Tanjil</div>
+<p id="footer-copyright" class="font-label-md text-label-md text-on-surface-variant opacity-80 brightness-110">© 2026 Ehsanul Karim Tanjil.</p>
 </div>
-<div class="flex gap-8">
-<!-- TODO: add real GitHub/LinkedIn URLs -->
+<!-- Populated at runtime by assets/js/render-content.js (Supabase, falls back to these links if not configured) -->
+<div id="footer-social-links" class="flex gap-8">
 <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors opacity-80 hover:opacity-100 brightness-110" href="#">GitHub</a>
 <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors opacity-80 hover:opacity-100 brightness-110" href="#">LinkedIn</a>
 <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors opacity-80 hover:opacity-100 brightness-110" href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer">Fiverr</a>

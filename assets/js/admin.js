@@ -23,6 +23,11 @@
         loadProjects();
         loadSkills();
         loadStats();
+        loadContent();
+        loadSocialLinks();
+        loadExperience();
+        loadEducation();
+        loadTestimonials();
     }
 
     // ---------- Stats ----------
@@ -400,5 +405,467 @@ ${thumb}
         resetSkillForm();
         loadSkills();
         loadStats();
+    });
+
+    // ---------- Site Text (single key/value fields, one save-all form) ----------
+
+    const CONTENT_KEYS = [
+        'hero_badge', 'hero_heading', 'hero_heading_highlight', 'hero_bio', 'hero_button_text', 'primary_cta_link',
+        'about_eyebrow', 'about_heading', 'about_text',
+        'work_heading', 'skills_eyebrow', 'skills_heading', 'skills_heading_highlight',
+        'experience_heading', 'education_heading', 'testimonials_heading',
+        'contact_heading', 'contact_text', 'contact_email',
+        'footer_name', 'footer_copyright',
+    ];
+
+    const contentForm = document.getElementById('content-form');
+    const contentError = document.getElementById('content-error');
+    const contentSuccess = document.getElementById('content-success');
+
+    async function loadContent() {
+        const { data, error } = await client.from('site_content').select('*');
+        if (error || !data) return;
+        const byKey = {};
+        data.forEach((row) => { byKey[row.key] = row.value; });
+        CONTENT_KEYS.forEach((key) => {
+            const field = document.getElementById(`sc-${key}`);
+            if (field && byKey[key] != null) field.value = byKey[key];
+        });
+    }
+
+    contentForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        contentError.classList.add('hidden');
+        contentSuccess.classList.add('hidden');
+
+        const rows = CONTENT_KEYS.map((key) => ({
+            key,
+            value: document.getElementById(`sc-${key}`).value.trim(),
+        }));
+
+        const { error } = await client.from('site_content').upsert(rows, { onConflict: 'key' });
+        if (error) {
+            contentError.textContent = error.message;
+            contentError.classList.remove('hidden');
+            return;
+        }
+        contentSuccess.classList.remove('hidden');
+    });
+
+    // ---------- Social Links ----------
+
+    const socialForm = document.getElementById('social-form');
+    const socialIdField = document.getElementById('social-id');
+    const socialCancelBtn = document.getElementById('social-cancel');
+    const socialError = document.getElementById('social-error');
+
+    async function loadSocialLinks() {
+        const list = document.getElementById('social-admin-list');
+        const { data, error } = await client.from('social_links').select('*').order('sort_order', { ascending: true });
+
+        if (error) {
+            list.innerHTML = `<p style="color:#ff8a80;">Failed to load social links: ${escapeHtml(error.message)}</p>`;
+            return;
+        }
+        if (!data.length) {
+            list.innerHTML = `<p class="text-on-surface-variant text-sm">No links yet.</p>`;
+            return;
+        }
+
+        list.innerHTML = data.map((s) => rowCard(`
+<div class="min-w-0">
+<p class="font-bold">${escapeHtml(s.label)}</p>
+<p class="text-on-surface-variant text-sm truncate">${escapeHtml(s.url)}</p>
+</div>
+<div class="flex gap-2 shrink-0">
+<button data-edit-social="${s.id}" class="liquid-glass-refractive liquid-glass-interactive w-10 h-10 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button data-delete-social="${s.id}" class="liquid-glass-refractive liquid-glass-interactive w-10 h-10 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+`)).join('');
+
+        list.querySelectorAll('[data-edit-social]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const row = data.find((s) => String(s.id) === btn.dataset.editSocial);
+                if (!row) return;
+                socialIdField.value = row.id;
+                document.getElementById('social-label').value = row.label || '';
+                document.getElementById('social-url').value = row.url || '';
+                document.getElementById('social-sort').value = row.sort_order || 0;
+                socialCancelBtn.classList.remove('hidden');
+                openAccordion('social');
+                socialForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        });
+
+        list.querySelectorAll('[data-delete-social]').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+                if (!confirm('Delete this link?')) return;
+                const { error } = await client.from('social_links').delete().eq('id', btn.dataset.deleteSocial);
+                if (error) { alert('Delete failed: ' + error.message); return; }
+                loadSocialLinks();
+            });
+        });
+    }
+
+    function resetSocialForm() {
+        socialForm.reset();
+        socialIdField.value = '';
+        document.getElementById('social-sort').value = 0;
+        socialCancelBtn.classList.add('hidden');
+        socialError.classList.add('hidden');
+    }
+
+    socialCancelBtn.addEventListener('click', resetSocialForm);
+
+    socialForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        socialError.classList.add('hidden');
+
+        const row = {
+            label: document.getElementById('social-label').value.trim(),
+            url: document.getElementById('social-url').value.trim(),
+            sort_order: Number(document.getElementById('social-sort').value) || 0,
+        };
+
+        const id = socialIdField.value;
+        const { error } = id
+            ? await client.from('social_links').update(row).eq('id', id)
+            : await client.from('social_links').insert(row);
+
+        if (error) {
+            socialError.textContent = error.message;
+            socialError.classList.remove('hidden');
+            return;
+        }
+        resetSocialForm();
+        loadSocialLinks();
+    });
+
+    // ---------- Experience ----------
+
+    const experienceForm = document.getElementById('experience-form');
+    const experienceIdField = document.getElementById('experience-id');
+    const experienceExistingImageField = document.getElementById('experience-existing-image');
+    const experienceImageInput = document.getElementById('experience-image');
+    const experienceImagePreview = document.getElementById('experience-image-preview');
+    const experienceCancelBtn = document.getElementById('experience-cancel');
+    const experienceError = document.getElementById('experience-error');
+
+    experienceImageInput.addEventListener('change', () => {
+        const file = experienceImageInput.files[0];
+        if (!file) return;
+        experienceImagePreview.src = URL.createObjectURL(file);
+        experienceImagePreview.classList.remove('hidden');
+    });
+
+    async function loadExperience() {
+        const list = document.getElementById('experience-admin-list');
+        const { data, error } = await client.from('experience').select('*').order('sort_order', { ascending: true });
+
+        if (error) {
+            list.innerHTML = `<p style="color:#ff8a80;">Failed to load experience: ${escapeHtml(error.message)}</p>`;
+            return;
+        }
+        if (!data.length) {
+            list.innerHTML = `<p class="text-on-surface-variant text-sm">No entries yet.</p>`;
+            return;
+        }
+
+        list.innerHTML = data.map((x) => {
+            const thumb = x.image_url
+                ? `<img src="${escapeHtml(x.image_url)}" class="w-12 h-12 rounded-xl object-cover shrink-0">`
+                : `<div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-surface-variant text-lg">image</span></div>`;
+
+            return rowCard(`
+${thumb}
+<div class="min-w-0 flex-1">
+<p class="font-bold">${escapeHtml(x.title)}</p>
+<p class="text-on-surface-variant text-sm truncate">${escapeHtml(x.organization)} · ${escapeHtml([x.start_date, x.end_date].filter(Boolean).join(' — '))}</p>
+</div>
+<div class="flex gap-2 shrink-0">
+<button data-edit-experience="${x.id}" class="liquid-glass-refractive liquid-glass-interactive w-10 h-10 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button data-delete-experience="${x.id}" class="liquid-glass-refractive liquid-glass-interactive w-10 h-10 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+`);
+        }).join('');
+
+        list.querySelectorAll('[data-edit-experience]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const row = data.find((x) => String(x.id) === btn.dataset.editExperience);
+                if (!row) return;
+                experienceIdField.value = row.id;
+                experienceExistingImageField.value = row.image_url || '';
+                document.getElementById('experience-title').value = row.title || '';
+                document.getElementById('experience-organization').value = row.organization || '';
+                document.getElementById('experience-start').value = row.start_date || '';
+                document.getElementById('experience-end').value = row.end_date || '';
+                document.getElementById('experience-description').value = row.description || '';
+                document.getElementById('experience-sort').value = row.sort_order || 0;
+                experienceImageInput.value = '';
+                if (row.image_url) {
+                    experienceImagePreview.src = row.image_url;
+                    experienceImagePreview.classList.remove('hidden');
+                } else {
+                    experienceImagePreview.classList.add('hidden');
+                }
+                experienceCancelBtn.classList.remove('hidden');
+                openAccordion('experience');
+                experienceForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        });
+
+        list.querySelectorAll('[data-delete-experience]').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+                if (!confirm('Delete this entry?')) return;
+                const { error } = await client.from('experience').delete().eq('id', btn.dataset.deleteExperience);
+                if (error) { alert('Delete failed: ' + error.message); return; }
+                loadExperience();
+            });
+        });
+    }
+
+    function resetExperienceForm() {
+        experienceForm.reset();
+        experienceIdField.value = '';
+        experienceExistingImageField.value = '';
+        experienceImagePreview.classList.add('hidden');
+        experienceImagePreview.src = '';
+        document.getElementById('experience-sort').value = 0;
+        experienceCancelBtn.classList.add('hidden');
+        experienceError.classList.add('hidden');
+    }
+
+    experienceCancelBtn.addEventListener('click', resetExperienceForm);
+
+    experienceForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        experienceError.classList.add('hidden');
+
+        const submitBtn = experienceForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+
+        try {
+            let imageUrl = experienceExistingImageField.value || null;
+            const file = experienceImageInput.files[0];
+
+            if (file) {
+                const path = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                const { error: uploadError } = await client.storage.from('project-images').upload(path, file, { upsert: true });
+                if (uploadError) throw uploadError;
+                imageUrl = client.storage.from('project-images').getPublicUrl(path).data.publicUrl;
+            }
+
+            const row = {
+                title: document.getElementById('experience-title').value.trim(),
+                organization: document.getElementById('experience-organization').value.trim(),
+                start_date: document.getElementById('experience-start').value.trim(),
+                end_date: document.getElementById('experience-end').value.trim(),
+                description: document.getElementById('experience-description').value.trim(),
+                image_url: imageUrl,
+                sort_order: Number(document.getElementById('experience-sort').value) || 0,
+            };
+
+            const id = experienceIdField.value;
+            const { error } = id
+                ? await client.from('experience').update(row).eq('id', id)
+                : await client.from('experience').insert(row);
+
+            if (error) throw error;
+
+            resetExperienceForm();
+            loadExperience();
+        } catch (err) {
+            experienceError.textContent = err.message || String(err);
+            experienceError.classList.remove('hidden');
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
+    // ---------- Education ----------
+
+    const educationForm = document.getElementById('education-form');
+    const educationIdField = document.getElementById('education-id');
+    const educationCancelBtn = document.getElementById('education-cancel');
+    const educationError = document.getElementById('education-error');
+
+    async function loadEducation() {
+        const list = document.getElementById('education-admin-list');
+        const { data, error } = await client.from('education').select('*').order('sort_order', { ascending: true });
+
+        if (error) {
+            list.innerHTML = `<p style="color:#ff8a80;">Failed to load education: ${escapeHtml(error.message)}</p>`;
+            return;
+        }
+        if (!data.length) {
+            list.innerHTML = `<p class="text-on-surface-variant text-sm">No entries yet.</p>`;
+            return;
+        }
+
+        list.innerHTML = data.map((x) => rowCard(`
+<div class="min-w-0">
+<p class="font-bold">${escapeHtml(x.degree)}</p>
+<p class="text-on-surface-variant text-sm truncate">${escapeHtml(x.institution)} · ${escapeHtml([x.start_date, x.end_date].filter(Boolean).join(' — '))}</p>
+</div>
+<div class="flex gap-2 shrink-0">
+<button data-edit-education="${x.id}" class="liquid-glass-refractive liquid-glass-interactive w-10 h-10 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button data-delete-education="${x.id}" class="liquid-glass-refractive liquid-glass-interactive w-10 h-10 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+`)).join('');
+
+        list.querySelectorAll('[data-edit-education]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const row = data.find((x) => String(x.id) === btn.dataset.editEducation);
+                if (!row) return;
+                educationIdField.value = row.id;
+                document.getElementById('education-degree').value = row.degree || '';
+                document.getElementById('education-institution').value = row.institution || '';
+                document.getElementById('education-start').value = row.start_date || '';
+                document.getElementById('education-end').value = row.end_date || '';
+                document.getElementById('education-description').value = row.description || '';
+                document.getElementById('education-sort').value = row.sort_order || 0;
+                educationCancelBtn.classList.remove('hidden');
+                openAccordion('education');
+                educationForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        });
+
+        list.querySelectorAll('[data-delete-education]').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+                if (!confirm('Delete this entry?')) return;
+                const { error } = await client.from('education').delete().eq('id', btn.dataset.deleteEducation);
+                if (error) { alert('Delete failed: ' + error.message); return; }
+                loadEducation();
+            });
+        });
+    }
+
+    function resetEducationForm() {
+        educationForm.reset();
+        educationIdField.value = '';
+        document.getElementById('education-sort').value = 0;
+        educationCancelBtn.classList.add('hidden');
+        educationError.classList.add('hidden');
+    }
+
+    educationCancelBtn.addEventListener('click', resetEducationForm);
+
+    educationForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        educationError.classList.add('hidden');
+
+        const row = {
+            degree: document.getElementById('education-degree').value.trim(),
+            institution: document.getElementById('education-institution').value.trim(),
+            start_date: document.getElementById('education-start').value.trim(),
+            end_date: document.getElementById('education-end').value.trim(),
+            description: document.getElementById('education-description').value.trim(),
+            sort_order: Number(document.getElementById('education-sort').value) || 0,
+        };
+
+        const id = educationIdField.value;
+        const { error } = id
+            ? await client.from('education').update(row).eq('id', id)
+            : await client.from('education').insert(row);
+
+        if (error) {
+            educationError.textContent = error.message;
+            educationError.classList.remove('hidden');
+            return;
+        }
+        resetEducationForm();
+        loadEducation();
+    });
+
+    // ---------- Testimonials ----------
+
+    const testimonialForm = document.getElementById('testimonial-form');
+    const testimonialIdField = document.getElementById('testimonial-id');
+    const testimonialCancelBtn = document.getElementById('testimonial-cancel');
+    const testimonialError = document.getElementById('testimonial-error');
+
+    async function loadTestimonials() {
+        const list = document.getElementById('testimonials-admin-list');
+        const { data, error } = await client.from('testimonials').select('*').order('sort_order', { ascending: true });
+
+        if (error) {
+            list.innerHTML = `<p style="color:#ff8a80;">Failed to load testimonials: ${escapeHtml(error.message)}</p>`;
+            return;
+        }
+        if (!data.length) {
+            list.innerHTML = `<p class="text-on-surface-variant text-sm">No testimonials yet.</p>`;
+            return;
+        }
+
+        list.innerHTML = data.map((x) => rowCard(`
+<div class="min-w-0">
+<p class="font-bold">${escapeHtml(x.client_name)} · ${'★'.repeat(Math.max(0, Math.min(5, Number(x.rating) || 0)))}</p>
+<p class="text-on-surface-variant text-sm truncate">${escapeHtml(x.quote)}</p>
+</div>
+<div class="flex gap-2 shrink-0">
+<button data-edit-testimonial="${x.id}" class="liquid-glass-refractive liquid-glass-interactive w-10 h-10 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button data-delete-testimonial="${x.id}" class="liquid-glass-refractive liquid-glass-interactive w-10 h-10 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+`)).join('');
+
+        list.querySelectorAll('[data-edit-testimonial]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const row = data.find((x) => String(x.id) === btn.dataset.editTestimonial);
+                if (!row) return;
+                testimonialIdField.value = row.id;
+                document.getElementById('testimonial-client').value = row.client_name || '';
+                document.getElementById('testimonial-quote').value = row.quote || '';
+                document.getElementById('testimonial-rating').value = row.rating || 5;
+                document.getElementById('testimonial-sort').value = row.sort_order || 0;
+                testimonialCancelBtn.classList.remove('hidden');
+                openAccordion('testimonials');
+                testimonialForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        });
+
+        list.querySelectorAll('[data-delete-testimonial]').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+                if (!confirm('Delete this testimonial?')) return;
+                const { error } = await client.from('testimonials').delete().eq('id', btn.dataset.deleteTestimonial);
+                if (error) { alert('Delete failed: ' + error.message); return; }
+                loadTestimonials();
+            });
+        });
+    }
+
+    function resetTestimonialForm() {
+        testimonialForm.reset();
+        testimonialIdField.value = '';
+        document.getElementById('testimonial-rating').value = 5;
+        document.getElementById('testimonial-sort').value = 0;
+        testimonialCancelBtn.classList.add('hidden');
+        testimonialError.classList.add('hidden');
+    }
+
+    testimonialCancelBtn.addEventListener('click', resetTestimonialForm);
+
+    testimonialForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        testimonialError.classList.add('hidden');
+
+        const row = {
+            client_name: document.getElementById('testimonial-client').value.trim(),
+            quote: document.getElementById('testimonial-quote').value.trim(),
+            rating: Math.max(1, Math.min(5, Number(document.getElementById('testimonial-rating').value) || 5)),
+            sort_order: Number(document.getElementById('testimonial-sort').value) || 0,
+        };
+
+        const id = testimonialIdField.value;
+        const { error } = id
+            ? await client.from('testimonials').update(row).eq('id', id)
+            : await client.from('testimonials').insert(row);
+
+        if (error) {
+            testimonialError.textContent = error.message;
+            testimonialError.classList.remove('hidden');
+            return;
+        }
+        resetTestimonialForm();
+        loadTestimonials();
     });
 })();

@@ -110,7 +110,7 @@
 </section>
 
 <!-- Skills -->
-<section>
+<section class="mb-6">
 <button type="button" class="accordion-toggle w-full flex items-center justify-between mb-6" data-accordion="skills" aria-expanded="false">
 <h2 class="font-headline-lg text-lg">Skills</h2>
 <span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
@@ -129,6 +129,167 @@
 <button type="button" id="skill-cancel" class="hidden liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel Edit</button>
 </div>
 <p id="skill-error" class="text-sm hidden" style="color: #ff8a80;"></p>
+</form>
+</div>
+</section>
+
+<!-- Site Content: hero text, headings, contact info, footer -->
+<section class="mb-6">
+<button type="button" class="accordion-toggle w-full flex items-center justify-between mb-6" data-accordion="content" aria-expanded="false">
+<h2 class="font-headline-lg text-lg">Site Text</h2>
+<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
+</button>
+<div class="accordion-panel hidden" data-panel="content">
+<form id="content-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Hero</p>
+<input type="text" id="sc-hero_badge" placeholder="Badge (e.g. Available for hire)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="sc-hero_heading" placeholder="Heading (first part)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="sc-hero_heading_highlight" placeholder="Heading (highlighted part)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<textarea id="sc-hero_bio" placeholder="Bio paragraph" rows="3" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container"></textarea>
+<input type="text" id="sc-hero_button_text" placeholder="Primary button text (e.g. View Projects)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="url" id="sc-primary_cta_link" placeholder="Hire Me / storefront link URL" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-3">About Me</p>
+<input type="text" id="sc-about_eyebrow" placeholder="Eyebrow label (e.g. About)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="sc-about_heading" placeholder="About heading" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<textarea id="sc-about_text" placeholder="About Me paragraph" rows="4" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container"></textarea>
+
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-3">Section Headings</p>
+<input type="text" id="sc-work_heading" placeholder="Work section heading" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="sc-skills_eyebrow" placeholder="Skills eyebrow label" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="sc-skills_heading" placeholder="Skills heading (first part)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="sc-skills_heading_highlight" placeholder="Skills heading (highlighted part)" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="sc-experience_heading" placeholder="Experience section heading" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="sc-education_heading" placeholder="Education section heading" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="sc-testimonials_heading" placeholder="Testimonials section heading" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-3">Contact</p>
+<input type="text" id="sc-contact_heading" placeholder="Contact heading" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<textarea id="sc-contact_text" placeholder="Contact paragraph" rows="2" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container"></textarea>
+<input type="email" id="sc-contact_email" placeholder="Contact email" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-3">Footer</p>
+<input type="text" id="sc-footer_name" placeholder="Footer name" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="sc-footer_copyright" placeholder="Footer copyright line" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+
+<button type="submit" class="mt-2 bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110">Save All Text</button>
+<p id="content-error" class="text-sm hidden" style="color: #ff8a80;"></p>
+<p id="content-success" class="text-sm hidden" style="color: #4ade80;">Saved.</p>
+</form>
+</div>
+</section>
+
+<!-- Social Links -->
+<section class="mb-6">
+<button type="button" class="accordion-toggle w-full flex items-center justify-between mb-6" data-accordion="social" aria-expanded="false">
+<h2 class="font-headline-lg text-lg">Social Links</h2>
+<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
+</button>
+<div class="accordion-panel hidden" data-panel="social">
+<div id="social-admin-list" class="flex flex-col gap-4 mb-6"></div>
+<form id="social-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
+<input type="hidden" id="social-id">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Add / Edit Link</p>
+<input type="text" id="social-label" placeholder="Label (e.g. GitHub)" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="url" id="social-url" placeholder="URL" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="number" id="social-sort" placeholder="Sort order" value="0" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<div class="flex gap-3">
+<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110">Save Link</button>
+<button type="button" id="social-cancel" class="hidden liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel Edit</button>
+</div>
+<p id="social-error" class="text-sm hidden" style="color: #ff8a80;"></p>
+</form>
+</div>
+</section>
+
+<!-- Experience -->
+<section class="mb-6">
+<button type="button" class="accordion-toggle w-full flex items-center justify-between mb-6" data-accordion="experience" aria-expanded="false">
+<h2 class="font-headline-lg text-lg">Experience</h2>
+<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
+</button>
+<div class="accordion-panel hidden" data-panel="experience">
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Hidden on the live site until you add at least one entry here.</p>
+<div id="experience-admin-list" class="flex flex-col gap-4 mb-6"></div>
+<form id="experience-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
+<input type="hidden" id="experience-id">
+<input type="hidden" id="experience-existing-image">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Add / Edit Experience</p>
+<input type="text" id="experience-title" placeholder="Job title / role" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="experience-organization" placeholder="Company / client" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<div>
+<label for="experience-image" class="block text-sm text-on-surface-variant mb-1">Photo (optional — shows a placeholder icon until you add one)</label>
+<input type="file" id="experience-image" accept="image/*" class="w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary-container file:text-on-primary-container file:font-bold">
+<img id="experience-image-preview" class="hidden mt-2 w-24 rounded-xl" style="aspect-ratio: 3/4; object-fit: cover;">
+</div>
+<div class="flex gap-3">
+<input type="text" id="experience-start" placeholder="Start (e.g. Jan 2024)" class="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="experience-end" placeholder="End (e.g. Present)" class="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+</div>
+<textarea id="experience-description" placeholder="Description" rows="2" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container"></textarea>
+<input type="number" id="experience-sort" placeholder="Sort order" value="0" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<div class="flex gap-3">
+<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110">Save Experience</button>
+<button type="button" id="experience-cancel" class="hidden liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel Edit</button>
+</div>
+<p id="experience-error" class="text-sm hidden" style="color: #ff8a80;"></p>
+</form>
+</div>
+</section>
+
+<!-- Education -->
+<section class="mb-6">
+<button type="button" class="accordion-toggle w-full flex items-center justify-between mb-6" data-accordion="education" aria-expanded="false">
+<h2 class="font-headline-lg text-lg">Education</h2>
+<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
+</button>
+<div class="accordion-panel hidden" data-panel="education">
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Hidden on the live site until you add at least one entry here.</p>
+<div id="education-admin-list" class="flex flex-col gap-4 mb-6"></div>
+<form id="education-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
+<input type="hidden" id="education-id">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Add / Edit Education</p>
+<input type="text" id="education-degree" placeholder="Degree / program" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="education-institution" placeholder="Institution" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<div class="flex gap-3">
+<input type="text" id="education-start" placeholder="Start (e.g. 2022)" class="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<input type="text" id="education-end" placeholder="End (e.g. Present)" class="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+</div>
+<textarea id="education-description" placeholder="Description (optional)" rows="2" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container"></textarea>
+<input type="number" id="education-sort" placeholder="Sort order" value="0" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<div class="flex gap-3">
+<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110">Save Education</button>
+<button type="button" id="education-cancel" class="hidden liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel Edit</button>
+</div>
+<p id="education-error" class="text-sm hidden" style="color: #ff8a80;"></p>
+</form>
+</div>
+</section>
+
+<!-- Testimonials -->
+<section>
+<button type="button" class="accordion-toggle w-full flex items-center justify-between mb-6" data-accordion="testimonials" aria-expanded="false">
+<h2 class="font-headline-lg text-lg">Testimonials</h2>
+<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
+</button>
+<div class="accordion-panel hidden" data-panel="testimonials">
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Hidden on the live site until you add at least one entry here.</p>
+<div id="testimonials-admin-list" class="flex flex-col gap-4 mb-6"></div>
+<form id="testimonial-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
+<input type="hidden" id="testimonial-id">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Add / Edit Testimonial</p>
+<input type="text" id="testimonial-client" placeholder="Client name" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<textarea id="testimonial-quote" placeholder="Quote" rows="2" required class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container"></textarea>
+<div>
+<label for="testimonial-rating" class="block text-sm text-on-surface-variant mb-1">Rating (1-5)</label>
+<input type="number" id="testimonial-rating" min="1" max="5" value="5" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+</div>
+<input type="number" id="testimonial-sort" placeholder="Sort order" value="0" class="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container">
+<div class="flex gap-3">
+<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110">Save Testimonial</button>
+<button type="button" id="testimonial-cancel" class="hidden liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel Edit</button>
+</div>
+<p id="testimonial-error" class="text-sm hidden" style="color: #ff8a80;"></p>
 </form>
 </div>
 </section>
