@@ -27,6 +27,25 @@
         return div.innerHTML;
     }
 
+    // Lets scene-owned animation timers (orbit auto-rotate, testimonial autoplay) pause
+    // themselves while their scene isn't the one on screen, instead of running forever in the
+    // background. assets/js/scene-animations.js calls setActive(id) on every scene change.
+    window.SceneTimers = (function () {
+        const registry = {};
+        let activeId = window.SceneNav ? window.SceneNav.current() : null;
+        return {
+            register(sceneId, handlers) {
+                registry[sceneId] = handlers;
+                if (sceneId === activeId) handlers.resume();
+            },
+            setActive(sceneId) {
+                if (activeId && registry[activeId] && activeId !== sceneId) registry[activeId].pause();
+                activeId = sceneId;
+                if (registry[sceneId]) registry[sceneId].resume();
+            },
+        };
+    })();
+
     function renderCards(containerId, items) {
         const container = document.getElementById(containerId);
         if (!container) return;
@@ -87,7 +106,7 @@ ${linkHtml}
         });
 
         const allNames = ordered.flatMap((g) => g.names);
-        const pillsHtml = allNames.map((n) => `<div class="px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
+        const pillsHtml = allNames.map((n) => `<div class="marquee-chip px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
 <span class="w-2 h-2 rounded-full bg-primary-container"></span>
 <span class="font-body-md text-body-md">${escapeHtml(n)}</span>
 </div>`).join('');
@@ -100,15 +119,47 @@ ${linkHtml}
         const container = document.getElementById('skills-list');
         if (!container) return;
 
-        container.innerHTML = groups.map((g) => `<div class="liquid-glass-refractive liquid-glass-interactive p-6 rounded-4xl" style="will-change: transform;">
-<div class="w-12 h-12 rounded-2xl bg-primary-container/10 flex items-center justify-center mb-5">
-<span class="material-symbols-outlined text-primary-container">${escapeHtml(g.icon)}</span>
+        container.innerHTML = groups.map((g, i) => `<div class="skill-card liquid-glass-refractive liquid-glass-interactive p-3 sm:p-6 rounded-2xl sm:rounded-4xl h-full flex flex-col" style="will-change: transform; animation-delay: ${(i % 4) * 0.15}s;" data-category="${escapeHtml(g.category)}">
+<div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-primary-container/10 flex items-center justify-center mb-2 sm:mb-5">
+<span class="material-symbols-outlined text-primary-container text-lg sm:text-2xl">${escapeHtml(g.icon)}</span>
 </div>
-<h3 class="font-headline-lg text-lg mb-4">${escapeHtml(g.category)}</h3>
-<div class="flex flex-wrap gap-2">
-${g.names.map((n) => `<span class="px-3 py-1 rounded-full bg-white/5 text-on-surface-variant text-xs">${escapeHtml(n)}</span>`).join('')}
+<h3 class="font-headline-lg text-sm sm:text-lg mb-2 sm:mb-4">${escapeHtml(g.category)}</h3>
+<div class="flex flex-wrap gap-1 sm:gap-2 content-start">
+${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/5 text-on-surface-variant text-[10px] sm:text-xs">${escapeHtml(n)}</span>`).join('')}
 </div>
 </div>`).join('');
+
+        renderSkillsFilter(groups);
+    }
+
+    // Filter pills above the Skills grid ("All" + each category). Filtering fades/scales
+    // non-matching cards out in place rather than removing them, so the grid doesn't reflow.
+    function renderSkillsFilter(groups) {
+        const filterEl = document.getElementById('skills-filter');
+        if (!filterEl) return;
+        if (groups.length <= 1) { filterEl.innerHTML = ''; return; }
+
+        const categories = ['All', ...groups.map((g) => g.category)];
+        filterEl.innerHTML = categories.map((c, i) => `<button type="button" class="skill-filter-btn px-2.5 py-1 sm:px-4 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold transition-all duration-300 ${i === 0 ? 'bg-primary-container text-on-primary-container' : 'liquid-glass-refractive text-on-surface-variant'}" data-category="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join('');
+
+        const buttons = [...filterEl.querySelectorAll('.skill-filter-btn')];
+        buttons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                if (btn.classList.contains('bg-primary-container')) return;
+                buttons.forEach((b) => {
+                    const active = b === btn;
+                    b.classList.toggle('bg-primary-container', active);
+                    b.classList.toggle('text-on-primary-container', active);
+                    b.classList.toggle('liquid-glass-refractive', !active);
+                    b.classList.toggle('text-on-surface-variant', !active);
+                });
+                const category = btn.dataset.category;
+                document.querySelectorAll('#skills-list .skill-card').forEach((card) => {
+                    const match = category === 'All' || card.dataset.category === category;
+                    card.classList.toggle('skill-card-hidden', !match);
+                });
+            });
+        });
     }
 
     // Flat skill rows (one per skill, sharing a category+icon) grouped into
@@ -363,13 +414,15 @@ ${g.names.map((n) => `<span class="px-3 py-1 rounded-full bg-white/5 text-on-sur
             const iconHtml = icon.type === 'fa'
                 ? `<i class="${icon.cls}"></i>`
                 : `<span class="material-symbols-outlined text-lg">${icon.name}</span>`;
-            return `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(s.label)}" class="w-10 h-10 liquid-glass-refractive liquid-glass-interactive bounce-feedback flex items-center justify-center rounded-full transition-transform hover:brightness-125">
+            return `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(s.label)}" class="w-8 h-8 sm:w-10 sm:h-10 liquid-glass-refractive liquid-glass-interactive bounce-feedback flex items-center justify-center rounded-full transition-transform hover:brightness-125">
 ${iconHtml}
 </a>`;
         }).join('');
     }
 
-    // ---------- Experience (same card style as Work, with a photo) ----------
+    // ---------- Experience: vertical timeline (a growing line with cards stacked along it).
+    // The line-grow + card-stagger entrance itself is handled by assets/js/scene-animations.js
+    // (targets .experience-line / .experience-card) when the "experience" scene becomes active.
     function renderExperience(rows) {
         const section = document.getElementById('experience');
         const container = document.getElementById('experience-list');
@@ -380,29 +433,35 @@ ${iconHtml}
         }
 
         section.classList.remove('hidden');
-        container.innerHTML = rows.map((x) => {
+        const cardsHtml = rows.map((x) => {
             const thumbHtml = x.image_url
                 ? `<img src="${escapeHtml(x.image_url)}" alt="${escapeHtml(x.title)}" class="w-full h-full object-cover">`
-                : `<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 36px;">work</span>`;
+                : `<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 28px;">work</span>`;
 
             const thumbClass = x.image_url
-                ? 'w-28 sm:w-32 shrink-0 rounded-2xl overflow-hidden flex items-center justify-center'
-                : 'w-28 sm:w-32 shrink-0 rounded-2xl border border-white/10 border-dashed bg-white/[0.02] flex items-center justify-center';
+                ? 'w-14 h-14 shrink-0 rounded-xl overflow-hidden flex items-center justify-center'
+                : 'w-14 h-14 shrink-0 rounded-xl border border-white/10 border-dashed bg-white/[0.02] flex items-center justify-center';
 
             const range = [x.start_date, x.end_date].filter(Boolean).join(' — ');
 
-            return `<div class="min-w-[88vw] sm:min-w-[440px] liquid-glass-refractive liquid-glass-interactive bounce-feedback rounded-4xl p-4 flex gap-4" style="will-change: transform;">
-<div class="${thumbClass}" style="aspect-ratio: 3/4;">
+            return `<div class="relative pl-10 sm:pl-12">
+<span class="absolute left-0 top-1.5 w-3 h-3 rounded-full bg-primary-container shadow-[0_0_10px_rgba(0,240,255,0.6)]"></span>
+<div class="experience-card liquid-glass-refractive liquid-glass-interactive rounded-4xl p-5 sm:p-6 flex gap-4">
+<div class="${thumbClass}">
 ${thumbHtml}
 </div>
-<div class="flex flex-col flex-1 min-w-0 py-1">
+<div class="flex flex-col flex-1 min-w-0 py-0.5">
 ${range ? `<span class="px-3 py-1 rounded-full liquid-glass-refractive text-[10px] font-bold self-start mb-2">${escapeHtml(range)}</span>` : ''}
 <h3 class="font-headline-lg text-lg mb-1">${escapeHtml(x.title)}</h3>
 <p class="font-body-sm text-body-sm text-primary-container mb-2">${escapeHtml(x.organization)}</p>
 ${x.description ? `<p class="font-body-sm text-body-sm text-on-surface-variant brightness-110 leading-relaxed line-clamp-3">${escapeHtml(x.description)}</p>` : ''}
 </div>
+</div>
 </div>`;
         }).join('');
+
+        container.innerHTML = `<div class="experience-line absolute left-[5px] sm:left-[7px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary-container/70 via-primary-container/25 to-transparent"></div>
+<div class="flex flex-col gap-10 sm:gap-12">${cardsHtml}</div>`;
     }
 
     // ---------- Education (orbital timeline: nodes rotate around a center,
@@ -427,25 +486,9 @@ ${x.description ? `<p class="font-body-sm text-body-sm text-on-surface-variant b
 
         wrap.classList.remove('hidden');
         wrap.classList.add('flex');
-
-        // Tied directly to scroll position (not a one-shot trigger): fades and
-        // scales in as it's scrolled up into view, and reverses back out if
-        // you scroll back up past it -- same in both directions.
-        if (!wrap.dataset.scrollRevealBound) {
-            wrap.dataset.scrollRevealBound = 'true';
-            const updateReveal = () => {
-                const rect = wrap.getBoundingClientRect();
-                const vh = window.innerHeight;
-                const start = vh; // wrap's top at the bottom edge of the viewport = 0%
-                const end = vh * 0.5; // wrap's top at mid-viewport = 100%
-                const progress = Math.max(0, Math.min(1, (start - rect.top) / (start - end)));
-                wrap.style.opacity = String(progress);
-                wrap.style.transform = `scale(${0.8 + 0.2 * progress})`;
-            };
-            window.addEventListener('scroll', updateReveal, { passive: true });
-            window.addEventListener('resize', updateReveal);
-            updateReveal();
-        }
+        // The scale+rotate entrance is handled by assets/js/scene-animations.js when the
+        // "about" scene becomes active, not by a scroll listener -- there's no page scroll
+        // to tie a reveal to anymore.
 
         container.innerHTML = `
 <div class="absolute inset-0 rounded-full border border-white/10 pointer-events-none"></div>
@@ -548,11 +591,18 @@ ${row.description ? `<p class="text-white/60 text-xs leading-relaxed mt-3 pt-3" 
         }
 
         update();
+        // Paused whenever the "about" scene isn't the one on screen (see window.SceneTimers
+        // above) so the orbit isn't recalculating/repainting while translated off-viewport.
+        let timerPaused = true;
         orbitalTimer = setInterval(() => {
-            if (!autoRotate) return;
+            if (timerPaused || !autoRotate) return;
             angle = (angle + 0.15) % 360;
             update();
         }, 50);
+        window.SceneTimers.register('about', {
+            pause: () => { timerPaused = true; },
+            resume: () => { timerPaused = false; },
+        });
 
         container.addEventListener('click', (e) => {
             if (e.target !== container) return;
@@ -562,10 +612,166 @@ ${row.description ? `<p class="text-white/60 text-xs leading-relaxed mt-3 pt-3" 
         });
     }
 
-    // ---------- Testimonials ----------
+    function testimonialCardHtml(t) {
+        const rating = Math.max(0, Math.min(5, Number(t.rating) || 0));
+        const stars = Array.from({ length: 5 }, (_, si) => `<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' ${si < rating ? 1 : 0};">star</span>`).join('');
+        const photo = t.photo_url
+            ? `<img src="${escapeHtml(t.photo_url)}" class="w-9 h-9 rounded-full object-cover shrink-0">`
+            : `<div class="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-surface-variant text-base">person</span></div>`;
+        // position/company hold country/platform for these reviews (e.g. "United Kingdom · Fiverr").
+        const roleLine = [t.position, t.company].filter(Boolean).join(' · ');
+        return `<div class="testimonial-card liquid-glass-refractive rounded-3xl p-4 sm:p-5 flex flex-col gap-3">
+<div class="flex text-primary-container">${stars}</div>
+<div class="flex-1 min-h-0"><p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed line-clamp-4">"${escapeHtml(t.quote)}"</p></div>
+<div class="flex items-center gap-2.5 pt-2 border-t border-white/10">
+${photo}
+<div class="min-w-0">
+<p class="font-bold text-xs sm:text-sm truncate">${escapeHtml(t.client_name)}</p>
+${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant truncate">${escapeHtml(roleLine)}</p>` : ''}
+</div>
+</div>
+</div>`;
+    }
+
+    // ---------- Testimonials: 3-up infinite sliding carousel, split into Engineering Work /
+    // Community Work tabs (same split as Work's project rails). Only 5 DOM cards ever exist
+    // (2 invisible buffers + up to 3 visible) no matter how many reviews there are -- see the
+    // .testimonial-track/.testimonial-slot comment in styles.css for how the responsive
+    // 1/2/3-visible layout and the -20%/-40%/0% shift math work.
+    //
+    // Each shift() call is two phases: (1) immediately re-tag every slot's data-role toward
+    // its destination (center/side/buffer) and start the position slide -- both animate
+    // together over the same 600ms, which is what makes a card's scale/glow grow in step with
+    // it physically arriving at the center instead of popping once it gets there; (2) once the
+    // slide finishes, instantly (transitions suspended) rebuild all 5 slots' content for the
+    // new center and snap the track back to its -20% resting position -- content doesn't
+    // actually need to change until this point, since the slide only ever moves already-correct
+    // buffered content into view (the buffer slot for "what's coming next" is populated one
+    // step ahead by the previous cycle's rebuild).
+    //
+    // Autoplay pauses on hover and whenever the "testimonials" scene isn't on screen (via
+    // window.SceneTimers); switching tabs re-registers it against the new review set and
+    // clears the previous tab's interval so only one is ever running.
+    function renderCarousel(container, items) {
+        if (!items.length) {
+            container.innerHTML = `<div class="liquid-glass-refractive rounded-4xl p-10 text-center text-on-surface-variant text-sm min-h-[200px] flex items-center justify-center">No reviews in this category yet.</div>`;
+            return () => {};
+        }
+
+        if (items.length === 1) {
+            container.innerHTML = `<div class="max-w-md mx-auto">${testimonialCardHtml(items[0])}</div>`;
+            return () => {};
+        }
+
+        const N = items.length;
+
+        if (N < 5) {
+            // Too few reviews for the 5-slot infinite-loop mechanism (buffers would overlap
+            // with visible slots) -- just show them all, no looping/nav needed.
+            container.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-${Math.min(N, 3)} gap-4">${items.map(testimonialCardHtml).join('')}</div>`;
+            return () => {};
+        }
+
+        container.innerHTML = `<div class="testimonial-viewport">
+<div class="testimonial-track"></div>
+</div>
+<div class="flex items-center justify-center gap-4 sm:gap-6 mt-6">
+<button type="button" class="testimonial-prev w-10 h-10 sm:w-11 sm:h-11 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback" aria-label="Previous review"><span class="material-symbols-outlined text-lg">chevron_left</span></button>
+<span class="testimonial-counter text-xs sm:text-sm text-on-surface-variant whitespace-nowrap"></span>
+<button type="button" class="testimonial-next w-10 h-10 sm:w-11 sm:h-11 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback" aria-label="Next review"><span class="material-symbols-outlined text-lg">chevron_right</span></button>
+</div>`;
+
+        const track = container.querySelector('.testimonial-track');
+        const counterEl = container.querySelector('.testimonial-counter');
+        const REST_ROLES = ['buffer', 'side', 'center', 'side', 'buffer'];
+        let center = 0;
+        let animating = false;
+
+        // On mobile only 1 slot is visible (see .testimonial-slot's responsive width in
+        // styles.css) -- centering that single visible slot on the true "center" slot (index 2)
+        // needs a -40% resting offset instead of the -20% that correctly centers the 3-wide
+        // (desktop) or 2-wide (tablet) window. Without this, the one card mobile shows would be
+        // a dim "side" slot instead of the featured "center" one.
+        function restOffsetPct() {
+            return window.matchMedia('(min-width: 640px)').matches ? -20 : -40;
+        }
+
+        function renderSlots() {
+            track.innerHTML = [-2, -1, 0, 1, 2].map((offset, i) => {
+                const idx = ((center + offset) % N + N) % N;
+                return `<div class="testimonial-slot" data-role="${REST_ROLES[i]}">${testimonialCardHtml(items[idx])}</div>`;
+            }).join('');
+            track.style.transform = `translateX(${restOffsetPct()}%)`;
+        }
+
+        function updateCounter() {
+            const first = ((center - 1 + N) % N) + 1;
+            const last = ((center + 1) % N) + 1;
+            counterEl.textContent = `Showing Reviews ${first}–${last} of ${N}`;
+        }
+
+        function shift(direction) {
+            if (animating) return;
+            animating = true;
+
+            const slots = [...track.children];
+            const oldRoles = slots.map((s) => s.dataset.role);
+            slots.forEach((s, i) => {
+                s.dataset.role = oldRoles[i - direction] || 'buffer';
+            });
+            track.style.transform = `translateX(${restOffsetPct() - direction * 20}%)`;
+
+            const onEnd = () => {
+                track.removeEventListener('transitionend', onEnd);
+                center = ((center + direction) % N + N) % N;
+                track.classList.add('no-transition');
+                renderSlots(); // also snaps the transform back to restOffsetPct()
+                void track.offsetWidth; // commit the no-transition state before re-enabling it
+                track.classList.remove('no-transition');
+                updateCounter();
+                animating = false;
+            };
+            track.addEventListener('transitionend', onEnd, { once: true });
+        }
+
+        renderSlots();
+        updateCounter();
+
+        container.querySelector('.testimonial-prev').addEventListener('click', () => shift(-1));
+        container.querySelector('.testimonial-next').addEventListener('click', () => shift(1));
+
+        // Autoplay is torn down and rebuilt (not just flagged on/off) every time it should
+        // start or stop, so the next tick is always exactly 4s from whenever it actually
+        // starts -- a single always-running interval would keep ticking on its original phase
+        // from mount time, so the first tick after becoming active could land anywhere from
+        // 0-4s later rather than a full 4s, and could even double-fire within one "4 second"
+        // wait if the phase happened to align that way.
+        let sceneActive = false;
+        let hovering = false;
+        let intervalId = null;
+
+        function syncAutoplay() {
+            if (intervalId) { clearInterval(intervalId); intervalId = null; }
+            if (sceneActive && !hovering) {
+                intervalId = setInterval(() => { if (!animating) shift(1); }, 4000);
+            }
+        }
+
+        container.addEventListener('mouseenter', () => { hovering = true; syncAutoplay(); });
+        container.addEventListener('mouseleave', () => { hovering = false; syncAutoplay(); });
+
+        window.SceneTimers.register('testimonials', {
+            pause: () => { sceneActive = false; syncAutoplay(); },
+            resume: () => { sceneActive = true; syncAutoplay(); },
+        });
+
+        return () => { if (intervalId) clearInterval(intervalId); };
+    }
+
     function renderTestimonials(rows) {
         const section = document.getElementById('testimonials');
         const container = document.getElementById('testimonials-list');
+        const tabsEl = document.getElementById('testimonials-tabs');
         if (!section || !container) return;
         const visible = (rows || []).filter((t) => t.visible !== false);
         if (!visible.length) {
@@ -574,25 +780,43 @@ ${row.description ? `<p class="text-white/60 text-xs leading-relaxed mt-3 pt-3" 
         }
 
         section.classList.remove('hidden');
-        container.innerHTML = visible.map((t) => {
-            const rating = Math.max(0, Math.min(5, Number(t.rating) || 0));
-            const stars = Array.from({ length: 5 }, (_, i) => `<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' ${i < rating ? 1 : 0};">star</span>`).join('');
-            const photo = t.photo_url
-                ? `<img src="${escapeHtml(t.photo_url)}" class="w-10 h-10 rounded-full object-cover">`
-                : `<div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center"><span class="material-symbols-outlined text-on-surface-variant text-lg">person</span></div>`;
-            const roleLine = [t.position, t.company].filter(Boolean).join(' · ');
-            return `<div class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3">
-<div class="flex text-primary-container">${stars}</div>
-<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed flex-1">"${escapeHtml(t.quote)}"</p>
-<div class="flex items-center gap-3">
-${photo}
-<div>
-<p class="font-bold text-sm">${escapeHtml(t.client_name)}</p>
-${roleLine ? `<p class="text-xs text-on-surface-variant">${escapeHtml(roleLine)}</p>` : ''}
-</div>
-</div>
-</div>`;
-        }).join('');
+
+        const groups = {
+            engineering: visible.filter((t) => (t.section || 'engineering') !== 'community'),
+            community: visible.filter((t) => (t.section || 'engineering') === 'community'),
+        };
+
+        let activeSection = groups.engineering.length ? 'engineering' : 'community';
+        let stopAutoplay = null;
+
+        function setActiveTab() {
+            if (!tabsEl) return;
+            tabsEl.querySelectorAll('.testimonial-tab').forEach((btn) => {
+                const active = btn.dataset.section === activeSection;
+                btn.classList.toggle('bg-primary-container', active);
+                btn.classList.toggle('text-on-primary-container', active);
+                btn.classList.toggle('text-on-surface-variant', !active);
+            });
+        }
+
+        function mount() {
+            if (stopAutoplay) stopAutoplay();
+            stopAutoplay = renderCarousel(container, groups[activeSection]);
+        }
+
+        if (tabsEl) {
+            tabsEl.querySelectorAll('.testimonial-tab').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    if (btn.dataset.section === activeSection) return;
+                    activeSection = btn.dataset.section;
+                    setActiveTab();
+                    mount();
+                });
+            });
+        }
+
+        setActiveTab();
+        mount();
     }
 
     // Every extra table here is independent of the others and of Supabase being

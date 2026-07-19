@@ -27,48 +27,64 @@
 </div>
 </div>
 <!-- Preloader end -->
+<!-- Fixed backdrop layer: particles, cursor glow -- persists behind every scene, never moves. -->
 <div id="site-particles" class="fixed inset-0 -z-20 overflow-hidden pointer-events-none"></div>
-<div class="ambient-glow" style="--x: 22.734375%; --y: 56.29577956051622%;"></div>
+<div class="ambient-glow" style="--x: 50%; --y: 50%;"></div>
 <!-- Top Navigation Bar -->
 <nav class="fixed top-0 left-0 right-0 z-50 flex items-center px-2 sm:px-6 py-2 gap-1 sm:gap-component-gap mt-6 mx-auto max-w-fit liquid-glass-refractive rounded-full shadow-2xl bounce-feedback">
 <!-- Populated at runtime by render-content.js only if a logo is set in Website Settings -->
 <img id="nav-logo" class="hidden h-7 w-auto object-contain ml-1 mr-1" alt="Logo">
 <div class="flex gap-0.5 sm:gap-6 items-center px-1 sm:px-4 relative z-10" id="nav-links">
-<a class="font-body-md text-[11px] sm:text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-2 sm:px-3 py-1 rounded-full transition-all duration-300" href="#work">Work</a>
-<a class="font-body-md text-[11px] sm:text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-2 sm:px-3 py-1 rounded-full transition-all duration-300" href="#skills">Skills</a>
+<a class="font-body-md text-[11px] sm:text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-2 sm:px-3 py-1 rounded-full transition-all duration-300" href="#hero">Home</a>
 <a class="font-body-md text-[11px] sm:text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-2 sm:px-3 py-1 rounded-full transition-all duration-300" href="#about">About</a>
+<a class="font-body-md text-[11px] sm:text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-2 sm:px-3 py-1 rounded-full transition-all duration-300" href="#skills">Skills</a>
 <a class="font-body-md text-[11px] sm:text-body-md text-on-surface/70 hover:text-on-surface hover:bg-white/10 px-2 sm:px-3 py-1 rounded-full transition-all duration-300" href="#contact">Contact</a>
 </div>
 <a id="nav-hire-link" href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer"
     class="inline-flex items-center bg-primary-container text-on-primary-container text-[11px] sm:text-body-md px-3 sm:px-6 py-1.5 sm:py-2 font-bold bounce-feedback transition-transform hover:brightness-110 relative z-10 rounded-full whitespace-nowrap">
 <span id="nav-hire-text">Hire Me</span>
     </a>
-<div class="absolute bg-primary-container/20 rounded-full transition-all duration-300 ease-out pointer-events-none shadow-[0_0_15px_rgba(0,240,255,0.3)] border border-primary-container/30 hidden md:block" id="nav-indicator" style="height: 32px; top: 50%; transform: translateY(-50%); z-index: 0; width: 39.125px; left: 243.328px; opacity: 1;"></div>
+<div class="absolute bg-primary-container/20 rounded-full transition-all duration-300 ease-out pointer-events-none shadow-[0_0_15px_rgba(0,240,255,0.3)] border border-primary-container/30 hidden md:block" id="nav-indicator" style="height: 32px; top: 50%; transform: translateY(-50%); z-index: 0; opacity: 0;"></div>
 </nav>
-<main class="relative pt-32 sm:pt-40 px-gutter space-y-16 sm:space-y-24 lg:space-y-32 max-w-7xl mx-auto mb-16 sm:mb-32">
-<!-- Hero Section -->
-<section class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-12 items-center min-h-0 lg:min-h-[60vh]" id="about">
-<div class="space-y-4 sm:space-y-6">
-<div id="hero-badge" class="inline-block px-4 py-1 liquid-glass-refractive text-primary font-label-md text-label-md uppercase tracking-widest rounded-full">
+<!-- Floating skill chips: fixed band, drifts forever, never moves with scene transitions. -->
+<div id="floating-chips" class="fixed left-0 right-0 bottom-6 sm:bottom-8 z-40 overflow-hidden pointer-events-none" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
+<div class="flex animate-marquee whitespace-nowrap w-max px-8 py-3 sm:py-4">
+<!-- Populated at runtime by assets/js/render-content.js (same skills you manage in admin.html) -->
+<div class="flex gap-6 shrink-0 mr-6" id="marquee-set-1"></div>
+<div class="flex gap-6 shrink-0 mr-6" id="marquee-set-2"></div>
+</div>
+</div>
+<!-- Scene viewport: exactly one 100vw x 100vh scene visible at a time. Vertical wheel/swipe/keyboard
+     input (assets/js/scene-nav.js) translateX's #scene-track by whole viewport widths. Everything
+     above this point is fixed chrome and lives outside the track on purpose. -->
+<div id="scene-viewport" class="fixed inset-0 overflow-hidden z-10">
+<div id="scene-track">
+
+<!-- Scene: Hero -->
+<section class="scene" id="hero">
+<div class="scene-inner min-h-full flex flex-col justify-center max-w-7xl mx-auto px-gutter pt-20 sm:pt-36 pb-20 sm:pb-28">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-12 items-center min-h-0 lg:min-h-[60vh]">
+<div class="space-y-3 sm:space-y-6">
+<div id="hero-badge" class="hero-anim inline-block px-4 py-1 liquid-glass-refractive text-primary font-label-md text-label-md uppercase tracking-widest rounded-full">
                 Available for hire
             </div>
-<h1 class="font-headline-xl text-4xl sm:text-headline-xl lg:text-7xl leading-tight">
+<h1 class="hero-anim font-headline-xl text-3xl sm:text-headline-xl lg:text-7xl leading-tight">
 <span id="hero-heading">Building Fast, Reliable</span> <span id="hero-heading-highlight" class="text-primary-container">Web Experiences.</span>
             </h1>
-<p id="hero-bio" class="font-body-md text-body-md text-on-surface-variant max-w-lg leading-relaxed brightness-125">
+<p id="hero-bio" class="hero-anim font-body-md text-sm sm:text-body-md text-on-surface-variant max-w-lg leading-relaxed brightness-125">
                 Frontend Developer specializing in modern web and mobile applications, and a Fiverr Level 2 Seller providing professional Telegram moderation and community management. I use an AI-assisted workflow — Claude, ChatGPT, and Cursor — to build and ship faster.
             </p>
-<div class="flex gap-4">
-<a id="hero-resume-link" href="#work" class="px-8 py-4 liquid-glass-refractive liquid-glass-interactive font-bold flex items-center gap-2 bounce-feedback rounded-full">
+<div class="hero-anim flex gap-4">
+<a id="hero-resume-link" href="#work" class="px-6 py-3 sm:px-8 sm:py-4 liquid-glass-refractive liquid-glass-interactive font-bold flex items-center gap-2 bounce-feedback rounded-full">
 <span id="hero-button-text">Download Resumex</span> <span class="material-symbols-outlined">arrow_downward</span>
 </a>
-<a id="hero-cta-link" href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer" class="w-14 h-14 liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback rounded-full" aria-label="View Fiverr profile">
+<a id="hero-cta-link" href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer" class="w-12 h-12 sm:w-14 sm:h-14 liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback rounded-full" aria-label="View Fiverr profile">
 <span class="material-symbols-outlined">storefront</span>
 </a>
 </div>
 </div>
-<div class="group flex flex-col lg:flex-row items-center gap-4 mx-auto lg:mx-0">
-<div class="relative max-w-[200px] sm:max-w-[340px] md:max-w-[440px] lg:max-w-none w-full lg:flex-1 lg:min-w-0">
+<div class="hero-anim group flex flex-col lg:flex-row items-center gap-3 sm:gap-4 mx-auto lg:mx-0">
+<div class="relative max-w-[125px] sm:max-w-[340px] md:max-w-[440px] lg:max-w-none w-full lg:flex-1 lg:min-w-0">
 <!-- Populated at runtime by render-content.js only if a Hero Background Image is set -->
 <div id="hero-bg-layer" class="hidden absolute -inset-6 -z-10 bg-cover bg-center rounded-4xl opacity-25 blur-sm"></div>
 <div id="hero-glow" class="absolute -inset-4 bg-primary-container/20 blur-3xl rounded-full transition-opacity group-hover:opacity-60 opacity-30"></div>
@@ -77,47 +93,74 @@
 </div>
 </div>
 <!-- Populated at runtime by assets/js/render-content.js from the same Social Links you manage in admin.html -->
-<div id="hero-social-icons" class="flex flex-row lg:flex-col justify-center gap-3 shrink-0 transition-transform duration-500 group-hover:-translate-y-1 lg:group-hover:translate-x-1"></div>
+<div id="hero-social-icons" class="flex flex-row lg:flex-col justify-center gap-2 sm:gap-3 shrink-0 transition-transform duration-500 group-hover:-translate-y-1 lg:group-hover:translate-x-1"></div>
+</div>
+</div>
 </div>
 </section>
-<!-- Skills Marquee -->
-<div class="relative w-screen left-1/2 -translate-x-1/2 overflow-hidden" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
-<!-- Populated at runtime by assets/js/render-content.js (same skills you manage in admin.html) -->
-<div class="flex animate-marquee whitespace-nowrap w-max px-8 py-8">
-<div class="flex gap-6 shrink-0 mr-6" id="marquee-set-1"></div>
-<div class="flex gap-6 shrink-0 mr-6" id="marquee-set-2"></div>
-</div>
-</div>
-<!-- About Me Section -->
-<section class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center" id="about-me">
-<div class="space-y-4">
-<div class="flex items-center gap-4">
+
+<!-- Scene: About + Education -->
+<section class="scene" id="about">
+<div class="scene-inner min-h-full flex flex-col justify-center max-w-7xl mx-auto px-gutter pt-16 sm:pt-32 pb-16 sm:pb-24">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-12 items-center">
+<div class="space-y-2 sm:space-y-3">
+<div class="about-anim flex items-center gap-4">
 <div class="w-8 h-px bg-primary-container"></div>
 <span id="about-eyebrow" class="font-label-md text-label-md text-primary-container uppercase tracking-widest">About</span>
 </div>
-<h2 id="about-heading" class="font-headline-lg text-headline-lg lg:text-5xl">Who I Am</h2>
-<p id="about-text" class="font-body-md text-body-md text-on-surface-variant leading-relaxed brightness-125">I'm Ehsanul Karim Tanjil, a Computer Science &amp; Engineering student at BUBT and a Fiverr Level 2 Seller with 65+ reviews and a 4.9★ rating. I build fast, reliable web experiences using an AI-assisted workflow, and manage Telegram communities with a focus on safety and engagement.</p>
+<h2 id="about-heading" class="about-anim font-headline-lg text-headline-lg lg:text-5xl">Who I Am</h2>
+<p id="about-text" class="about-anim font-body-md text-sm sm:text-body-md text-on-surface-variant leading-relaxed brightness-125">I'm Ehsanul Karim Tanjil, a Computer Science &amp; Engineering student at BUBT and a Fiverr Level 2 Seller with 65+ reviews and a 4.9★ rating. I build fast, reliable web experiences using an AI-assisted workflow, and manage Telegram communities with a focus on safety and engagement.</p>
+<div class="about-anim flex flex-wrap gap-1.5 sm:gap-2 pt-1 sm:pt-2">
+<span class="px-2.5 py-1 sm:px-3 sm:py-1.5 liquid-glass-refractive rounded-full text-[11px] sm:text-xs font-medium">📍 Bangladesh</span>
+<span class="px-2.5 py-1 sm:px-3 sm:py-1.5 liquid-glass-refractive rounded-full text-[11px] sm:text-xs font-medium">🎓 B.Sc CSE</span>
+<span class="px-2.5 py-1 sm:px-3 sm:py-1.5 liquid-glass-refractive rounded-full text-[11px] sm:text-xs font-medium">⭐ Fiverr Level 2 Seller</span>
+<span class="px-2.5 py-1 sm:px-3 sm:py-1.5 liquid-glass-refractive rounded-full text-[11px] sm:text-xs font-medium">💻 Frontend Developer</span>
+<span class="px-2.5 py-1 sm:px-3 sm:py-1.5 liquid-glass-refractive rounded-full text-[11px] sm:text-xs font-medium">🤖 AI Assisted Workflow</span>
+<span class="px-2.5 py-1 sm:px-3 sm:py-1.5 liquid-glass-refractive rounded-full text-[11px] sm:text-xs font-medium">🛡️ Telegram Community Manager</span>
+</div>
+<div class="about-anim grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 pt-1 sm:pt-2">
+<div class="liquid-glass-refractive rounded-2xl px-3 py-2 sm:py-3 text-center">
+<div class="font-headline-lg text-xl sm:text-2xl text-primary-container">4+</div>
+<div class="text-xs text-on-surface-variant mt-1">Projects</div>
+</div>
+<div class="liquid-glass-refractive rounded-2xl px-3 py-2 sm:py-3 text-center">
+<div class="font-headline-lg text-xl sm:text-2xl text-primary-container">65+</div>
+<div class="text-xs text-on-surface-variant mt-1">Reviews</div>
+</div>
+<div class="liquid-glass-refractive rounded-2xl px-3 py-2 sm:py-3 text-center">
+<div class="font-headline-lg text-xl sm:text-2xl text-primary-container">4.9★</div>
+<div class="text-xs text-on-surface-variant mt-1">Rating</div>
+</div>
+<div class="liquid-glass-refractive rounded-2xl px-3 py-2 sm:py-3 text-center">
+<div class="font-headline-lg text-xl sm:text-2xl text-primary-container">3+</div>
+<div class="text-xs text-on-surface-variant mt-1">Years Experience</div>
+</div>
+</div>
 </div>
 <!-- Education: orbital timeline, populated at runtime by assets/js/render-content.js. Hidden until at least one education entry exists. -->
-<div class="hidden flex-col items-center gap-4" id="orbital-timeline-wrap">
-<div class="relative w-full max-w-[420px] aspect-square mx-auto" id="orbital-timeline"></div>
+<div class="education-anim hidden flex-col items-center gap-4" id="orbital-timeline-wrap">
+<div class="relative w-full max-w-[230px] sm:max-w-[420px] aspect-square mx-auto" id="orbital-timeline"></div>
+</div>
+</div>
 </div>
 </section>
-<!-- Work Section -->
-<section class="space-y-8" id="work">
+
+<!-- Scene: Projects / Work -->
+<section class="scene" id="work">
+<div class="scene-inner min-h-full flex flex-col justify-center max-w-7xl mx-auto px-gutter pt-28 sm:pt-36 pb-24 sm:pb-28 space-y-8">
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
-<div class="space-y-4">
+<div class="work-anim space-y-4">
 <h2 id="work-heading" class="font-headline-lg text-headline-lg">My Work</h2>
 <div class="inline-flex liquid-glass-refractive rounded-full p-1 gap-1 max-w-full overflow-x-auto" id="work-tabs">
 <button class="work-tab px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-300 bg-primary-container text-on-primary-container" data-tab="projects">Engineering Work</button>
 <button class="work-tab px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-300 text-on-surface-variant" data-tab="community">Community Work</button>
 </div>
 </div>
-<div class="flex gap-4">
-<button class="w-14 h-14 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback" style="will-change: transform;">
+<div class="work-anim flex gap-4">
+<button type="button" class="work-arrow-prev w-14 h-14 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback" style="will-change: transform;" aria-label="Previous projects">
 <span class="material-symbols-outlined">chevron_left</span>
 </button>
-<button class="w-14 h-14 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback" style="will-change: transform;">
+<button type="button" class="work-arrow-next w-14 h-14 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback" style="will-change: transform;" aria-label="Next projects">
 <span class="material-symbols-outlined">chevron_right</span>
 </button>
 </div>
@@ -130,10 +173,13 @@
 <!-- Populated at runtime by assets/js/render-content.js (Supabase, falls back to placeholder cards if not configured) -->
 <div id="community-list" class="flex gap-6 overflow-x-auto pb-8 custom-scrollbar scroll-smooth px-8 py-6"></div>
 </div>
+</div>
 </section>
-<!-- Skills Section -->
-<section class="space-y-12" id="skills">
-<div class="flex flex-col items-center text-center space-y-4">
+
+<!-- Scene: Skills -->
+<section class="scene" id="skills">
+<div class="scene-inner min-h-full flex flex-col justify-center max-w-7xl mx-auto px-gutter pt-20 sm:pt-36 pb-20 sm:pb-28 space-y-4 sm:space-y-8">
+<div class="skills-anim flex flex-col items-center text-center space-y-2 sm:space-y-4">
 <div class="flex items-center gap-4">
 <div class="w-8 h-px bg-primary-container"></div>
 <span id="skills-eyebrow" class="font-label-md text-label-md text-primary-container uppercase tracking-widest">Skills</span>
@@ -141,12 +187,17 @@
 </div>
 <h2 class="font-headline-lg text-headline-lg lg:text-5xl"><span id="skills-heading">Tools &amp; Technologies I</span> <span id="skills-heading-highlight" class="text-primary-container">Use</span></h2>
 </div>
-<!-- Populated at runtime by assets/js/render-content.js (Supabase, falls back to placeholder cards if not configured) -->
-<div id="skills-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start"></div>
+<!-- Populated at runtime by assets/js/render-content.js -->
+<div id="skills-filter" class="skills-anim flex flex-wrap justify-center gap-2"></div>
+<!-- Populated at runtime by assets/js/render-content.js (Supabase, falls back to placeholder cards if not configured). Two per row even on mobile (not one) -- Skills is admin-driven/unbounded, so this is what keeps it close to fitting one screen instead of a tall single column. -->
+<div id="skills-list" class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-6 items-stretch"></div>
+</div>
 </section>
-<!-- Experience Section (hidden until admin adds at least one entry) -->
-<section class="space-y-12 hidden" id="experience">
-<div class="flex flex-col items-center text-center space-y-4">
+
+<!-- Scene: Experience (hidden until admin adds at least one entry) -->
+<section class="scene hidden" id="experience">
+<div class="scene-inner min-h-full flex flex-col justify-center max-w-3xl mx-auto px-gutter pt-20 sm:pt-36 pb-20 sm:pb-28 space-y-6 sm:space-y-12">
+<div class="experience-anim flex flex-col items-center text-center space-y-4">
 <div class="flex items-center gap-4">
 <div class="w-8 h-px bg-primary-container"></div>
 <span class="font-label-md text-label-md text-primary-container uppercase tracking-widest">Experience</span>
@@ -154,12 +205,16 @@
 </div>
 <h2 id="experience-heading" class="font-headline-lg text-headline-lg lg:text-5xl">Experience</h2>
 </div>
-<!-- Populated at runtime by assets/js/render-content.js -->
-<div id="experience-list" class="flex gap-6 overflow-x-auto pb-8 custom-scrollbar scroll-smooth px-8 py-6"></div>
+<!-- Populated at runtime by assets/js/render-content.js as a vertical timeline -->
+<div id="experience-list" class="relative"></div>
+</div>
 </section>
-<!-- Testimonials Section (hidden until admin adds at least one entry) -->
-<section class="space-y-12 hidden" id="testimonials">
-<div class="flex flex-col items-center text-center space-y-4">
+
+<!-- Scene: Testimonials (hidden until admin adds at least one entry) -->
+<section class="scene hidden" id="testimonials">
+<div class="scene-inner min-h-full flex flex-col justify-center max-w-5xl mx-auto px-gutter pt-28 sm:pt-36 pb-24 sm:pb-28 space-y-8 relative">
+<span class="testimonials-anim material-symbols-outlined pointer-events-none select-none absolute top-8 left-1/2 -translate-x-1/2 text-primary-container/15" style="font-size: 140px;" aria-hidden="true">format_quote</span>
+<div class="testimonials-anim relative flex flex-col items-center text-center space-y-4">
 <div class="flex items-center gap-4">
 <div class="w-8 h-px bg-primary-container"></div>
 <span class="font-label-md text-label-md text-primary-container uppercase tracking-widest">Testimonials</span>
@@ -167,40 +222,49 @@
 </div>
 <h2 id="testimonials-heading" class="font-headline-lg text-headline-lg lg:text-5xl">What Clients Say</h2>
 </div>
-<!-- Populated at runtime by assets/js/render-content.js -->
-<div id="testimonials-list" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+<div class="testimonials-anim inline-flex liquid-glass-refractive rounded-full p-1 gap-1 mx-auto" id="testimonials-tabs">
+<button type="button" class="testimonial-tab px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-300 bg-primary-container text-on-primary-container" data-section="engineering">Engineering Work</button>
+<button type="button" class="testimonial-tab px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-300 text-on-surface-variant" data-section="community">Community Work</button>
+</div>
+<!-- Populated at runtime by assets/js/render-content.js as a 3-up sliding carousel -->
+<div id="testimonials-list" class="relative w-full"></div>
+</div>
 </section>
-<!-- Contact -->
-<section class="space-y-8 pb-12" id="contact">
+
+<!-- Scene: Contact (footer merged in -- there's no "scroll past the end" anymore, so it lives here) -->
+<section class="scene" id="contact">
+<div class="scene-inner min-h-full flex flex-col justify-center max-w-3xl mx-auto px-gutter pt-28 sm:pt-36 pb-16 sm:pb-20 gap-10">
 <div class="liquid-glass-refractive rounded-4xl p-6 sm:p-12 flex flex-col items-center text-center gap-6">
-<h2 id="contact-heading" class="font-headline-lg text-headline-lg">Get In Touch</h2>
-<p id="contact-text" class="font-body-md text-body-md text-on-surface-variant max-w-lg leading-relaxed brightness-125">Have a project in mind or need a Telegram community managed? Send an email — I read every message.</p>
-<a id="contact-email-link" href="mailto:ehsanultanjil@gmail.com" class="px-8 py-4 bg-primary-container text-on-primary-container font-bold bounce-feedback transition-transform hover:brightness-110 rounded-full">
+<h2 id="contact-heading" class="contact-anim font-headline-lg text-headline-lg">Get In Touch</h2>
+<p id="contact-text" class="contact-anim font-body-md text-body-md text-on-surface-variant max-w-lg leading-relaxed brightness-125">Have a project in mind or need a Telegram community managed? Send an email — I read every message.</p>
+<a id="contact-email-link" href="mailto:ehsanultanjil@gmail.com" class="contact-anim px-8 py-4 bg-primary-container text-on-primary-container font-bold bounce-feedback transition-transform hover:brightness-110 rounded-full">
                 ehsanultanjil@gmail.com
             </a>
 <!-- Populated at runtime by render-content.js, only shown if set in admin -->
-<div id="contact-extra" class="flex flex-wrap justify-center gap-3 text-sm text-on-surface-variant"></div>
+<div id="contact-extra" class="contact-anim flex flex-wrap justify-center gap-3 text-sm text-on-surface-variant"></div>
 </div>
-</section>
-</main>
-<!-- Footer -->
-<footer class="w-full py-16 px-gutter flex flex-col md:flex-row justify-between items-center gap-component-gap bg-white/[0.03] border-t border-white/10 backdrop-blur-xl">
-<div class="flex flex-col gap-2">
+<footer class="w-full flex flex-col sm:flex-row justify-between items-center gap-4 pt-2">
+<div class="flex flex-col items-center sm:items-start gap-1">
 <div id="footer-name" class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Tanjil</div>
 <p id="footer-copyright" class="font-label-md text-label-md text-on-surface-variant opacity-80 brightness-110">© 2026 Ehsanul Karim Tanjil.</p>
 </div>
 <!-- Populated at runtime by assets/js/render-content.js (Supabase, falls back to these links if not configured) -->
-<div id="footer-social-links" class="flex gap-8">
+<div id="footer-social-links" class="flex gap-6">
 <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors opacity-80 hover:opacity-100 brightness-110" href="#">GitHub</a>
 <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors opacity-80 hover:opacity-100 brightness-110" href="#">LinkedIn</a>
 <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors opacity-80 hover:opacity-100 brightness-110" href="https://www.fiverr.com/rafikhand1" target="_blank" rel="noopener noreferrer">Fiverr</a>
 </div>
-<div class="flex items-center gap-4">
-<div class="w-14 h-14 liquid-glass-refractive flex items-center justify-center cursor-pointer hover:bg-white/15 transition-all bounce-feedback rounded-full" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-<span class="material-symbols-outlined text-xl">arrow_upward</span>
-</div>
-</div>
+<button type="button" class="w-11 h-11 liquid-glass-refractive flex items-center justify-center hover:bg-white/15 transition-all bounce-feedback rounded-full shrink-0" aria-label="Back to top" onclick="window.SceneNav && window.SceneNav.goTo('hero')">
+<span class="material-symbols-outlined text-lg">arrow_upward</span>
+</button>
 </footer>
+</div>
+</section>
+
+</div>
+</div>
+<!-- End scene viewport -->
+<script src="assets/js/scene-nav.js"></script>
 <script src="assets/js/nav.js"></script>
 <script src="assets/js/work-tabs.js"></script>
 <script src="assets/js/particles-bg.js"></script>
@@ -208,6 +272,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase-client.js"></script>
 <script src="assets/js/render-content.js"></script>
+<!-- GSAP: used only for per-scene entrance animations. The scene-slide transition itself is
+     hand-rolled vanilla JS (assets/js/scene-nav.js), driven by CSS transform + requestAnimationFrame. -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12/dist/gsap.min.js"></script>
+<script src="assets/js/scene-animations.js"></script>
 <script src="assets/js/ambient-glow.js"></script>
 <script src="assets/js/preloader.js"></script>
 </body></html>

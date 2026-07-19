@@ -35,3 +35,23 @@ workTabs.forEach(tab => {
         }, 300);
     });
 });
+
+// Arrow navigation for whichever project rail (Engineering/Community) is currently visible.
+const workArrowPrev = document.querySelector('.work-arrow-prev');
+const workArrowNext = document.querySelector('.work-arrow-next');
+
+function activeCardList() {
+    const panel = [...workPanels].find(p => !p.classList.contains('hidden'));
+    return panel ? panel.querySelector('[id$="-list"]') : null;
+}
+
+function scrollActiveList(direction) {
+    const list = activeCardList();
+    if (!list) return;
+    const card = list.querySelector(':scope > *');
+    const step = card ? card.getBoundingClientRect().width + 24 : list.clientWidth * 0.8; // 24px = gap-6
+    list.scrollBy({ left: direction * step, behavior: 'smooth' });
+}
+
+if (workArrowPrev) workArrowPrev.addEventListener('click', () => scrollActiveList(-1));
+if (workArrowNext) workArrowNext.addEventListener('click', () => scrollActiveList(1));

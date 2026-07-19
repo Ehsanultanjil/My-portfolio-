@@ -27,7 +27,13 @@ links.forEach(link => {
         hovering = true;
         moveIndicator(e.target);
     });
-    link.addEventListener('click', (e) => moveIndicator(e.target));
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = link.getAttribute('href').slice(1);
+        const idx = window.SceneNav ? window.SceneNav.indexOf(id) : -1;
+        if (idx !== -1) window.SceneNav.goTo(idx);
+        moveIndicator(e.target);
+    });
 });
 
 nav.addEventListener('mouseleave', () => {
@@ -35,39 +41,17 @@ nav.addEventListener('mouseleave', () => {
     moveIndicator(activeLink);
 });
 
-// Scroll spy: keep the indicator and active link in sync with the section in view
-const sections = links
-    .map(link => document.querySelector(link.getAttribute('href')))
-    .filter(Boolean);
-
-if (sections.length > 0) {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (!entry.isIntersecting) return;
-            const link = links.find(l => l.getAttribute('href') === `#${entry.target.id}`);
-            if (!link) return;
-            activeLink = link;
-            setActiveLink(link);
-            if (!hovering) moveIndicator(link);
-        });
-    }, { rootMargin: '-100px 0px -80% 0px' });
-
-    sections.forEach(section => observer.observe(section));
+// Active link / indicator now track the current scene (assets/js/scene-nav.js) instead of
+// page scroll position -- there's no page scroll left to spy on once scenes are transform-paged.
+if (window.SceneNav) {
+    window.SceneNav.onChange((_index, id) => {
+        const link = links.find(l => l.getAttribute('href') === `#${id}`);
+        if (!link) return; // Hero/Testimonials have no nav link -- leave the indicator where it was
+        activeLink = link;
+        setActiveLink(link);
+        if (!hovering) moveIndicator(link);
+    });
 }
-
-// Fallback for the last section: if it's short enough that the page can't
-// scroll it up into the trigger band above, fall back to "scrolled to the
-// bottom of the page" instead.
-window.addEventListener('scroll', () => {
-    const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
-    if (!atBottom) return;
-    const lastLink = links[links.length - 1];
-    if (activeLink !== lastLink) {
-        activeLink = lastLink;
-        setActiveLink(lastLink);
-    }
-    if (!hovering) moveIndicator(lastLink);
-}, { passive: true });
 
 // Initialize
 if (links.length > 0) {

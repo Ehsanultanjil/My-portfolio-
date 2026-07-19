@@ -1,10 +1,3 @@
-html {
-    /* Anchor-scrolling (nav links, "View Projects" scrollIntoView) needs to
-       stop short of the fixed nav bar's height, or it lands right underneath
-       it and the top of the section gets covered. */
-    scroll-padding-top: 110px;
-}
-
 .liquid-glass-refractive {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
     backdrop-filter: blur(24px) saturate(180%);
@@ -43,15 +36,176 @@ html {
 .bounce-feedback:active {
     transform: scale(0.92);
 }
-.custom-scrollbar::-webkit-scrollbar {
-    height: 4px;
+/* Elements GSAP is currently tweening (assets/js/scene-animations.js) get this class for the
+   tween's duration -- without it, .liquid-glass-interactive's own `transition: all` (and any
+   other transition on the target) fights GSAP's per-frame inline writes on the same property,
+   each one re-triggering a CSS transition chasing a value that's already moved on again, so it
+   never actually converges. */
+.gsap-animating {
+    transition: none !important;
 }
-.custom-scrollbar::-webkit-scrollbar-track {
+.custom-scrollbar::-webkit-scrollbar,
+.scene::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track,
+.scene::-webkit-scrollbar-track {
     background: transparent;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb {
+.custom-scrollbar::-webkit-scrollbar-thumb,
+.scene::-webkit-scrollbar-thumb {
     background: rgba(0, 219, 233, 0.2);
     border-radius: 10px;
+}
+
+/* ==================== Scene system ====================
+   One 100vw x 100vh scene on screen at a time; #scene-track is translateX'd by whole
+   viewport widths (assets/js/scene-nav.js). Navbar, floating chips, particles and cursor
+   glow all live outside this tree so they never move with the transition. */
+#scene-viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: 10;
+}
+#scene-track {
+    display: flex;
+    height: 100vh;
+    will-change: transform;
+}
+.scene {
+    width: 100vw;
+    height: 100vh;
+    flex-shrink: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 219, 233, 0.2) transparent;
+}
+
+/* Floating skill chips -- fixed position, drifts forever (animate-marquee), never animates
+   with scene transitions. */
+.marquee-chip {
+    pointer-events: auto;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+}
+.marquee-chip:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 24px rgba(0, 240, 255, 0.5), inset 0 0 20px rgba(0, 219, 233, 0.15);
+}
+.chip-burst-particle {
+    position: fixed;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 60;
+    animation: chip-burst 0.6s ease-out forwards;
+}
+@keyframes chip-burst {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) translate(0, 0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(0.3);
+    }
+}
+
+/* Skills: cards drift gently; hovering hands transform back to .liquid-glass-interactive's
+   own hover lift (a still-running keyframe animation would otherwise win over that transition
+   for the same `transform` property). */
+.skill-card {
+    animation: float-y 4.5s ease-in-out infinite;
+}
+.skill-card:hover {
+    animation: none;
+}
+.skill-card-hidden {
+    opacity: 0;
+    transform: scale(0.9);
+    pointer-events: none;
+}
+@keyframes float-y {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+/* Experience: the timeline line grows top-down while entering (assets/js/scene-animations.js
+   scales it on the Y axis) -- without an explicit top origin, GSAP's default center origin
+   would grow it both up and down from the middle instead. */
+.experience-line {
+    transform-origin: top;
+}
+
+/* ==================== Testimonials: 3-up infinite sliding carousel ====================
+   Only 5 DOM cards ever exist (2 invisible buffers + up to 3 visible), regardless of how
+   many reviews there are -- .testimonial-track holds them and is wide enough that each
+   .testimonial-slot is exactly 1/5 of its width; translateX is expressed as a percentage of
+   the track's own width so -20%/-40%/0% always equal exactly 1/2 slot-widths without any JS
+   pixel math, and stay correct across the responsive width changes below. Each slot's
+   data-role (center/side/buffer, assigned in assets/js/render-content.js) drives the actual
+   visible scale/opacity/glow difference. */
+.testimonial-viewport {
+    overflow: hidden;
+    width: 100%;
+}
+.testimonial-track {
+    display: flex;
+    align-items: stretch;
+    width: 500%; /* mobile: 1 of 5 slots visible */
+    /* transform is always set explicitly by assets/js/render-content.js (restOffsetPct()) --
+       mobile's resting offset differs from tablet/desktop's, see the comment there. */
+    transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+    will-change: transform;
+}
+@media (min-width: 640px) {
+    .testimonial-track { width: 250%; } /* tablet: 2 visible */
+}
+@media (min-width: 1024px) {
+    .testimonial-track { width: 166.6667%; } /* desktop: 3 visible */
+}
+/* Suspended for one frame during the instant post-slide recycle (see shift() in
+   render-content.js) so relabeling content + snapping the transform back never animates. */
+.testimonial-track.no-transition,
+.testimonial-track.no-transition .testimonial-card {
+    transition: none !important;
+}
+.testimonial-slot {
+    flex: 0 0 20%;
+    width: 20%;
+    box-sizing: border-box;
+    padding: 0 6px;
+    display: flex;
+}
+@media (min-width: 640px) {
+    .testimonial-slot { padding: 0 10px; }
+}
+.testimonial-card {
+    width: 100%;
+    min-height: 260px;
+    transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.6s ease, box-shadow 0.6s ease;
+    transform-origin: center center;
+}
+.testimonial-slot[data-role="center"] .testimonial-card {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow:
+        inset 0 0 30px rgba(0, 219, 233, 0.18),
+        0 0 55px -8px rgba(0, 240, 255, 0.5),
+        0 20px 50px -12px rgba(0, 0, 0, 0.9);
+    z-index: 2;
+}
+.testimonial-slot[data-role="side"] .testimonial-card {
+    transform: scale(0.88);
+    opacity: 0.55;
+}
+.testimonial-slot[data-role="buffer"] .testimonial-card {
+    transform: scale(0.8);
+    opacity: 0.25;
 }
 .ambient-glow {
     position: fixed;

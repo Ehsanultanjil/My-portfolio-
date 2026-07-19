@@ -1091,6 +1091,7 @@ ${photo}
 <p class="font-bold text-sm truncate">${escapeHtml(x.client_name)} <span class="text-primary-container text-xs">${stars}</span></p>
 <p class="text-on-surface-variant text-xs truncate">${escapeHtml([x.position, x.company].filter(Boolean).join(' · '))}</p>
 </div>
+<span class="text-[10px] px-2 py-0.5 rounded-full liquid-glass-refractive uppercase tracking-wide whitespace-nowrap shrink-0">${escapeHtml(SECTION_LABELS[x.section] || 'Engineering Work')}</span>
 <span class="toggle-switch shrink-0" title="Visible"><input type="checkbox" data-toggle-visible="${x.id}" ${x.visible === false ? '' : 'checked'}><span class="toggle-track"></span></span>
 </div>
 <p class="text-on-surface-variant text-sm line-clamp-2">${escapeHtml(x.quote)}</p>
@@ -1149,6 +1150,7 @@ ${photo}
         testimonialPhotoPreview.classList.add('hidden');
         testimonialPhotoPreview.src = '';
         document.getElementById('testimonial-rating').value = 5;
+        document.getElementById('testimonial-section').value = 'engineering';
         document.getElementById('testimonial-sort').value = cachedTestimonials.length + 1;
         document.getElementById('testimonial-visible').checked = true;
         document.getElementById('testimonial-error').classList.add('hidden');
@@ -1164,6 +1166,7 @@ ${photo}
         document.getElementById('testimonial-company').value = x.company || '';
         document.getElementById('testimonial-quote').value = x.quote || '';
         document.getElementById('testimonial-rating').value = x.rating || 5;
+        document.getElementById('testimonial-section').value = x.section || 'engineering';
         document.getElementById('testimonial-sort').value = x.sort_order || 0;
         document.getElementById('testimonial-visible').checked = x.visible !== false;
         testimonialPhotoInput.value = '';
@@ -1184,6 +1187,7 @@ ${photo}
             if (file) photoUrl = await uploadTo('project-images', file);
             const row = {
                 client_name: document.getElementById('testimonial-client').value.trim(),
+                section: document.getElementById('testimonial-section').value,
                 position: document.getElementById('testimonial-position').value.trim(),
                 company: document.getElementById('testimonial-company').value.trim(),
                 photo_url: photoUrl,
