@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "motion": "^12.42.2"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
   }
 }
