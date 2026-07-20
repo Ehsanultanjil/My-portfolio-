@@ -10,6 +10,18 @@
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body class="text-on-surface overflow-x-hidden bg-background">
+<!-- Preloader/particles disable are both Supabase settings (render-content.js), which can't
+     resolve before this HTML paints -- each would start fully anyway for a beat regardless of
+     the setting, then get hidden/cleared late. This runs synchronously, before the preloader
+     div or particles-bg.js are even parsed, using the last value render-content.js cached to
+     localStorage so returning visits skip the flash entirely (a brand new browser with no
+     cache yet still sees one flash, same as any other Supabase-driven setting on a first-ever
+     load). assets/js/particles-bg.js checks for .no-particles itself and skips setup entirely
+     rather than starting its canvas + animation loop just to immediately tear it back down. -->
+<script>
+if (localStorage.getItem('preloader_enabled') === 'false') document.documentElement.classList.add('no-preloader');
+if (localStorage.getItem('particles_enabled') === 'false') document.documentElement.classList.add('no-particles');
+</script>
 <!-- Populated at runtime by render-content.js if maintenance_mode is on -->
 <div id="maintenance-overlay" class="hidden fixed inset-0 z-[999] bg-background flex items-center justify-center p-6 text-center">
 <div class="liquid-glass-refractive rounded-4xl p-10 max-w-md">
@@ -30,8 +42,12 @@
 <!-- Fixed backdrop layer: particles, cursor glow -- persists behind every scene, never moves. -->
 <div id="site-particles" class="fixed inset-0 -z-20 overflow-hidden pointer-events-none"></div>
 <div class="ambient-glow" style="--x: 50%; --y: 50%;"></div>
-<!-- Top Navigation Bar -->
-<nav class="fixed top-0 left-0 right-0 z-50 flex items-center px-2 sm:px-6 py-2 gap-1 sm:gap-component-gap mt-6 mx-auto max-w-fit liquid-glass-refractive rounded-full shadow-2xl bounce-feedback">
+<!-- Top Navigation Bar: liquid-metal shader look, mounted by assets/js/liquid-metal.js (always
+     on for the nav specifically, regardless of the `liquid_metal_enabled` setting that gates
+     every other .liquid-glass-refractive element). Ported from the uilayouts LiquidMetalButton
+     (@paper-design/shaders, loaded from esm.sh -- no React/build step needed, the shader class
+     itself is framework-agnostic). -->
+<nav class="fixed top-0 left-0 right-0 z-50 flex items-center px-2 sm:px-6 py-2 gap-1 sm:gap-component-gap mt-6 mx-auto max-w-fit liquid-glass-refractive rounded-full shadow-2xl">
 <!-- Populated at runtime by render-content.js only if a logo is set in Website Settings -->
 <img id="nav-logo" class="hidden h-7 w-auto object-contain ml-1 mr-1" alt="Logo">
 <div class="flex gap-0.5 sm:gap-6 items-center px-1 sm:px-4 relative z-10" id="nav-links">
@@ -213,7 +229,6 @@
 <!-- Scene: Testimonials (hidden until admin adds at least one entry) -->
 <section class="scene hidden" id="testimonials">
 <div class="scene-inner min-h-full flex flex-col justify-center max-w-5xl mx-auto px-gutter pt-28 sm:pt-36 pb-24 sm:pb-28 space-y-8 relative">
-<span class="testimonials-anim material-symbols-outlined pointer-events-none select-none absolute top-8 left-1/2 -translate-x-1/2 text-primary-container/15" style="font-size: 140px;" aria-hidden="true">format_quote</span>
 <div class="testimonials-anim relative flex flex-col items-center text-center space-y-4">
 <div class="flex items-center gap-4">
 <div class="w-8 h-px bg-primary-container"></div>
@@ -266,6 +281,7 @@
 <!-- End scene viewport -->
 <script src="assets/js/scene-nav.js"></script>
 <script src="assets/js/nav.js"></script>
+<script type="module" src="assets/js/liquid-metal.js"></script>
 <script src="assets/js/work-tabs.js"></script>
 <script src="assets/js/particles-bg.js"></script>
 <!-- Supabase (projects/skills data) -->

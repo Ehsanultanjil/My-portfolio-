@@ -307,6 +307,13 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-w
             if (glow) glow.style.display = 'none';
         }
 
+        // Cached so the next load can skip starting particles-bg.js's canvas + animation loop
+        // entirely, synchronously, before this setting is even fetched again (see the inline
+        // script at the top of index.html's <body>) -- without it, particles always render
+        // for a beat regardless of this setting, since it can only ever be cleared after this
+        // async fetch resolves.
+        localStorage.setItem('particles_enabled', byKey.particles_enabled === 'false' ? 'false' : 'true');
+
         if (byKey.particles_enabled === 'false') {
             const particles = document.getElementById('site-particles');
             if (particles) particles.innerHTML = '';
@@ -315,6 +322,12 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-w
         if (byKey.cursor_light_enabled === 'false') {
             document.querySelectorAll('.ambient-glow').forEach((el) => { el.style.display = 'none'; });
         }
+
+        // Cached so the very next load can hide the preloader synchronously, before this
+        // setting is even fetched again (see the inline script at the top of index.html's
+        // <body> -- without it, the preloader always flashes visible first regardless of this
+        // setting, since it can only ever be turned off after this async fetch resolves).
+        localStorage.setItem('preloader_enabled', byKey.preloader_enabled === 'false' ? 'false' : 'true');
 
         if (byKey.preloader_enabled === 'false') {
             const preloader = document.getElementById('preloader');
@@ -672,17 +685,15 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
             return () => {};
         }
 
-        container.innerHTML = `<div class="testimonial-viewport">
+        container.innerHTML = `<div class="flex items-center gap-2 sm:gap-4">
+<button type="button" class="testimonial-prev w-10 h-10 sm:w-11 sm:h-11 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback shrink-0" aria-label="Previous review"><span class="material-symbols-outlined text-lg">chevron_left</span></button>
+<div class="testimonial-viewport flex-1">
 <div class="testimonial-track"></div>
 </div>
-<div class="flex items-center justify-center gap-4 sm:gap-6 mt-6">
-<button type="button" class="testimonial-prev w-10 h-10 sm:w-11 sm:h-11 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback" aria-label="Previous review"><span class="material-symbols-outlined text-lg">chevron_left</span></button>
-<span class="testimonial-counter text-xs sm:text-sm text-on-surface-variant whitespace-nowrap"></span>
-<button type="button" class="testimonial-next w-10 h-10 sm:w-11 sm:h-11 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback" aria-label="Next review"><span class="material-symbols-outlined text-lg">chevron_right</span></button>
+<button type="button" class="testimonial-next w-10 h-10 sm:w-11 sm:h-11 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback shrink-0" aria-label="Next review"><span class="material-symbols-outlined text-lg">chevron_right</span></button>
 </div>`;
 
         const track = container.querySelector('.testimonial-track');
-        const counterEl = container.querySelector('.testimonial-counter');
         const REST_ROLES = ['buffer', 'side', 'center', 'side', 'buffer'];
         let center = 0;
         let animating = false;
@@ -704,12 +715,6 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
             track.style.transform = `translateX(${restOffsetPct()}%)`;
         }
 
-        function updateCounter() {
-            const first = ((center - 1 + N) % N) + 1;
-            const last = ((center + 1) % N) + 1;
-            counterEl.textContent = `Showing Reviews ${first}–${last} of ${N}`;
-        }
-
         function shift(direction) {
             if (animating) return;
             animating = true;
@@ -728,14 +733,12 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
                 renderSlots(); // also snaps the transform back to restOffsetPct()
                 void track.offsetWidth; // commit the no-transition state before re-enabling it
                 track.classList.remove('no-transition');
-                updateCounter();
                 animating = false;
             };
             track.addEventListener('transitionend', onEnd, { once: true });
         }
 
         renderSlots();
-        updateCounter();
 
         container.querySelector('.testimonial-prev').addEventListener('click', () => shift(-1));
         container.querySelector('.testimonial-next').addEventListener('click', () => shift(1));

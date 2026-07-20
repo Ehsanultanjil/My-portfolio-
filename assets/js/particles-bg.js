@@ -1,4 +1,6 @@
 (function () {
+    if (document.documentElement.classList.contains('no-particles')) return;
+
     const container = document.getElementById('site-particles');
     if (!container) return;
 

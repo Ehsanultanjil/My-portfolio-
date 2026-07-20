@@ -29,10 +29,10 @@
         return getScenes().findIndex((s) => s.id === id);
     }
 
-    function easeInOutCubic(t) {
-        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    }
-
+    // The whole strip of scenes is one flex row inside #scene-track, so "current slides left"
+    // and "next slides in from right" are literally the same translateX -- a single GSAP tween
+    // moving the track is exactly a perfect, unbreakable cross-transition: there's no way for
+    // one half to run ahead of or wait on the other, because it's one motion, not two.
     function goTo(target) {
         const scenes = getScenes();
         const currentIndex = scenes.findIndex((s) => s.id === currentId);
@@ -48,27 +48,33 @@
         // assets/js/scene-animations.js instantly hide the incoming scene's content so it
         // stays invisible while it slides into view, instead of arriving fully visible and
         // only then resetting itself to play the entrance animation (which reads as "I saw
-        // the content, then it flashed and popped in again").
+        // the content, then it flashed and popped in again"). The staggered heading/text/
+        // cards/buttons reveal only starts once onComplete below fires, i.e. after the scene
+        // is fully centered -- never mid-slide.
         beforeListeners.forEach((cb) => cb(targetIndex, targetId, direction));
 
-        const startX = -currentIndex * window.innerWidth;
         const endX = -targetIndex * window.innerWidth;
-        const duration = 800; // ms -- midpoint of the requested 700-900ms range
-        const startTime = performance.now();
 
-        function tick(now) {
-            const t = Math.min((now - startTime) / duration, 1);
-            const eased = easeInOutCubic(t);
-            track.style.transform = `translateX(${startX + (endX - startX) * eased}px)`;
-            if (t < 1) {
-                requestAnimationFrame(tick);
-                return;
-            }
-            currentId = scenes[targetIndex].id;
-            isAnimating = false;
+        function finish() {
+            currentId = targetId;
+            isAnimating = false; // scroll stays locked (onWheel checks this) until exactly this point
             listeners.forEach((cb) => cb(targetIndex, currentId, direction));
         }
-        requestAnimationFrame(tick);
+
+        if (typeof gsap === 'undefined') {
+            // GSAP failed to load (e.g. CDN unreachable) -- snap instantly rather than leave
+            // navigation completely broken.
+            track.style.transform = `translateX(${endX}px)`;
+            finish();
+            return;
+        }
+
+        gsap.to(track, {
+            x: endX,
+            duration: 0.8, // 700-900ms range
+            ease: 'power3.inOut',
+            onComplete: finish,
+        });
     }
 
     function next() {
