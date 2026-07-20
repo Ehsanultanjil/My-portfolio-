@@ -172,6 +172,37 @@
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 219, 233, 0.2) transparent;
 }
+/* Mobile drops the horizontal transform-paging engine for native vertical document scroll --
+   assets/js/scene-nav.js's initMobile() branch swaps window.SceneNav's implementation to
+   match (scrollIntoView instead of translateX), so every consumer keeps working through the
+   same API. Sections size to their own content instead of being forced to 100vh each. */
+@media (max-width: 1023px) {
+    #scene-viewport {
+        position: static;
+        overflow: visible;
+    }
+    #scene-track {
+        display: block;
+        height: auto;
+        transform: none !important;
+        will-change: auto;
+    }
+    .scene {
+        width: auto;
+        height: auto;
+        overflow: visible;
+    }
+    /* Every .scene-inner's top/bottom padding utilities (e.g. pt-28 sm:pt-36 pb-24 sm:pb-28) was sized to
+       vertically-center content inside a fixed 100vh box (justify-center) -- with sections
+       now stacking at their natural height instead, that much padding per section, times
+       seven sections in a row, reads as a lot of dead space. !important because these are
+       individual Tailwind utility classes baked into each section's markup (.scene-inner has
+       no dedicated CSS rule of its own to just edit), same specificity as this override. */
+    .scene-inner {
+        padding-top: 80px !important;
+        padding-bottom: 48px !important;
+    }
+}
 
 /* Floating skill chips -- fixed position, drifts forever (animate-marquee), never animates
    with scene transitions. */
