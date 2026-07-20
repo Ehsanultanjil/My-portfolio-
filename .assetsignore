@@ -1,0 +1,10 @@
+node_modules/
+package.json
+package-lock.json
+wrangler.toml
+.gitignore
+.git/
+.github/
+supabase/
+components/
+lib/
