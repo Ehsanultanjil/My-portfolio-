@@ -85,6 +85,7 @@
             if (id === 'education-modal') resetEducationForm();
             if (id === 'testimonial-modal') resetTestimonialForm();
             if (id === 'social-modal') resetSocialForm();
+            if (id === 'app-modal') resetAppForm();
             openModal(id);
         });
     });
@@ -128,7 +129,7 @@
     const PAGE_TITLES = {
         dashboard: 'Dashboard', home: 'Home Page', projects: 'Projects', skills: 'Skills',
         experience: 'Experience', education: 'Education', testimonials: 'Testimonials',
-        contact: 'Contact', social: 'Social Links', settings: 'Website Settings',
+        apps: 'Apps', contact: 'Contact', social: 'Social Links', settings: 'Website Settings',
     };
 
     function showPage(name) {
@@ -257,6 +258,7 @@
         loadEducation();
         loadTestimonials();
         loadSocialLinks();
+        loadApps();
     }
 
     client.auth.getSession().then(({ data }) => {
@@ -673,6 +675,143 @@ ${p.visible === false ? '<span class="text-[10px] px-2 py-0.5 rounded-full white
             closeModal(document.getElementById('project-modal-overlay'));
             toast(id ? 'Project updated' : 'Project added');
             loadProjects(); loadStats(); loadRecentActivity();
+        } catch (err) {
+            errorEl.textContent = err.message || String(err);
+            errorEl.classList.remove('hidden');
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
+    // ================= Apps =================
+
+    let cachedApps = [];
+
+    async function loadApps() {
+        const list = document.getElementById('apps-admin-list');
+        const { data, error } = await client.from('apps').select('*').order('sort_order', { ascending: true });
+        if (error) { list.innerHTML = `<p style="color:#ff8a80;">Failed to load: ${escapeHtml(error.message)}</p>`; return; }
+        cachedApps = data || [];
+        renderApps();
+    }
+
+    function renderApps() {
+        const list = document.getElementById('apps-admin-list');
+        const empty = document.getElementById('apps-empty');
+        const search = document.getElementById('app-search').value.toLowerCase();
+
+        const filtered = cachedApps.filter((a) => !search || a.name.toLowerCase().includes(search));
+
+        if (!filtered.length) {
+            empty.classList.remove('hidden');
+            empty.innerHTML = `<div class="liquid-glass-refractive rounded-3xl p-10 text-center"><span class="material-symbols-outlined text-3xl text-on-surface-variant">apps</span><p class="text-on-surface-variant text-sm mt-2">${cachedApps.length ? 'No apps match your search.' : 'No apps yet — add your first one.'}</p></div>`;
+            list.innerHTML = '';
+            return;
+        }
+        empty.classList.add('hidden');
+
+        list.innerHTML = filtered.map((a) => {
+            const thumb = a.icon_url
+                ? `<img src="${escapeHtml(a.icon_url)}" class="w-14 h-14 rounded-xl object-cover shrink-0">`
+                : `<div class="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-surface-variant">apps</span></div>`;
+            return `<div draggable="true" data-id="${a.id}" class="liquid-glass-refractive rounded-3xl p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+<div class="flex items-center gap-3 min-w-0 flex-1">
+<span class="material-symbols-outlined drag-handle text-on-surface-variant shrink-0">drag_indicator</span>
+${thumb}
+<div class="min-w-0 flex-1">
+<p class="font-bold">${escapeHtml(a.name)}</p>
+<p class="text-on-surface-variant text-sm truncate">${escapeHtml(a.drive_url)}</p>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+<span class="text-xs text-on-surface-variant">#${a.sort_order}</span>
+<div class="flex gap-1">
+<button data-edit="${a.id}" class="liquid-glass-refractive liquid-glass-interactive w-9 h-9 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-base">edit</span></button>
+<button data-delete="${a.id}" class="liquid-glass-refractive liquid-glass-interactive w-9 h-9 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-base">delete</span></button>
+</div>
+</div>
+</div>`;
+        }).join('');
+
+        list.querySelectorAll('[data-edit]').forEach((btn) => btn.addEventListener('click', () => editApp(btn.dataset.edit)));
+        list.querySelectorAll('[data-delete]').forEach((btn) => btn.addEventListener('click', () => {
+            const a = cachedApps.find((x) => String(x.id) === btn.dataset.delete);
+            confirmDelete(`Delete app "${a?.name}"?`, async () => {
+                const { error } = await client.from('apps').delete().eq('id', btn.dataset.delete);
+                if (error) { toast('Delete failed: ' + error.message, 'error'); return; }
+                toast('App deleted');
+                loadApps();
+            });
+        }));
+
+        enableDragReorder(list, 'apps', loadApps);
+    }
+
+    document.getElementById('app-search').addEventListener('input', renderApps);
+
+    const appForm = document.getElementById('app-form');
+    const appIconInput = document.getElementById('app-icon');
+    const appIconPreview = document.getElementById('app-icon-preview');
+
+    appIconInput.addEventListener('change', () => {
+        const file = appIconInput.files[0];
+        if (!file) return;
+        appIconPreview.src = URL.createObjectURL(file);
+        appIconPreview.classList.remove('hidden');
+    });
+
+    function resetAppForm() {
+        appForm.reset();
+        document.getElementById('app-modal-title').textContent = 'Add App';
+        document.getElementById('app-id').value = '';
+        document.getElementById('app-existing-icon').value = '';
+        appIconPreview.classList.add('hidden');
+        appIconPreview.src = '';
+        document.getElementById('app-error').classList.add('hidden');
+        document.getElementById('app-sort').value = cachedApps.length + 1;
+    }
+
+    function editApp(id) {
+        const a = cachedApps.find((x) => String(x.id) === id);
+        if (!a) return;
+        document.getElementById('app-modal-title').textContent = 'Edit App';
+        document.getElementById('app-id').value = a.id;
+        document.getElementById('app-existing-icon').value = a.icon_url || '';
+        document.getElementById('app-name').value = a.name || '';
+        document.getElementById('app-drive-url').value = a.drive_url || '';
+        document.getElementById('app-sort').value = a.sort_order || 1;
+        appIconInput.value = '';
+        if (a.icon_url) { appIconPreview.src = a.icon_url; appIconPreview.classList.remove('hidden'); }
+        else { appIconPreview.classList.add('hidden'); }
+        document.getElementById('app-error').classList.add('hidden');
+        openModal('app-modal');
+    }
+
+    appForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const errorEl = document.getElementById('app-error');
+        errorEl.classList.add('hidden');
+        const submitBtn = appForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        try {
+            let iconUrl = document.getElementById('app-existing-icon').value || null;
+            const file = appIconInput.files[0];
+            if (file) iconUrl = await uploadTo('project-images', file);
+
+            const row = {
+                name: document.getElementById('app-name').value.trim(),
+                drive_url: document.getElementById('app-drive-url').value.trim(),
+                sort_order: Number(document.getElementById('app-sort').value) || 1,
+                icon_url: iconUrl,
+            };
+
+            const id = document.getElementById('app-id').value;
+            const { error } = id ? await client.from('apps').update(row).eq('id', id) : await client.from('apps').insert(row);
+            if (error) throw error;
+
+            closeModal(document.getElementById('app-modal-overlay'));
+            toast(id ? 'App updated' : 'App added');
+            loadApps();
         } catch (err) {
             errorEl.textContent = err.message || String(err);
             errorEl.classList.remove('hidden');

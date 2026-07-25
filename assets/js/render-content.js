@@ -211,7 +211,10 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-w
         hero_heading_highlight: { selector: '#hero-heading-highlight', mode: 'text' },
         hero_bio: { selector: '#hero-bio', mode: 'text' },
         hero_button_text: { selector: '#hero-button-text', mode: 'text' },
-        primary_cta_link: { selector: '#nav-hire-link, #hero-cta-link', mode: 'href' },
+        // #hero-cta-link intentionally excluded -- it's a fixed link to apps.html now (the
+        // "browse my apps" button), not admin-configurable through this shared CTA-link
+        // setting anymore. Only the nav "Hire Me" pill still follows it.
+        primary_cta_link: { selector: '#nav-hire-link', mode: 'href' },
         hire_button_image_url: { selector: '#nav-hire-link', mode: 'image' },
         resume_url: { selector: '#hero-resume-link', mode: 'resume' },
         hero_photo_url: { selector: '#hero-photo-img', mode: 'src' },
