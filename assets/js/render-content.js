@@ -688,30 +688,57 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
             return () => {};
         }
 
+        // The two arrows are `hidden sm:flex`: on a phone they'd cost about 100px of a 375px
+        // screen (two 44px buttons plus the row gaps), over a quarter of the width, which is
+        // what was squeezing the card. Below 640px the card takes the full width instead and
+        // the dot strip below plus a swipe replace them -- see the swipe handler and
+        // renderDots() further down.
         container.innerHTML = `<div class="flex items-center gap-2 sm:gap-4">
-<button type="button" class="testimonial-prev w-10 h-10 sm:w-11 sm:h-11 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback shrink-0" aria-label="Previous review"><span class="material-symbols-outlined text-lg">chevron_left</span></button>
+<button type="button" class="testimonial-prev w-10 h-10 sm:w-11 sm:h-11 rounded-full liquid-glass-refractive liquid-glass-interactive hidden sm:flex items-center justify-center bounce-feedback shrink-0" aria-label="Previous review"><span class="material-symbols-outlined text-lg">chevron_left</span></button>
 <div class="testimonial-viewport flex-1">
 <div class="testimonial-track"></div>
 </div>
-<button type="button" class="testimonial-next w-10 h-10 sm:w-11 sm:h-11 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback shrink-0" aria-label="Next review"><span class="material-symbols-outlined text-lg">chevron_right</span></button>
-</div>`;
+<button type="button" class="testimonial-next w-10 h-10 sm:w-11 sm:h-11 rounded-full liquid-glass-refractive liquid-glass-interactive hidden sm:flex items-center justify-center bounce-feedback shrink-0" aria-label="Next review"><span class="material-symbols-outlined text-lg">chevron_right</span></button>
+</div>
+<div class="testimonial-dots mt-5 flex sm:hidden justify-center items-center gap-2" aria-hidden="true"></div>`;
 
         const track = container.querySelector('.testimonial-track');
         const REST_ROLES = ['buffer', 'side', 'center', 'side', 'buffer'];
         let center = 0;
         let animating = false;
 
-        // Mobile shows a narrower window than desktop's 3-wide one (see .testimonial-track's
-        // responsive width in styles.css), so it needs its own resting offset to land slot
-        // index 2 -- the featured "center" one -- in the middle of the screen rather than a dim
-        // "side" slot.
-        //
-        // The offset that does that follows from the track width: slot 2 sits at 0.5 * trackWidth
-        // in track coordinates, and translateX percentages resolve against the track's own width,
-        // so it lands at trackWidth * (0.5 + offset/100) on screen. Setting that equal to half a
-        // viewport gives -20% for desktop's 166.6667% track, and -37.5% for mobile's 400% one.
+        // On mobile only 1 slot is visible (see .testimonial-track's responsive width in
+        // styles.css) -- centering that single visible slot on the true "center" slot (index 2)
+        // needs a -40% resting offset instead of the -20% that correctly centers the 3-wide
+        // (desktop) or 2-wide (tablet) window. Without this, the one card mobile shows would be
+        // a dim "side" slot instead of the featured "center" one.
         function restOffsetPct() {
-            return window.matchMedia('(min-width: 640px)').matches ? -20 : -37.5;
+            return window.matchMedia('(min-width: 640px)').matches ? -20 : -40;
+        }
+
+        // Phone-only position indicator, standing in for the hidden arrows: it's what tells you
+        // there are more reviews at all, which a lone full-width card with nothing either side
+        // of it otherwise doesn't. Dots stop working as a count past roughly eight -- they
+        // either overflow the width or shrink into an unreadable smear -- so a plain "n / N"
+        // counter takes over from there rather than trying to squeeze in one dot per review.
+        //
+        // Built once and then only re-flagged, never re-rendered: .testimonial-dot animates its
+        // width to stretch the active one into a pill, and a fresh element out of innerHTML has
+        // no previous value to transition from, so rebuilding the strip each time would make it
+        // snap instead. (The >8 counter is plain text with nothing to animate, so it rewrites.)
+        const dotsEl = container.querySelector('.testimonial-dots');
+        const DOTS_MAX = 8;
+
+        if (N <= DOTS_MAX) {
+            dotsEl.innerHTML = items.map(() => '<span class="testimonial-dot"></span>').join('');
+        }
+
+        function syncDots() {
+            if (N <= DOTS_MAX) {
+                [...dotsEl.children].forEach((dot, i) => { dot.dataset.active = String(i === center); });
+            } else {
+                dotsEl.innerHTML = `<span class="font-label-md text-label-md text-on-surface-variant opacity-80">${center + 1} / ${N}</span>`;
+            }
         }
 
         function renderSlots() {
@@ -726,6 +753,14 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
             if (animating) return;
             animating = true;
 
+            // `center` advances here rather than in onEnd (nothing below it depends on the old
+            // value -- the role retag and the transform are both purely relative) so the dots
+            // can move off it in the same frame the slide starts. Updating them at the end
+            // instead would leave the indicator sitting 600ms behind the card it describes,
+            // which reads as lag.
+            center = ((center + direction) % N + N) % N;
+            syncDots();
+
             const slots = [...track.children];
             const oldRoles = slots.map((s) => s.dataset.role);
             slots.forEach((s, i) => {
@@ -735,7 +770,6 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
 
             const onEnd = () => {
                 track.removeEventListener('transitionend', onEnd);
-                center = ((center + direction) % N + N) % N;
                 track.classList.add('no-transition');
                 renderSlots(); // also snaps the transform back to restOffsetPct()
                 void track.offsetWidth; // commit the no-transition state before re-enabling it
@@ -746,9 +780,36 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
         }
 
         renderSlots();
+        syncDots();
 
         container.querySelector('.testimonial-prev').addEventListener('click', () => shift(-1));
         container.querySelector('.testimonial-next').addEventListener('click', () => shift(1));
+
+        // Swipe. Registered unconditionally rather than behind a matchMedia check -- it's
+        // harmless on a touch-capable laptop, which still has the arrows -- but it's the only
+        // manual control that exists below 640px, where they're hidden.
+        //
+        // The gesture has to be clearly horizontal to count: mobile scrolls the page itself
+        // vertically (scene-nav.js's initMobile), so a drag that's mostly vertical, or that
+        // started as a swipe and turned into a scroll, belongs to the page and must not also
+        // advance the carousel. Listeners stay passive since nothing here calls preventDefault
+        // -- a horizontal drag doesn't scroll anything, so there's nothing to suppress.
+        let touchX = null;
+        let touchY = null;
+        const viewport = container.querySelector('.testimonial-viewport');
+        viewport.addEventListener('touchstart', (e) => {
+            touchX = e.touches[0].clientX;
+            touchY = e.touches[0].clientY;
+        }, { passive: true });
+        viewport.addEventListener('touchend', (e) => {
+            if (touchX == null) return;
+            const dx = touchX - e.changedTouches[0].clientX;
+            const dy = touchY - e.changedTouches[0].clientY;
+            touchX = null;
+            touchY = null;
+            if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+            shift(dx > 0 ? 1 : -1); // drag left (positive dx) reveals the next review
+        }, { passive: true });
 
         // Autoplay is torn down and rebuilt (not just flagged on/off) every time it should
         // start or stop, so the next tick is always exactly 4s from whenever it actually
