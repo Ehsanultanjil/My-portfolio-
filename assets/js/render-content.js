@@ -701,13 +701,17 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
         let center = 0;
         let animating = false;
 
-        // On mobile only 1 slot is visible (see .testimonial-slot's responsive width in
-        // styles.css) -- centering that single visible slot on the true "center" slot (index 2)
-        // needs a -40% resting offset instead of the -20% that correctly centers the 3-wide
-        // (desktop) or 2-wide (tablet) window. Without this, the one card mobile shows would be
-        // a dim "side" slot instead of the featured "center" one.
+        // Mobile shows a narrower window than desktop's 3-wide one (see .testimonial-track's
+        // responsive width in styles.css), so it needs its own resting offset to land slot
+        // index 2 -- the featured "center" one -- in the middle of the screen rather than a dim
+        // "side" slot.
+        //
+        // The offset that does that follows from the track width: slot 2 sits at 0.5 * trackWidth
+        // in track coordinates, and translateX percentages resolve against the track's own width,
+        // so it lands at trackWidth * (0.5 + offset/100) on screen. Setting that equal to half a
+        // viewport gives -20% for desktop's 166.6667% track, and -37.5% for mobile's 400% one.
         function restOffsetPct() {
-            return window.matchMedia('(min-width: 640px)').matches ? -20 : -40;
+            return window.matchMedia('(min-width: 640px)').matches ? -20 : -37.5;
         }
 
         function renderSlots() {

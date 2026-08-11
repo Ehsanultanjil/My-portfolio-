@@ -312,10 +312,39 @@
     #testimonials-list .testimonial-card p.line-clamp-4 {
         -webkit-line-clamp: 3;
     }
-    /* Side/buffer slots are already scaled down and dimmed; on a 1-visible-slot phone layout
-       the extra slot padding is just wasted width on the center card. */
+    /* Side/buffer slots are already scaled down and dimmed; the extra slot padding is just
+       wasted width on the center card at phone size. */
     .testimonial-slot {
         padding: 0 4px;
+    }
+
+    /* Under 5 reviews there's no carousel at all -- renderCarousel() bails to a plain
+       `grid-cols-1 sm:grid-cols-N` grid (the 5-slot loop needs its buffers not to overlap the
+       visible slots), which on a phone is a tall vertical stack. Rebuilt here as a horizontal
+       snap rail so it matches the peek layout the real carousel now uses, and so a short
+       review list doesn't cost several screens of height. Native scroll-snap does all of it --
+       no JS, and it's swipeable, which the arrow-driven carousel isn't.
+
+       `> .grid` is what distinguishes this path: the carousel root is `flex items-center`, the
+       single-review root is `max-w-md mx-auto`, and the empty state is a glass panel -- none of
+       them carry .grid. */
+    #testimonials-list > .grid {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        /* Lets the first and last card still reach the centre of the screen to snap. */
+        padding-inline: 10%;
+        scrollbar-width: none;
+    }
+    #testimonials-list > .grid::-webkit-scrollbar {
+        display: none;
+    }
+    #testimonials-list > .grid > .testimonial-card {
+        /* flex-basis, not width -- .testimonial-card's own `width: 100%` would otherwise make
+           every card a full screen wide and defeat the peek. */
+        flex: 0 0 80%;
+        scroll-snap-align: center;
     }
 }
 
@@ -390,7 +419,15 @@
 .testimonial-track {
     display: flex;
     align-items: stretch;
-    width: 500%; /* mobile: 1 of 5 slots visible */
+    /* Mobile: 1.25 of 5 slots visible -- a "peek" layout, not a full 1-up. The center card is
+       80% of the viewport and both neighbours show ~10% at the edges, already scaled down and
+       dimmed by the [data-role="side"] rule below, so the carousel reads as a carousel instead
+       of a lone static card. Actually fitting 3 cards across (166.6667%, as desktop does) would
+       make each one ~1/3 of a phone screen, roughly 110px -- with an avatar, a star row and a
+       quote inside, that wraps text to about two words per line. Peeking is the readable way to
+       signal "there's more here". Slot width is always 20% of the track no matter what this
+       value is, so shift()'s per-step 20% translate stays correct untouched. */
+    width: 400%;
     /* transform is always set explicitly by assets/js/render-content.js (restOffsetPct()) --
        mobile's resting offset differs from tablet/desktop's, see the comment there. */
     transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
