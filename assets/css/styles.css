@@ -239,6 +239,86 @@
     }
 }
 
+/* ==================== Phone-only card sizing ====================
+   Work cards and testimonial cards are both built as HTML strings in
+   assets/js/render-content.js with Tailwind utilities baked in, and both were sized for a
+   viewport with room to spare -- on a phone they eat most of the screen. Overridden here
+   rather than by editing those template strings so desktop markup stays byte-identical.
+
+   Breakpoint is 639px, not the 1023px used by the scene-system block above: every size in
+   these two cards already has an `sm:` (640px) variant that's the intended larger form, so
+   anything at or above 640px is deliberately left alone. Selectors are id-scoped (or carry
+   !important) purely to outrank the single-class Tailwind utilities they're replacing --
+   the Tailwind Play CDN injects its stylesheet at runtime, so source order alone isn't
+   something to rely on here. */
+@media (max-width: 639px) {
+    /* Rail gutters: px-8/py-6 exists so .liquid-glass-interactive's hover lift + shadow
+       aren't clipped by overflow-x-auto. No hover on touch, so this only needs enough room
+       for the resting shadow -- the reclaimed ~40px of width goes to the cards. */
+    #projects-list,
+    #community-list {
+        gap: 12px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        padding-top: 10px !important;
+        padding-bottom: 12px !important;
+    }
+    /* Card: narrower (leaves a clear sliver of the next card visible, so the rail reads as
+       swipeable) and tighter internally. */
+    #projects-list > div,
+    #community-list > div {
+        min-width: 78vw;
+        padding: 12px;
+        gap: 12px;
+        border-radius: 24px;
+    }
+    /* Thumb keeps its inline aspect-ratio: 3/4 -- shrinking the width alone takes the height
+       down with it (112px -> 88px wide, ~149px -> ~117px tall). */
+    #projects-list > div > div:first-child,
+    #community-list > div > div:first-child {
+        width: 88px;
+    }
+    #projects-list > div h3,
+    #community-list > div h3 {
+        font-size: 15px;
+        line-height: 1.3;
+        margin-bottom: 6px;
+    }
+    /* Text column, not the thumb, is what actually sets the card's height -- two clamped
+       lines instead of three is the single biggest reduction here. */
+    #projects-list > div p,
+    #community-list > div p {
+        -webkit-line-clamp: 2;
+        margin-bottom: 8px;
+    }
+    #projects-list > div a,
+    #community-list > div a {
+        width: 34px;
+        height: 34px;
+    }
+    #projects-list > div a .material-symbols-outlined,
+    #community-list > div a .material-symbols-outlined {
+        font-size: 16px;
+    }
+
+    /* Testimonials: min-height was holding the card open well past its own content once the
+       quote is clamped shorter, so both move together. */
+    #testimonials-list .testimonial-card {
+        min-height: 190px;
+        padding: 12px !important;
+        gap: 8px !important;
+        border-radius: 20px;
+    }
+    #testimonials-list .testimonial-card p.line-clamp-4 {
+        -webkit-line-clamp: 3;
+    }
+    /* Side/buffer slots are already scaled down and dimmed; on a 1-visible-slot phone layout
+       the extra slot padding is just wasted width on the center card. */
+    .testimonial-slot {
+        padding: 0 4px;
+    }
+}
+
 /* Floating skill chips -- fixed position, drifts forever (animate-marquee), never animates
    with scene transitions. */
 .marquee-chip {
