@@ -718,6 +718,15 @@
     box-shadow: inset 3px 0 0 0 #00dbe9;
 }
 
+/* The admin shell is a sidebar + main flex row, but it also has to be hideable while logged
+   out. Expressing the flex as a `lg:flex` utility next to `hidden` meant the two fought over
+   `display` and the wrong one won above 1024px (see the comment in admin.html). Keying it to
+   :not(.hidden) means the toggle is always decisive: with the class on, nothing here matches
+   and `hidden` applies; with it off, this makes the shell a flex row at every width. */
+#dashboard-view:not(.hidden) {
+    display: flex;
+}
+
 /* Mobile sidebar drawer */
 #admin-sidebar-overlay {
     position: fixed;

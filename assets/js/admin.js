@@ -261,12 +261,37 @@
         loadApps();
     }
 
-    client.auth.getSession().then(({ data }) => {
-        if (data.session) showLoggedIn(); else showLoggedOut();
-    });
-    client.auth.onAuthStateChange((_event, session) => {
-        if (session) showLoggedIn(); else showLoggedOut();
-    });
+    // Both of these used to call showLoggedIn()/showLoggedOut() directly, which meant the full
+    // dashboard bootstrap -- showPage('dashboard') plus all ten loaders -- ran on every auth
+    // event rather than on an actual change of who is signed in. Two ways that went wrong:
+    //
+    //   - supabase-js v2 emits INITIAL_SESSION as soon as onAuthStateChange subscribes, so it
+    //     duplicated the getSession() result on every page load: twenty concurrent queries and
+    //     two renders racing to fill the same containers.
+    //   - TOKEN_REFRESHED and SIGNED_IN also fire on the refresh timer and whenever the tab
+    //     regains focus. Each one called showPage('dashboard'), so sitting on Projects and
+    //     switching away and back silently threw you to the Dashboard page -- the buttons you
+    //     were looking at "disappeared" -- and refetched every list behind it.
+    //
+    // Routing both through one handler keyed on the user id fixes both: a repeat event for the
+    // same user is a no-op, and only a genuine sign-in/sign-out/user-switch rebuilds anything.
+    // `signedInAs` starts undefined rather than null so that the first resolve is always a
+    // change, including the logged-out case, which has to run showLoggedOut() to reveal the
+    // login form.
+    let signedInAs;
+
+    function handleSession(session) {
+        const userId = session ? session.user.id : null;
+        if (userId === signedInAs) return;
+        signedInAs = userId;
+        if (userId) showLoggedIn(); else showLoggedOut();
+    }
+
+    // getSession() is kept alongside the subscription, rather than relying on INITIAL_SESSION
+    // alone, so a supabase-js build that doesn't emit it still boots. It's free now that a
+    // duplicate resolves to the same user id and returns early.
+    client.auth.getSession().then(({ data }) => handleSession(data.session));
+    client.auth.onAuthStateChange((_event, session) => handleSession(session));
 
     const loginForm = document.getElementById('login-form');
     const loginError = document.getElementById('login-error');

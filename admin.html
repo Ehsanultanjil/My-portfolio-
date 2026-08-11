@@ -30,7 +30,12 @@
 </div>
 
 <!-- ================= App shell (shown once logged in) ================= -->
-<div id="dashboard-view" class="hidden lg:flex h-screen overflow-hidden">
+<!-- `lg:flex` used to sit alongside `hidden` here. Both set `display`, and Tailwind emits the
+     responsive variant later in the stylesheet at the same specificity, so at >=1024px lg:flex
+     won unconditionally and this shell could never actually be hidden -- showLoggedOut()'s
+     classList.add('hidden') did nothing on a desktop screen. The flex display comes from a
+     :not(.hidden) rule in assets/css/styles.css instead, which can't fight the toggle. -->
+<div id="dashboard-view" class="hidden h-screen overflow-hidden">
 
 <div id="admin-sidebar-overlay"></div>
 
