@@ -106,9 +106,14 @@ ${linkHtml}
         });
 
         const allNames = ordered.flatMap((g) => g.names);
-        const pillsHtml = allNames.map((n) => `<div class="marquee-chip px-8 py-3 liquid-glass-refractive flex items-center gap-3 rounded-full">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span>
-<span class="font-body-md text-body-md">${escapeHtml(n)}</span>
+        // Slimmer than the original px-8 py-3 / 16px text, which made each pill about 48px tall
+        // and gave the band more visual weight than a background detail wants. Note this also
+        // slows the drift on its own: the marquee animation covers a fixed -50% of the track in
+        // a fixed time, so a narrower track is fewer pixels per second even before the duration
+        // change in tailwind-config.js.
+        const pillsHtml = allNames.map((n) => `<div class="marquee-chip px-5 py-1.5 liquid-glass-refractive flex items-center gap-2 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span class="font-body-sm text-body-sm">${escapeHtml(n)}</span>
 </div>`).join('');
 
         set1.innerHTML = pillsHtml;
@@ -119,7 +124,7 @@ ${linkHtml}
         const container = document.getElementById('skills-list');
         if (!container) return;
 
-        container.innerHTML = groups.map((g, i) => `<div class="skill-card liquid-glass-refractive liquid-glass-interactive p-3 sm:p-6 rounded-2xl sm:rounded-4xl h-full flex flex-col" style="will-change: transform; animation-delay: ${(i % 4) * 0.15}s;" data-category="${escapeHtml(g.category)}">
+        container.innerHTML = groups.map((g, i) => `<div class="skill-card liquid-glass-refractive liquid-glass-interactive p-3 sm:p-6 rounded-2xl sm:rounded-4xl h-full flex flex-col" style="will-change: transform; animation-delay: ${(i % 4) * 0.15}s;">
 <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-primary-container/10 flex items-center justify-center mb-2 sm:mb-5">
 <span class="material-symbols-outlined text-primary-container text-lg sm:text-2xl">${escapeHtml(g.icon)}</span>
 </div>
@@ -129,38 +134,13 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-w
 </div>
 </div>`).join('');
 
-        renderSkillsFilter(groups);
     }
 
-    // Filter pills above the Skills grid ("All" + each category). Filtering fades/scales
-    // non-matching cards out in place rather than removing them, so the grid doesn't reflow.
-    function renderSkillsFilter(groups) {
-        const filterEl = document.getElementById('skills-filter');
-        if (!filterEl) return;
-        if (groups.length <= 1) { filterEl.innerHTML = ''; return; }
-
-        const categories = ['All', ...groups.map((g) => g.category)];
-        filterEl.innerHTML = categories.map((c, i) => `<button type="button" class="skill-filter-btn px-2.5 py-1 sm:px-4 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold transition-all duration-300 ${i === 0 ? 'bg-primary-container text-on-primary-container' : 'liquid-glass-refractive text-on-surface-variant'}" data-category="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join('');
-
-        const buttons = [...filterEl.querySelectorAll('.skill-filter-btn')];
-        buttons.forEach((btn) => {
-            btn.addEventListener('click', () => {
-                if (btn.classList.contains('bg-primary-container')) return;
-                buttons.forEach((b) => {
-                    const active = b === btn;
-                    b.classList.toggle('bg-primary-container', active);
-                    b.classList.toggle('text-on-primary-container', active);
-                    b.classList.toggle('liquid-glass-refractive', !active);
-                    b.classList.toggle('text-on-surface-variant', !active);
-                });
-                const category = btn.dataset.category;
-                document.querySelectorAll('#skills-list .skill-card').forEach((card) => {
-                    const match = category === 'All' || card.dataset.category === category;
-                    card.classList.toggle('skill-card-hidden', !match);
-                });
-            });
-        });
-    }
+    // The row of category filter pills that used to sit above this grid ("All" plus one per
+    // category, fading non-matching cards out in place) is gone, along with the #skills-filter
+    // container in index.html, the data-category attribute the cards carried for it to match
+    // on, and the .skill-card-hidden class in styles.css that did the fading. Every category is
+    // always shown now.
 
     // Flat skill rows (one per skill, sharing a category+icon) grouped into
     // { category, icon, names[] } for rendering.

@@ -83,7 +83,12 @@ try {
                     "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
                 },
                 "animation": {
-                    "marquee": "marquee 30s linear infinite",
+                    // Was 30s. The chips themselves also got narrower (see renderMarquee in
+                    // render-content.js), and since this covers a fixed -50% of the track
+                    // whatever its width, that already reduced the pixels-per-second on its own
+                    // -- the two together are the slower drift, so lower this number rather
+                    // than raising it if it now reads as too slow.
+                    "marquee": "marquee 40s linear infinite",
                 },
                 "keyframes": {
                     "marquee": {

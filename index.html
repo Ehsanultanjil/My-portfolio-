@@ -64,7 +64,7 @@ if (localStorage.getItem('particles_enabled') === 'false') document.documentElem
 </nav>
 <!-- Floating skill chips: fixed band, drifts forever, never moves with scene transitions. -->
 <div id="floating-chips" class="fixed left-0 right-0 bottom-6 sm:bottom-8 z-40 overflow-hidden pointer-events-none" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
-<div class="flex animate-marquee whitespace-nowrap w-max px-8 py-3 sm:py-4">
+<div class="flex animate-marquee whitespace-nowrap w-max px-8 py-2">
 <!-- Populated at runtime by assets/js/render-content.js (same skills you manage in admin.html) -->
 <div class="flex gap-6 shrink-0 mr-6" id="marquee-set-1"></div>
 <div class="flex gap-6 shrink-0 mr-6" id="marquee-set-2"></div>
@@ -203,8 +203,6 @@ if (localStorage.getItem('particles_enabled') === 'false') document.documentElem
 </div>
 <h2 class="font-headline-lg text-headline-lg lg:text-5xl"><span id="skills-heading">Tools &amp; Technologies I</span> <span id="skills-heading-highlight" class="text-primary-container">Use</span></h2>
 </div>
-<!-- Populated at runtime by assets/js/render-content.js -->
-<div id="skills-filter" class="skills-anim flex flex-wrap justify-center gap-2"></div>
 <!-- Populated at runtime by assets/js/render-content.js (Supabase, falls back to placeholder cards if not configured). Two per row even on mobile (not one) -- Skills is admin-driven/unbounded, so this is what keeps it close to fitting one screen instead of a tall single column. -->
 <div id="skills-list" class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-6 items-stretch"></div>
 </div>
