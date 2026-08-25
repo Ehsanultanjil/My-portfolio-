@@ -252,7 +252,7 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-w
     // Settings that don't map cleanly onto a single "find element(s), set an
     // attribute" rule -- document head tags, feature toggles, the nav logo
     // slot, and the maintenance overlay. All optional/no-op if unset.
-    function applySiteExtras(byKey) {
+    function applySiteExtras(byKey, bgVideos) {
         if (byKey.seo_title) document.title = byKey.seo_title;
 
         if (byKey.seo_description) {
@@ -308,46 +308,149 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-w
             if (particles) particles.innerHTML = '';
         }
 
-        // Desktop-only custom background (video or image): cached to localStorage so the
-        // early inline script in index.html can pre-set the class synchronously on the next
-        // load. On mobile (<1024px) neither ever loads or shows.
+        // Custom background (video, image, or default particles)
         localStorage.setItem('video_bg_enabled', byKey.video_bg_enabled === 'true' ? 'true' : 'false');
 
-        const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
         const videoBg = document.getElementById('site-video-bg');
         const imageBg = document.getElementById('site-image-bg');
-        let customBgActive = false;
+        const videoEl = document.getElementById('site-video-el');
+        const imageEl = document.getElementById('site-image-el');
+        const particlesEl = document.getElementById('site-particles');
+        const switcher = document.getElementById('hero-bg-video-switcher');
 
-        if (isDesktop && byKey.video_bg_enabled === 'true') {
-            if (byKey.video_bg_url) {
-                // Video takes priority
-                const videoEl = document.getElementById('site-video-el');
-                if (videoBg && videoEl) {
-                    videoEl.src = byKey.video_bg_url;
-                    videoBg.style.display = '';
-                    customBgActive = true;
-                }
-                if (imageBg) imageBg.style.display = 'none';
-            } else if (byKey.bg_image_url) {
-                // Fall back to image if no video
-                const imageEl = document.getElementById('site-image-el');
-                if (imageBg && imageEl) {
-                    imageEl.src = byKey.bg_image_url;
-                    imageBg.style.display = '';
-                    customBgActive = true;
-                }
-                if (videoBg) videoBg.style.display = 'none';
-            }
+        // Build complete list of available background options
+        const allOptions = [
+            { id: 'particles', title: 'Default (Particles)', type: 'particles' }
+        ];
+
+        const visibleVideos = (bgVideos || []).filter((v) => v.visible !== false && v.video_url);
+        if (!visibleVideos.length && byKey.video_bg_url) {
+            visibleVideos.push({ id: 'default-video', title: 'Default Video', video_url: byKey.video_bg_url });
         }
 
-        if (customBgActive) {
-            // Hide particles when custom bg is active
-            const particles = document.getElementById('site-particles');
-            if (particles) particles.style.display = 'none';
-            document.documentElement.classList.add('has-video-bg');
+        visibleVideos.forEach((v) => {
+            allOptions.push({ id: String(v.id), title: v.title, type: 'video', video_url: v.video_url });
+        });
+
+        if (byKey.bg_image_url) {
+            allOptions.push({ id: 'custom-image', title: 'Background Image', type: 'image', image_url: byKey.bg_image_url });
+        }
+
+        if (allOptions.length > 1) {
+            // Determine active background option:
+            // 1. User's saved preference in localStorage (if valid)
+            // 2. Otherwise: if admin toggle is ON -> first custom video/image; if toggle is OFF -> 'particles' (default)
+            const savedId = localStorage.getItem('active_bg_video_id');
+            let activeOption = allOptions.find((o) => o.id === String(savedId));
+
+            if (!activeOption) {
+                if (byKey.video_bg_enabled === 'true' && allOptions.length > 1) {
+                    activeOption = allOptions[1]; // First custom video/image
+                } else {
+                    activeOption = allOptions[0]; // Default particles
+                }
+            }
+
+            function applyBackground(opt) {
+                if (opt.type === 'video' && opt.video_url && videoBg && videoEl) {
+                    videoEl.src = opt.video_url;
+                    videoBg.style.display = '';
+                    if (imageBg) imageBg.style.display = 'none';
+                    if (particlesEl) particlesEl.style.display = 'none';
+                    document.documentElement.classList.add('has-video-bg');
+                } else if (opt.type === 'image' && opt.image_url && imageBg && imageEl) {
+                    imageEl.src = opt.image_url;
+                    imageBg.style.display = '';
+                    if (videoBg) videoBg.style.display = 'none';
+                    if (particlesEl) particlesEl.style.display = 'none';
+                    document.documentElement.classList.add('has-video-bg');
+                } else {
+                    // Default particles
+                    if (videoBg) videoBg.style.display = 'none';
+                    if (imageBg) imageBg.style.display = 'none';
+                    if (particlesEl) particlesEl.style.display = '';
+                    document.documentElement.classList.remove('has-video-bg');
+                }
+            }
+
+            applyBackground(activeOption);
+
+            // Always show the switcher in the top right on desktop
+            if (switcher) {
+                switcher.classList.remove('hidden');
+                const btn = document.getElementById('hero-bg-video-btn');
+                const icon = document.getElementById('hero-bg-video-icon');
+                const menu = document.getElementById('hero-bg-video-menu');
+                const optionsContainer = document.getElementById('hero-bg-video-options');
+
+                function updateSwitcherUI(currOpt) {
+                    if (btn) btn.setAttribute('title', `Background: ${currOpt.title}`);
+                    if (optionsContainer) {
+                        optionsContainer.innerHTML = allOptions.map((opt) => {
+                            const isCur = opt.id === currOpt.id;
+                            const iconName = opt.type === 'particles' ? 'auto_awesome' : (opt.type === 'image' ? 'image' : 'videocam');
+                            return `<button type="button" data-bg-id="${escapeHtml(opt.id)}" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs text-left transition-all ${isCur ? 'bg-primary-container text-on-primary-container font-bold shadow-md' : 'hover:bg-white/10 text-on-surface'}">
+                                <span class="flex items-center gap-2 truncate mr-2 font-medium">
+                                    <span class="material-symbols-outlined text-xs shrink-0">${iconName}</span>
+                                    <span class="truncate">${escapeHtml(opt.title)}</span>
+                                </span>
+                                ${isCur ? '<span class="material-symbols-outlined text-sm shrink-0">check</span>' : ''}
+                            </button>`;
+                        }).join('');
+
+                        optionsContainer.querySelectorAll('[data-bg-id]').forEach((optBtn) => {
+                            optBtn.addEventListener('click', () => {
+                                const targetOpt = allOptions.find((o) => o.id === optBtn.dataset.bgId);
+                                if (targetOpt) {
+                                    activeOption = targetOpt;
+                                    applyBackground(targetOpt);
+                                    localStorage.setItem('active_bg_video_id', targetOpt.id);
+                                    updateSwitcherUI(targetOpt);
+                                    closeMenu();
+                                }
+                            });
+                        });
+                    }
+                }
+
+                function openMenu() {
+                    if (!menu) return;
+                    menu.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-2', 'scale-95');
+                    menu.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0', 'scale-100');
+                    if (icon) icon.style.transform = 'rotate(15deg) scale(1.15)';
+                }
+                function closeMenu() {
+                    if (!menu) return;
+                    menu.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0', 'scale-100');
+                    menu.classList.add('opacity-0', 'pointer-events-none', '-translate-y-2', 'scale-95');
+                    if (icon) icon.style.transform = 'rotate(0deg) scale(1)';
+                }
+                function toggleMenu() {
+                    if (!menu) return;
+                    const isOpen = menu.classList.contains('opacity-100');
+                    if (isOpen) closeMenu(); else openMenu();
+                }
+
+                if (btn) {
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        toggleMenu();
+                    };
+                }
+
+                document.addEventListener('click', (e) => {
+                    if (switcher && !switcher.contains(e.target)) {
+                        closeMenu();
+                    }
+                });
+
+                updateSwitcherUI(activeOption);
+            }
         } else {
             if (videoBg) videoBg.style.display = 'none';
             if (imageBg) imageBg.style.display = 'none';
+            if (particlesEl) particlesEl.style.display = '';
+            if (switcher) switcher.classList.add('hidden');
             document.documentElement.classList.remove('has-video-bg');
         }
 
@@ -814,18 +917,19 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
         // The `education` table is deliberately not fetched here any more -- the orbital ring
         // that consumed it is gone, so this was a query whose result nothing read. The rows and
         // the admin screen that edits them are untouched.
-        const [siteContent, socialLinks, experience, testimonials] = await Promise.all([
+        const [siteContent, socialLinks, experience, testimonials, bgVideos] = await Promise.all([
             safe(client.from('site_content').select('*')),
             safe(client.from('social_links').select('*').order('sort_order', { ascending: true })),
             safe(client.from('experience').select('*').order('sort_order', { ascending: true })),
             safe(client.from('testimonials').select('*').order('sort_order', { ascending: true })),
+            safe(client.from('background_videos').select('*').order('sort_order', { ascending: true })),
         ]);
 
         applySiteContent(siteContent.data);
 
         const byKey = {};
         (siteContent.data || []).forEach((r) => { byKey[r.key] = r.value; });
-        applySiteExtras(byKey);
+        applySiteExtras(byKey, bgVideos.data);
 
         renderSocialLinks(socialLinks.data);
         renderHeroSocialIcons(socialLinks.data);

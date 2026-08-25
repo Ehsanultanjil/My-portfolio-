@@ -56,6 +56,7 @@
 <button class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold" data-page="education"><span class="material-symbols-outlined text-lg">school</span>Education</button>
 <button class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold" data-page="testimonials"><span class="material-symbols-outlined text-lg">format_quote</span>Testimonials</button>
 <button class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold" data-page="apps"><span class="material-symbols-outlined text-lg">apps</span>Apps</button>
+<button class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold" data-page="bg-videos"><span class="material-symbols-outlined text-lg">videocam</span>Background Videos</button>
 
 <p class="px-4 pt-5 pb-2 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant opacity-60">Communication</p>
 <button class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold" data-page="contact"><span class="material-symbols-outlined text-lg">mail</span>Contact</button>
@@ -273,6 +274,17 @@
 <div id="apps-admin-list" class="flex flex-col gap-3"></div>
 </section>
 
+<!-- ============ BACKGROUND VIDEOS ============ -->
+<section class="admin-page hidden" data-page="bg-videos">
+<div class="flex justify-between items-center mb-5">
+<input type="text" id="bg-video-search" placeholder="Search background videos..." class="admin-input flex-1 mr-3">
+<button class="bg-primary-container text-on-primary-container px-5 py-2.5 rounded-full text-sm font-bold bounce-feedback flex items-center gap-2 whitespace-nowrap" data-open-modal="bg-video-modal"><span class="material-symbols-outlined text-lg">add</span>Add Video</button>
+</div>
+<p class="text-sm text-on-surface-variant mb-5">Manage background videos available on your site. Visitors on desktop can switch between visible videos via the dropdown in the Hero section.</p>
+<div id="bg-videos-empty" class="hidden empty-state"></div>
+<div id="bg-videos-admin-list" class="flex flex-col gap-3"></div>
+</section>
+
 <!-- ============ CONTACT ============ -->
 <section class="admin-page hidden" data-page="contact">
 <form id="contact-form" class="liquid-glass-refractive rounded-4xl p-6 flex flex-col gap-3 max-w-xl">
@@ -335,7 +347,7 @@
 <label class="flex items-center justify-between gap-3 py-1"><span class="text-sm">Preloader</span><span class="toggle-switch"><input type="checkbox" id="sc-preloader_enabled"><span class="toggle-track"></span></span></label>
 
 <p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-2">Background</p>
-<label class="flex items-center justify-between gap-3 py-1"><span class="text-sm">Custom background (desktop only, replaces particles)</span><span class="toggle-switch"><input type="checkbox" id="sc-video_bg_enabled"><span class="toggle-track"></span></span></label>
+<label class="flex items-center justify-between gap-3 py-1"><span class="text-sm">Custom background (replaces particles)</span><span class="toggle-switch"><input type="checkbox" id="sc-video_bg_enabled"><span class="toggle-track"></span></span></label>
 <div>
 <label class="block text-sm text-on-surface-variant mb-1">Background video</label>
 <input type="file" id="sc-video-bg-file" accept="video/*" class="admin-file">
@@ -350,7 +362,7 @@
 <button type="button" id="sc-bg-image-clear" class="hidden text-xs text-on-surface-variant underline mt-1">Remove image</button>
 <input type="hidden" id="sc-bg_image_url">
 </div>
-<p class="text-xs text-on-surface-variant opacity-70">Desktop only (≥1024px). Mobile always uses particles. If both video and image are set, video takes priority.</p>
+<p class="text-xs text-on-surface-variant opacity-70">If both video and image are set, video takes priority. Visitors can also switch backgrounds using the top-right button.</p>
 <p class="text-xs text-on-surface-variant opacity-70">No "Background Music" toggle — the site has no audio/music feature to control, so this was left out rather than adding a switch that does nothing.</p>
 
 <button type="submit" class="mt-2 bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110 self-start">Save Settings</button>
@@ -419,6 +431,31 @@
 <button type="button" class="modal-close liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel</button>
 </div>
 <p id="app-error" class="text-sm hidden" style="color: #ff8a80;"></p>
+</form>
+</div>
+</div>
+
+<!-- Background Video modal -->
+<div class="modal-overlay" id="bg-video-modal-overlay" data-modal="bg-video-modal">
+<div class="modal-panel liquid-glass-refractive rounded-4xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto admin-scrollbar">
+<div class="flex justify-between items-center mb-4"><h3 class="font-headline-lg text-lg" id="bg-video-modal-title">Add Background Video</h3><button class="modal-close w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center"><span class="material-symbols-outlined">close</span></button></div>
+<form id="bg-video-form" class="flex flex-col gap-3">
+<input type="hidden" id="bg-video-id">
+<input type="hidden" id="bg-video-existing-url">
+<input type="text" id="bg-video-title" placeholder="Video Title (e.g. Cyberpunk City, Abstract Nebula)" required class="admin-input">
+<div>
+<label class="block text-sm text-on-surface-variant mb-1">Video File (or provide direct URL below)</label>
+<input type="file" id="bg-video-file" accept="video/*" class="admin-file">
+<video id="bg-video-preview" class="hidden mt-2 w-full max-h-36 rounded-xl object-cover" muted loop playsinline></video>
+</div>
+<input type="url" id="bg-video-url" placeholder="Direct Video URL (optional if uploading file)" class="admin-input">
+<input type="number" id="bg-video-sort" placeholder="Display order" value="1" min="1" class="admin-input">
+<label class="flex items-center justify-between gap-2"><span class="text-sm">Visible in Hero Switcher</span><span class="toggle-switch"><input type="checkbox" id="bg-video-visible" checked><span class="toggle-track"></span></span></label>
+<div class="flex gap-3 mt-2">
+<button type="submit" class="bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback flex-1">Save</button>
+<button type="button" class="modal-close liquid-glass-refractive px-6 py-3 font-bold rounded-2xl bounce-feedback">Cancel</button>
+</div>
+<p id="bg-video-error" class="text-sm hidden" style="color: #ff8a80;"></p>
 </form>
 </div>
 </div>

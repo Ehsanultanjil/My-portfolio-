@@ -86,6 +86,7 @@
             if (id === 'testimonial-modal') resetTestimonialForm();
             if (id === 'social-modal') resetSocialForm();
             if (id === 'app-modal') resetAppForm();
+            if (id === 'bg-video-modal') resetBackgroundVideoForm();
             openModal(id);
         });
     });
@@ -129,7 +130,7 @@
     const PAGE_TITLES = {
         dashboard: 'Dashboard', home: 'Home Page', projects: 'Projects', skills: 'Skills',
         experience: 'Experience', education: 'Education', testimonials: 'Testimonials',
-        apps: 'Apps', contact: 'Contact', social: 'Social Links', settings: 'Website Settings',
+        apps: 'Apps', 'bg-videos': 'Background Videos', contact: 'Contact', social: 'Social Links', settings: 'Website Settings',
     };
 
     function showPage(name) {
@@ -259,6 +260,7 @@
         loadTestimonials();
         loadSocialLinks();
         loadApps();
+        loadBackgroundVideos();
     }
 
     // Both of these used to call showLoggedIn()/showLoggedOut() directly, which meant the full
@@ -881,6 +883,167 @@ ${thumb}
             closeModal(document.getElementById('app-modal-overlay'));
             toast(id ? 'App updated' : 'App added');
             loadApps();
+        } catch (err) {
+            errorEl.textContent = err.message || String(err);
+            errorEl.classList.remove('hidden');
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
+    // ================= Background Videos =================
+
+    let cachedBgVideos = [];
+
+    async function loadBackgroundVideos() {
+        const list = document.getElementById('bg-videos-admin-list');
+        if (!list) return;
+        const { data, error } = await client.from('background_videos').select('*').order('sort_order', { ascending: true });
+        if (error) { list.innerHTML = `<p style="color:#ff8a80;">Failed to load: ${escapeHtml(error.message)}</p>`; return; }
+        cachedBgVideos = data || [];
+        renderBackgroundVideos();
+    }
+
+    function renderBackgroundVideos() {
+        const list = document.getElementById('bg-videos-admin-list');
+        const empty = document.getElementById('bg-videos-empty');
+        if (!list) return;
+        const search = (document.getElementById('bg-video-search')?.value || '').toLowerCase();
+
+        const filtered = cachedBgVideos.filter((v) => !search || v.title.toLowerCase().includes(search));
+
+        if (!filtered.length) {
+            empty.classList.remove('hidden');
+            empty.innerHTML = `<div class="liquid-glass-refractive rounded-3xl p-10 text-center"><span class="material-symbols-outlined text-3xl text-on-surface-variant">videocam_off</span><p class="text-on-surface-variant text-sm mt-2">${cachedBgVideos.length ? 'No background videos match your search.' : 'No background videos yet — add your first one.'}</p></div>`;
+            list.innerHTML = '';
+            return;
+        }
+        empty.classList.add('hidden');
+
+        list.innerHTML = filtered.map((v) => {
+            const thumb = v.video_url
+                ? `<video src="${escapeHtml(v.video_url)}" class="w-16 h-12 rounded-xl object-cover shrink-0" muted></video>`
+                : `<div class="w-16 h-12 rounded-xl bg-white/5 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-surface-variant">videocam</span></div>`;
+            return `<div draggable="true" data-id="${v.id}" class="liquid-glass-refractive rounded-3xl p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+<div class="flex items-center gap-3 min-w-0 flex-1">
+<span class="material-symbols-outlined drag-handle text-on-surface-variant shrink-0">drag_indicator</span>
+${thumb}
+<div class="min-w-0 flex-1">
+<div class="flex items-center gap-2 flex-wrap">
+<p class="font-bold">${escapeHtml(v.title)}</p>
+${v.visible === false ? '<span class="text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap" style="background:rgba(255,138,128,0.15); color:#ff8a80;">Hidden in Switcher</span>' : '<span class="text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap" style="background:rgba(0,219,233,0.15); color:#7cf3ff;">Active</span>'}
+</div>
+<p class="text-on-surface-variant text-sm truncate">${escapeHtml(v.video_url)}</p>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+<span class="text-xs text-on-surface-variant">#${v.sort_order}</span>
+<span class="toggle-switch" title="Visible in Hero Switcher"><input type="checkbox" data-toggle-visible="${v.id}" ${v.visible === false ? '' : 'checked'}><span class="toggle-track"></span></span>
+<div class="flex gap-1">
+<button data-edit="${v.id}" class="liquid-glass-refractive liquid-glass-interactive w-9 h-9 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-base">edit</span></button>
+<button data-delete="${v.id}" class="liquid-glass-refractive liquid-glass-interactive w-9 h-9 rounded-full flex items-center justify-center bounce-feedback"><span class="material-symbols-outlined text-base">delete</span></button>
+</div>
+</div>
+</div>`;
+        }).join('');
+
+        list.querySelectorAll('[data-edit]').forEach((btn) => btn.addEventListener('click', () => editBackgroundVideo(btn.dataset.edit)));
+        list.querySelectorAll('[data-delete]').forEach((btn) => btn.addEventListener('click', () => {
+            const v = cachedBgVideos.find((x) => String(x.id) === btn.dataset.delete);
+            confirmDelete(`Delete video "${v?.title}"?`, async () => {
+                const { error } = await client.from('background_videos').delete().eq('id', btn.dataset.delete);
+                if (error) { toast('Delete failed: ' + error.message, 'error'); return; }
+                toast('Video deleted');
+                loadBackgroundVideos();
+            });
+        }));
+        list.querySelectorAll('[data-toggle-visible]').forEach((cb) => cb.addEventListener('change', async () => {
+            const { error } = await client.from('background_videos').update({ visible: cb.checked }).eq('id', cb.dataset.toggleVisible);
+            if (error) { toast('Update failed: ' + error.message, 'error'); cb.checked = !cb.checked; return; }
+            toast(cb.checked ? 'Video shown in switcher' : 'Video hidden from switcher');
+            loadBackgroundVideos();
+        }));
+
+        enableDragReorder(list, 'background_videos', loadBackgroundVideos);
+    }
+
+    document.getElementById('bg-video-search')?.addEventListener('input', renderBackgroundVideos);
+
+    const bgVideoForm = document.getElementById('bg-video-form');
+    const bgVideoFileInput = document.getElementById('bg-video-file');
+    const bgVideoFilePreview = document.getElementById('bg-video-preview');
+
+    bgVideoFileInput?.addEventListener('change', () => {
+        const file = bgVideoFileInput.files[0];
+        if (!file) return;
+        bgVideoFilePreview.src = URL.createObjectURL(file);
+        bgVideoFilePreview.classList.remove('hidden');
+    });
+
+    function resetBackgroundVideoForm() {
+        bgVideoForm.reset();
+        document.getElementById('bg-video-modal-title').textContent = 'Add Background Video';
+        document.getElementById('bg-video-id').value = '';
+        document.getElementById('bg-video-existing-url').value = '';
+        if (bgVideoFilePreview) {
+            bgVideoFilePreview.classList.add('hidden');
+            bgVideoFilePreview.src = '';
+        }
+        document.getElementById('bg-video-visible').checked = true;
+        document.getElementById('bg-video-error').classList.add('hidden');
+        document.getElementById('bg-video-sort').value = cachedBgVideos.length + 1;
+    }
+
+    function editBackgroundVideo(id) {
+        const v = cachedBgVideos.find((x) => String(x.id) === id);
+        if (!v) return;
+        document.getElementById('bg-video-modal-title').textContent = 'Edit Background Video';
+        document.getElementById('bg-video-id').value = v.id;
+        document.getElementById('bg-video-existing-url').value = v.video_url || '';
+        document.getElementById('bg-video-title').value = v.title || '';
+        document.getElementById('bg-video-url').value = v.video_url || '';
+        document.getElementById('bg-video-sort').value = v.sort_order || 1;
+        document.getElementById('bg-video-visible').checked = v.visible !== false;
+        if (bgVideoFileInput) bgVideoFileInput.value = '';
+        if (v.video_url) {
+            bgVideoFilePreview.src = v.video_url;
+            bgVideoFilePreview.classList.remove('hidden');
+        } else {
+            bgVideoFilePreview.classList.add('hidden');
+        }
+        document.getElementById('bg-video-error').classList.add('hidden');
+        openModal('bg-video-modal');
+    }
+
+    bgVideoForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const errorEl = document.getElementById('bg-video-error');
+        errorEl.classList.add('hidden');
+        const submitBtn = bgVideoForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        try {
+            let videoUrl = document.getElementById('bg-video-url').value.trim() || document.getElementById('bg-video-existing-url').value || '';
+            const file = bgVideoFileInput.files[0];
+            if (file) videoUrl = await uploadTo('project-images', file);
+
+            if (!videoUrl) {
+                throw new Error('Please upload a video file or provide a video URL.');
+            }
+
+            const row = {
+                title: document.getElementById('bg-video-title').value.trim(),
+                video_url: videoUrl,
+                sort_order: Number(document.getElementById('bg-video-sort').value) || 1,
+                visible: document.getElementById('bg-video-visible').checked,
+            };
+
+            const id = document.getElementById('bg-video-id').value;
+            const { error } = id ? await client.from('background_videos').update(row).eq('id', id) : await client.from('background_videos').insert(row);
+            if (error) throw error;
+
+            closeModal(document.getElementById('bg-video-modal-overlay'));
+            toast(id ? 'Background video updated' : 'Background video added');
+            loadBackgroundVideos();
         } catch (err) {
             errorEl.textContent = err.message || String(err);
             errorEl.classList.remove('hidden');
