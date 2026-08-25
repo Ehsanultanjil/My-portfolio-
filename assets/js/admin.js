@@ -364,7 +364,10 @@
     const ABOUT_KEYS = ['about_eyebrow', 'about_heading', 'about_text'];
     const TITLES_KEYS = ['work_heading', 'skills_heading', 'skills_heading_highlight', 'experience_heading', 'testimonials_heading', 'footer_name'];
     const CONTACT_KEYS = ['contact_heading', 'contact_text', 'contact_email', 'contact_phone', 'contact_address', 'contact_whatsapp', 'contact_form_email'];
-    const SETTINGS_KEYS = ['seo_title', 'seo_description', 'favicon_url', 'logo_url', 'maintenance_mode', 'ga_id', 'gsc_verification', 'particles_enabled', 'cursor_light_enabled', 'orbit_enabled', 'preloader_enabled'];
+    // 'orbit_enabled' was dropped from this list along with its toggle in admin.html: it gated
+    // the auto-rotation of the Education orbital ring on the public site, and that ring is gone.
+    // Any existing site_content row for the key is simply left alone -- nothing reads it now.
+    const SETTINGS_KEYS = ['seo_title', 'seo_description', 'favicon_url', 'logo_url', 'maintenance_mode', 'ga_id', 'gsc_verification', 'particles_enabled', 'cursor_light_enabled', 'preloader_enabled', 'video_bg_enabled', 'video_bg_url', 'bg_image_url'];
 
     let siteContentCache = {};
 
@@ -404,6 +407,19 @@
             document.getElementById('sc-logo-preview').src = siteContentCache.logo_url;
             document.getElementById('sc-logo-preview').classList.remove('hidden');
             document.getElementById('sc-logo-clear').classList.remove('hidden');
+        }
+        if (siteContentCache.video_bg_url) {
+            const videoPrev = document.getElementById('sc-video-bg-preview');
+            if (videoPrev) {
+                videoPrev.src = siteContentCache.video_bg_url;
+                videoPrev.classList.remove('hidden');
+                document.getElementById('sc-video-bg-clear').classList.remove('hidden');
+            }
+        }
+        if (siteContentCache.bg_image_url) {
+            document.getElementById('sc-bg-image-preview').src = siteContentCache.bg_image_url;
+            document.getElementById('sc-bg-image-preview').classList.remove('hidden');
+            document.getElementById('sc-bg-image-clear').classList.remove('hidden');
         }
 
         document.getElementById('site-status-dot').style.background = siteContentCache.maintenance_mode === 'true' ? '#facc15' : '#4ade80';
@@ -452,6 +468,30 @@
     wireImageUpload('sc-hire-image-file', 'sc-hire-image-preview', 'sc-hire_button_image_url', 'sc-hire-image-clear');
     wireImageUpload('sc-favicon-file', 'sc-favicon-preview', 'sc-favicon_url', null);
     wireImageUpload('sc-logo-file', 'sc-logo-preview', 'sc-logo_url', 'sc-logo-clear');
+
+    // Video upload wiring — similar to wireImageUpload but uses video element (src, not img.src)
+    (function wireVideoUpload() {
+        const fileInput = document.getElementById('sc-video-bg-file');
+        const preview = document.getElementById('sc-video-bg-preview');
+        const clearBtn = document.getElementById('sc-video-bg-clear');
+        if (!fileInput) return;
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            if (!file) return;
+            preview.src = URL.createObjectURL(file);
+            preview.classList.remove('hidden');
+            clearBtn.classList.remove('hidden');
+        });
+        clearBtn.addEventListener('click', () => {
+            fileInput.value = '';
+            preview.classList.add('hidden');
+            preview.src = '';
+            clearBtn.classList.add('hidden');
+            document.getElementById('sc-video_bg_url').value = '';
+        });
+    })();
+
+    wireImageUpload('sc-bg-image-file', 'sc-bg-image-preview', 'sc-bg_image_url', 'sc-bg-image-clear');
 
     async function handleFormUpload(fileInputId, bucket, hiddenId) {
         const file = document.getElementById(fileInputId).files[0];
@@ -515,9 +555,13 @@
         try {
             await handleFormUpload('sc-favicon-file', 'project-images', 'sc-favicon_url');
             await handleFormUpload('sc-logo-file', 'project-images', 'sc-logo_url');
+            await handleFormUpload('sc-video-bg-file', 'project-images', 'sc-video_bg_url');
+            await handleFormUpload('sc-bg-image-file', 'project-images', 'sc-bg_image_url');
             await saveContentKeys(SETTINGS_KEYS, 'Settings saved');
             document.getElementById('sc-favicon-file').value = '';
             document.getElementById('sc-logo-file').value = '';
+            document.getElementById('sc-video-bg-file').value = '';
+            document.getElementById('sc-bg-image-file').value = '';
             loadHomeContent();
         } catch (err) {
             errorEl.textContent = err.message || String(err);

@@ -209,34 +209,6 @@
     #floating-chips {
         position: static !important;
     }
-    /* Education orbit ring: a fixed px value here means picking one phone width to fit and
-       hoping others are close enough -- min(300px, 75vw) instead scales with the actual
-       viewport, always leaving the same ~25% margin for the 24px-per-side node-button
-       overshoot (nodes are centered ON the ring, not inset from it) regardless of phone size. */
-    #orbital-timeline {
-        max-width: min(300px, 75vw) !important;
-    }
-    /* Gives the top node (which sits 24px above the ring's own top edge, per the overshoot
-       above) clearance from the stat-card grid right above it in the stacked mobile layout --
-       without this they visually collide. */
-    #orbital-timeline-wrap {
-        margin-top: 40px;
-    }
-    /* Orbit detail card: made more compact via padding/line-clamp, not width -- a narrower
-       card wraps its text into MORE lines, growing taller and covering more of the ring
-       vertically, the opposite of what "smaller" should do here. Width stays at its natural
-       256px (w-64, untouched). */
-    .orbital-card > div:last-child {
-        padding: 8px !important;
-    }
-    .orbital-card p:last-of-type {
-        display: -webkit-box;
-        -webkit-line-clamp: 1;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        margin-top: 6px !important;
-        padding-top: 6px !important;
-    }
 }
 
 /* ==================== Phone-only card sizing ====================
@@ -536,6 +508,17 @@
     justify-content: center;
     gap: 0.75rem 1.5rem;
     padding: 0 1.5rem;
+}
+/* Stacked on phones, one line everywhere else. The three words need roughly 555px at the font
+   size clamp() gives them, so they fit on a single row down to about 640px and then stop --
+   below that, flex-wrap breaks them 2 + 1, leaving "Allahu-Akbar" hanging under the other two
+   rather than reading as a deliberate stack. Making the axis vertical is what makes it look
+   intended; the staggered animation-delays in index.html then reveal them top to bottom. */
+@media (max-width: 639px) {
+    .preloader-words {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 }
 .preloader-word {
     font-family: "Outfit", sans-serif;

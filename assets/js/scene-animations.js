@@ -47,19 +47,13 @@
             reveal: (el) => revealTo(el, '.hero-anim', NEUTRAL),
         },
 
+        // The separate .education-anim branch here (a scale + rotate settling the orbital ring
+        // into place, guarded on offsetParent so it was skipped while the ring was still hidden
+        // waiting on data) went with the ring itself. The details list that replaced it carries
+        // .about-anim, so it rides the same staggered slide-in as the heading and intro text.
         about: {
-            hide: (el) => {
-                hideSet(el, '.about-anim', { opacity: 0, x: -40 });
-                const orbit = el.querySelector('.education-anim');
-                if (orbit && orbit.offsetParent !== null) hideSet(el, '.education-anim', { opacity: 0, scale: 0.7, rotate: -25 });
-            },
-            reveal: (el) => {
-                revealTo(el, '.about-anim', Object.assign({ stagger: 0.1 }, NEUTRAL));
-                const orbit = el.querySelector('.education-anim');
-                if (orbit && orbit.offsetParent !== null) {
-                    revealTo(el, '.education-anim', Object.assign({ duration: 0.8, ease: 'back.out(1.4)' }, NEUTRAL));
-                }
-            },
+            hide: (el) => hideSet(el, '.about-anim', { opacity: 0, x: -40 }),
+            reveal: (el) => revealTo(el, '.about-anim', Object.assign({ stagger: 0.1 }, NEUTRAL)),
         },
 
         work: {

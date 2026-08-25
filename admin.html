@@ -332,8 +332,25 @@
 <p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-2">Visual Effects</p>
 <label class="flex items-center justify-between gap-3 py-1"><span class="text-sm">Particle background</span><span class="toggle-switch"><input type="checkbox" id="sc-particles_enabled"><span class="toggle-track"></span></span></label>
 <label class="flex items-center justify-between gap-3 py-1"><span class="text-sm">Cursor light (ambient glow)</span><span class="toggle-switch"><input type="checkbox" id="sc-cursor_light_enabled"><span class="toggle-track"></span></span></label>
-<label class="flex items-center justify-between gap-3 py-1"><span class="text-sm">Education orbit auto-rotation</span><span class="toggle-switch"><input type="checkbox" id="sc-orbit_enabled"><span class="toggle-track"></span></span></label>
 <label class="flex items-center justify-between gap-3 py-1"><span class="text-sm">Preloader</span><span class="toggle-switch"><input type="checkbox" id="sc-preloader_enabled"><span class="toggle-track"></span></span></label>
+
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-2">Background</p>
+<label class="flex items-center justify-between gap-3 py-1"><span class="text-sm">Custom background (desktop only, replaces particles)</span><span class="toggle-switch"><input type="checkbox" id="sc-video_bg_enabled"><span class="toggle-track"></span></span></label>
+<div>
+<label class="block text-sm text-on-surface-variant mb-1">Background video</label>
+<input type="file" id="sc-video-bg-file" accept="video/*" class="admin-file">
+<video id="sc-video-bg-preview" class="hidden mt-2 w-full max-h-32 rounded-xl object-cover" muted loop playsinline></video>
+<button type="button" id="sc-video-bg-clear" class="hidden text-xs text-on-surface-variant underline mt-1">Remove video</button>
+<input type="hidden" id="sc-video_bg_url">
+</div>
+<div>
+<label class="block text-sm text-on-surface-variant mb-1">Background image (used if no video is set)</label>
+<input type="file" id="sc-bg-image-file" accept="image/*" class="admin-file">
+<img id="sc-bg-image-preview" class="hidden mt-2 w-full max-h-32 rounded-xl object-cover">
+<button type="button" id="sc-bg-image-clear" class="hidden text-xs text-on-surface-variant underline mt-1">Remove image</button>
+<input type="hidden" id="sc-bg_image_url">
+</div>
+<p class="text-xs text-on-surface-variant opacity-70">Desktop only (≥1024px). Mobile always uses particles. If both video and image are set, video takes priority.</p>
 <p class="text-xs text-on-surface-variant opacity-70">No "Background Music" toggle — the site has no audio/music feature to control, so this was left out rather than adding a switch that does nothing.</p>
 
 <button type="submit" class="mt-2 bg-primary-container text-on-primary-container px-6 py-3 font-bold rounded-2xl bounce-feedback transition-transform hover:brightness-110 self-start">Save Settings</button>

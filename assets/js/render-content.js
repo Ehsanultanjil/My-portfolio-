@@ -21,6 +21,12 @@
         { category: 'Community & Client Work', icon: 'groups', names: ['Telegram Moderation', 'Community Management', 'Fiverr Freelancing'] },
     ];
 
+    const FALLBACK_SOCIAL = [
+        { label: 'GitHub', url: '#', visible: true },
+        { label: 'LinkedIn', url: '#', visible: true },
+        { label: 'Fiverr', url: 'https://www.fiverr.com/rafikhand1', visible: true },
+    ];
+
     function escapeHtml(str) {
         const div = document.createElement('div');
         div.textContent = str == null ? '' : String(str);
@@ -302,6 +308,49 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-w
             if (particles) particles.innerHTML = '';
         }
 
+        // Desktop-only custom background (video or image): cached to localStorage so the
+        // early inline script in index.html can pre-set the class synchronously on the next
+        // load. On mobile (<1024px) neither ever loads or shows.
+        localStorage.setItem('video_bg_enabled', byKey.video_bg_enabled === 'true' ? 'true' : 'false');
+
+        const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+        const videoBg = document.getElementById('site-video-bg');
+        const imageBg = document.getElementById('site-image-bg');
+        let customBgActive = false;
+
+        if (isDesktop && byKey.video_bg_enabled === 'true') {
+            if (byKey.video_bg_url) {
+                // Video takes priority
+                const videoEl = document.getElementById('site-video-el');
+                if (videoBg && videoEl) {
+                    videoEl.src = byKey.video_bg_url;
+                    videoBg.style.display = '';
+                    customBgActive = true;
+                }
+                if (imageBg) imageBg.style.display = 'none';
+            } else if (byKey.bg_image_url) {
+                // Fall back to image if no video
+                const imageEl = document.getElementById('site-image-el');
+                if (imageBg && imageEl) {
+                    imageEl.src = byKey.bg_image_url;
+                    imageBg.style.display = '';
+                    customBgActive = true;
+                }
+                if (videoBg) videoBg.style.display = 'none';
+            }
+        }
+
+        if (customBgActive) {
+            // Hide particles when custom bg is active
+            const particles = document.getElementById('site-particles');
+            if (particles) particles.style.display = 'none';
+            document.documentElement.classList.add('has-video-bg');
+        } else {
+            if (videoBg) videoBg.style.display = 'none';
+            if (imageBg) imageBg.style.display = 'none';
+            document.documentElement.classList.remove('has-video-bg');
+        }
+
         if (byKey.cursor_light_enabled === 'false') {
             document.querySelectorAll('.ambient-glow').forEach((el) => { el.style.display = 'none'; });
         }
@@ -348,7 +397,10 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-w
             extraContact.innerHTML = pills.join('');
         }
 
-        return { orbitEnabled: byKey.orbit_enabled !== 'false' };
+        // The `orbit_enabled` setting used to be read out here and returned to the caller, where
+        // it gated the auto-rotation of the Education orbital ring. That ring is gone, so the
+        // toggle in admin.html still saves to site_content but has nothing left to act on. Left
+        // in the database rather than migrated away, so nothing breaks if it ever comes back.
     }
 
     // Real "resume download" count for the admin dashboard -- only counted
@@ -363,12 +415,22 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-w
         });
     }
 
+    function createSocialButtonHtml(s, sizeClass = 'w-8 h-8 sm:w-10 sm:h-10') {
+        const icon = iconForLabel(s.label);
+        const iconHtml = icon.type === 'fa'
+            ? `<i class="${icon.cls}"></i>`
+            : `<span class="material-symbols-outlined text-base sm:text-lg">${icon.name}</span>`;
+        return `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(s.label)}" title="${escapeHtml(s.label)}" class="${sizeClass} liquid-glass-refractive liquid-glass-interactive bounce-feedback flex items-center justify-center rounded-full transition-transform hover:brightness-125 text-on-surface hover:text-primary-container">
+${iconHtml}
+</a>`;
+    }
+
     function renderSocialLinks(rows) {
         const container = document.getElementById('footer-social-links');
         if (!container) return;
-        const visible = (rows || []).filter((s) => s.visible !== false);
+        const visible = (rows && rows.length ? rows : FALLBACK_SOCIAL).filter((s) => s.visible !== false);
         if (!visible.length) return;
-        container.innerHTML = visible.map((s) => `<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors opacity-80 hover:opacity-100 brightness-110" href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.label)}</a>`).join('');
+        container.innerHTML = visible.map((s) => createSocialButtonHtml(s, 'w-8 h-8 sm:w-10 sm:h-10')).join('');
     }
 
     // Picks a real brand icon (Font Awesome Brands) based on the link's label --
@@ -399,21 +461,24 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-w
     function renderHeroSocialIcons(rows) {
         const container = document.getElementById('hero-social-icons');
         if (!container) return;
-        const visible = (rows || []).filter((s) => s.visible !== false);
+        const visible = (rows && rows.length ? rows : FALLBACK_SOCIAL).filter((s) => s.visible !== false);
         if (!visible.length) {
             container.innerHTML = '';
             return;
         }
+        container.innerHTML = visible.map((s) => createSocialButtonHtml(s, 'w-8 h-8 sm:w-10 sm:h-10')).join('');
+    }
 
-        container.innerHTML = visible.map((s) => {
-            const icon = iconForLabel(s.label);
-            const iconHtml = icon.type === 'fa'
-                ? `<i class="${icon.cls}"></i>`
-                : `<span class="material-symbols-outlined text-lg">${icon.name}</span>`;
-            return `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(s.label)}" class="w-8 h-8 sm:w-10 sm:h-10 liquid-glass-refractive liquid-glass-interactive bounce-feedback flex items-center justify-center rounded-full transition-transform hover:brightness-125">
-${iconHtml}
-</a>`;
-        }).join('');
+    // Contact card icon rail -- matches hero social icons
+    function renderContactSocialIcons(rows) {
+        const container = document.getElementById('contact-social-icons');
+        if (!container) return;
+        const visible = (rows && rows.length ? rows : FALLBACK_SOCIAL).filter((s) => s.visible !== false);
+        if (!visible.length) {
+            container.innerHTML = '';
+            return;
+        }
+        container.innerHTML = visible.map((s) => createSocialButtonHtml(s, 'w-9 h-9 sm:w-11 sm:h-11 text-base sm:text-lg')).join('');
     }
 
     // ---------- Experience: vertical timeline (a growing line with cards stacked along it).
@@ -460,153 +525,14 @@ ${x.description ? `<p class="font-body-sm text-body-sm text-on-surface-variant b
 <div class="flex flex-col gap-10 sm:gap-12">${cardsHtml}</div>`;
     }
 
-    // ---------- Education (orbital timeline: nodes rotate around a center,
-    // click one to expand its details). Lives in the right column of About Me.
-    let orbitalTimer = null;
-
-    function renderEducationOrbital(rows, orbitEnabled) {
-        const wrap = document.getElementById('orbital-timeline-wrap');
-        const container = document.getElementById('orbital-timeline');
-        if (!wrap || !container) return;
-
-        if (orbitalTimer) {
-            clearInterval(orbitalTimer);
-            orbitalTimer = null;
-        }
-
-        if (!rows || !rows.length) {
-            wrap.classList.add('hidden');
-            wrap.classList.remove('flex');
-            return;
-        }
-
-        wrap.classList.remove('hidden');
-        wrap.classList.add('flex');
-        // The scale+rotate entrance is handled by assets/js/scene-animations.js when the
-        // "about" scene becomes active, not by a scroll listener -- there's no page scroll
-        // to tie a reveal to anymore.
-
-        container.innerHTML = `
-<div class="absolute inset-0 rounded-full border border-white/10 pointer-events-none"></div>
-<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full flex items-center justify-center pointer-events-none" style="background: linear-gradient(135deg, #a855f7, #3b82f6, #14b8a6);">
-<div class="absolute w-20 h-20 rounded-full border border-white/20 animate-ping" style="opacity: 0.7;"></div>
-<div class="absolute w-24 h-24 rounded-full border border-white/10 animate-ping" style="opacity: 0.5; animation-delay: 0.5s;"></div>
-<div class="w-8 h-8 rounded-full bg-white/80" style="backdrop-filter: blur(8px);"></div>
-</div>`;
-
-        const total = rows.length;
-        const radius = container.clientWidth ? container.clientWidth / 2 : 175;
-        let angle = 0;
-        let autoRotate = orbitEnabled !== false;
-        let expandedId = null;
-
-        const nodes = rows.map((row) => {
-            const range = [row.start_date, row.end_date].filter(Boolean).join(' — ');
-            const isInProgress = !row.end_date;
-            const statusLabel = isInProgress ? 'IN PROGRESS' : 'COMPLETED';
-            const statusColor = isInProgress ? '#60a5fa' : '#4ade80';
-            const wrapEl = document.createElement('div');
-            wrapEl.className = 'absolute left-1/2 top-1/2';
-            wrapEl.innerHTML = `
-<button type="button" class="orbital-btn w-12 h-12 -ml-6 -mt-6 rounded-full flex items-center justify-center border-2 bg-black text-white border-white/40" style="transition: background-color 0.3s, border-color 0.3s, color 0.3s, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;">
-${row.short_name ? `<span class="text-[11px] font-bold tracking-tight">${escapeHtml(row.short_name)}</span>` : `<span class="material-symbols-outlined text-2xl">school</span>`}
-</button>
-<div class="orbital-label absolute top-9 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold uppercase tracking-wide text-white/70 transition-all duration-300">${escapeHtml(row.degree)}</div>
-<div class="orbital-card hidden absolute top-16 left-1/2 -translate-x-1/2 w-64 rounded-lg overflow-visible text-left" style="background: rgba(0,0,0,0.9); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 0 15px ${statusColor}66;">
-<div class="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3" style="background: rgba(255,255,255,0.5);"></div>
-<div class="p-4">
-<div class="flex justify-between items-center mb-2">
-<span class="px-2 text-[10px] font-bold border" style="color:${statusColor}; background:#000; border-color:${statusColor};">${statusLabel}</span>
-${range ? `<span class="text-[11px] text-white/50" style="font-family: ui-monospace, monospace;">${escapeHtml(range)}</span>` : ''}
-</div>
-<p class="font-bold text-sm text-white mt-1">${escapeHtml(row.degree)}</p>
-${row.institution ? `<p class="text-white/80 text-xs mt-1">${escapeHtml(row.institution)}</p>` : ''}
-${row.grade ? `<p class="text-white/60 text-xs mt-1">Grade: ${escapeHtml(row.grade)}</p>` : ''}
-${row.description ? `<p class="text-white/60 text-xs leading-relaxed mt-3 pt-3" style="border-top: 1px solid rgba(255,255,255,0.1);">${escapeHtml(row.description)}</p>` : ''}
-</div>
-</div>`;
-            container.appendChild(wrapEl);
-
-            const node = {
-                row,
-                wrapEl,
-                btn: wrapEl.querySelector('.orbital-btn'),
-                label: wrapEl.querySelector('.orbital-label'),
-                card: wrapEl.querySelector('.orbital-card'),
-            };
-
-            node.btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const opening = expandedId !== row.id;
-                expandedId = opening ? row.id : null;
-                autoRotate = expandedId === null && orbitEnabled !== false;
-
-                if (opening) {
-                    // Rotate the ring so the clicked node lands at the top,
-                    // with a springy "pop" transition on the way there.
-                    const idx = rows.findIndex((r) => r.id === row.id);
-                    angle = (270 - (idx / total) * 360 + 360) % 360;
-                    nodes.forEach((n) => {
-                        n.wrapEl.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-                    });
-                    setTimeout(() => {
-                        nodes.forEach((n) => { n.wrapEl.style.transition = ''; });
-                    }, 650);
-                }
-
-                update();
-            });
-
-            return node;
-        });
-
-        function update() {
-            nodes.forEach((n, i) => {
-                const a = ((i / total) * 360 + angle) % 360;
-                const rad = (a * Math.PI) / 180;
-                const x = radius * Math.cos(rad);
-                const y = radius * Math.sin(rad);
-                const isExpanded = expandedId === n.row.id;
-                const z = isExpanded ? 50 : Math.round(10 + 10 * Math.cos(rad));
-
-                n.wrapEl.style.transform = `translate(${x}px, ${y}px)`;
-                n.wrapEl.style.zIndex = z;
-                n.btn.classList.toggle('bg-white', isExpanded);
-                n.btn.classList.toggle('text-black', isExpanded);
-                n.btn.classList.toggle('border-white', isExpanded);
-                n.btn.classList.toggle('scale-150', isExpanded);
-                n.btn.style.boxShadow = isExpanded ? '0 0 12px rgba(255,255,255,0.4)' : '';
-                n.btn.classList.toggle('bg-black', !isExpanded);
-                n.btn.classList.toggle('text-white', !isExpanded);
-                n.btn.classList.toggle('border-white/40', !isExpanded);
-                n.label.classList.toggle('text-white', isExpanded);
-                n.label.classList.toggle('scale-125', isExpanded);
-                n.label.classList.toggle('text-white/70', !isExpanded);
-                n.card.classList.toggle('hidden', !isExpanded);
-            });
-        }
-
-        update();
-        // Paused whenever the "about" scene isn't the one on screen (see window.SceneTimers
-        // above) so the orbit isn't recalculating/repainting while translated off-viewport.
-        let timerPaused = true;
-        orbitalTimer = setInterval(() => {
-            if (timerPaused || !autoRotate) return;
-            angle = (angle + 0.15) % 360;
-            update();
-        }, 50);
-        window.SceneTimers.register('about', {
-            pause: () => { timerPaused = true; },
-            resume: () => { timerPaused = false; },
-        });
-
-        container.addEventListener('click', (e) => {
-            if (e.target !== container) return;
-            expandedId = null;
-            autoRotate = orbitEnabled !== false;
-            update();
-        });
-    }
+    // The Education orbital ring that lived in the right-hand column of About -- nodes spaced
+    // around a circle, auto-rotating on a 50ms interval, click one to swing it to the top and
+    // expand a detail card -- has been removed, along with its SceneTimers registration (there
+    // is no timer left to pause) and the #orbital-timeline markup it rendered into.
+    //
+    // Nothing renders the `education` table now. The rows are still there and still editable in
+    // admin.html, they just aren't shown anywhere on the public site; the Degree row in About's
+    // details list is hardcoded in index.html, not read from them.
 
     function testimonialCardHtml(t) {
         const rating = Math.max(0, Math.min(5, Number(t.rating) || 0));
@@ -876,15 +802,22 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
     // hardcoded/hidden state instead of breaking the rest of the page.
     async function loadExtras() {
         const client = window.supabaseClient;
-        if (!client) return;
+        if (!client) {
+            renderSocialLinks(FALLBACK_SOCIAL);
+            renderHeroSocialIcons(FALLBACK_SOCIAL);
+            renderContactSocialIcons(FALLBACK_SOCIAL);
+            return;
+        }
 
         const safe = (query) => query.then((r) => (r.error ? { data: null } : r)).catch(() => ({ data: null }));
 
-        const [siteContent, socialLinks, experience, education, testimonials] = await Promise.all([
+        // The `education` table is deliberately not fetched here any more -- the orbital ring
+        // that consumed it is gone, so this was a query whose result nothing read. The rows and
+        // the admin screen that edits them are untouched.
+        const [siteContent, socialLinks, experience, testimonials] = await Promise.all([
             safe(client.from('site_content').select('*')),
             safe(client.from('social_links').select('*').order('sort_order', { ascending: true })),
             safe(client.from('experience').select('*').order('sort_order', { ascending: true })),
-            safe(client.from('education').select('*').order('sort_order', { ascending: true })),
             safe(client.from('testimonials').select('*').order('sort_order', { ascending: true })),
         ]);
 
@@ -892,12 +825,12 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
 
         const byKey = {};
         (siteContent.data || []).forEach((r) => { byKey[r.key] = r.value; });
-        const { orbitEnabled } = applySiteExtras(byKey);
+        applySiteExtras(byKey);
 
         renderSocialLinks(socialLinks.data);
         renderHeroSocialIcons(socialLinks.data);
+        renderContactSocialIcons(socialLinks.data);
         renderExperience(experience.data);
-        renderEducationOrbital(education.data, orbitEnabled);
         renderTestimonials(testimonials.data);
     }
 
