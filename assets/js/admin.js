@@ -731,7 +731,7 @@ ${p.visible === false ? '<span class="text-[10px] px-2 py-0.5 rounded-full white
                 description: document.getElementById('project-description').value.trim(),
                 link_url: document.getElementById('project-website').value.trim() || null,
                 github_url: document.getElementById('project-github').value.trim() || null,
-                tag: document.getElementById('project-tag').value.trim() || null,
+                tag: document.getElementById('project-tag').value.trim() || '',
                 section: document.getElementById('project-section').value,
                 sort_order: Number(document.getElementById('project-sort').value) || 1,
                 image_url: imageUrl,
