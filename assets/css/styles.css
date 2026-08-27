@@ -222,6 +222,8 @@
     #floating-chips {
         position: static !important;
     }
+}
+
 /* ==================== Sliding Tab Glider Indicator ==================== */
 #work-tabs, #testimonials-tabs {
     position: relative;
