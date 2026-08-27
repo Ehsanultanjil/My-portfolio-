@@ -831,40 +831,85 @@
     transition-delay: 200ms;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
     .elastic-gallery {
         flex-direction: column;
-        height: 520px;
-        gap: 8px;
+        height: auto;
+        min-height: 600px;
+        gap: 12px;
+        padding: 4px 0;
     }
     .elastic-card {
-        border-radius: 16px;
+        border-radius: 18px;
+        flex: none !important;
+        height: 68px;
+        min-height: 68px;
+        transition: height 600ms cubic-bezier(0.25, 1, 0.5, 1),
+                    filter 500ms ease,
+                    border-color 400ms ease,
+                    box-shadow 400ms ease;
     }
     .elastic-card.is-active {
-        flex: 3.5;
+        height: auto;
+        min-height: 380px;
+        filter: brightness(1);
     }
     .elastic-card:not(.is-active) {
-        flex: 1;
+        height: 68px;
+        filter: brightness(0.65);
     }
     .elastic-card-content {
-        padding: 16px 14px;
+        padding: 20px 18px;
+    }
+    .elastic-card-tag {
+        font-size: 0.725rem;
+        padding: 4px 12px;
     }
     .elastic-card-title {
-        font-size: 1.25rem;
+        font-size: 1.35rem;
+        font-weight: 800;
+        margin: 4px 0 2px;
+        line-height: 1.25;
+    }
+    .elastic-card-org {
+        font-size: 0.95rem;
+        font-weight: 700;
     }
     .elastic-card-desc {
-        -webkit-line-clamp: 2;
-        font-size: 0.75rem;
+        -webkit-line-clamp: 6;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: rgba(240, 240, 240, 0.95);
+        margin-top: 6px;
+    }
+    .elastic-card-cta {
+        padding: 8px 18px;
+        font-size: 0.8rem;
+        margin-top: 12px;
     }
     .elastic-collapsed-label {
         writing-mode: horizontal-tb;
-        transform: translateX(-50%);
-        bottom: 12px;
-        font-size: 0.8rem;
-        letter-spacing: 0.05em;
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        bottom: auto;
+        transform: translateY(-50%);
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: #ffffff;
+        max-width: 85%;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .elastic-card.is-active .elastic-collapsed-label {
-        transform: translateX(-50%) scale(0.8);
+        opacity: 0;
+        transform: translateY(-50%) scale(0.9);
+    }
+    .elastic-card:not(.is-active) .elastic-collapsed-label {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
     }
 }
 
