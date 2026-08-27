@@ -488,7 +488,8 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-w
                     el.setAttribute('href', `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(value)}`);
                     el.setAttribute('target', '_blank');
                     el.setAttribute('rel', 'noopener noreferrer');
-                    el.innerHTML = `<span class="material-symbols-outlined text-base">mail</span><span>${escapeHtml(value)}</span>`;
+                    const textEl = el.querySelector('#contact-email-text');
+                    if (textEl) textEl.textContent = value;
                 } else if (target.mode === 'resume') {
                     el.setAttribute('href', value);
                     el.setAttribute('target', '_blank');
