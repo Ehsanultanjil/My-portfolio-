@@ -31,12 +31,16 @@
         gsap.killTweensOf(targets);
         gsap.set(targets, vars);
     }
+    const isMobileViewport = !window.matchMedia('(min-width: 1024px)').matches;
+
     function revealTo(el, selector, vars) {
         const targets = el.querySelectorAll(selector);
         if (!targets.length) return;
         gsap.killTweensOf(targets);
         const clear = suspendTransitions(targets);
-        gsap.to(targets, Object.assign({ duration: 0.6, stagger: 0.08, ease: 'power2.out', onComplete: clear, onInterrupt: clear }, vars));
+        const defaultDuration = isMobileViewport ? 0.35 : 0.6;
+        const defaultStagger = isMobileViewport ? 0.04 : 0.08;
+        gsap.to(targets, Object.assign({ duration: defaultDuration, stagger: defaultStagger, ease: 'power2.out', onComplete: clear, onInterrupt: clear }, vars));
     }
 
     const NEUTRAL = { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0 };

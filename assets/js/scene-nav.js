@@ -228,9 +228,9 @@
                 const rect = el.getBoundingClientRect();
                 if (rect.height === 0) return; // class="hidden" (Experience/Testimonials pre-data)
 
-                // Its top has entered the viewport at all -- catches every section the scroll
-                // passed through on the way here, not just wherever it landed.
-                if (rect.top < window.innerHeight && !seen.has(el.id)) {
+                // Pre-reveal approaching sections 350px before entering the viewport,
+                // so during fast continuous scrolling, elements are already smoothly painted.
+                if (rect.top < window.innerHeight + 350 && !seen.has(el.id)) {
                     seen.add(el.id);
                     listeners.forEach((cb) => cb(indexOf(el.id), el.id, 'next'));
                 }
