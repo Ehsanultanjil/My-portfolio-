@@ -27,6 +27,8 @@
         { label: 'Fiverr', url: 'https://www.fiverr.com/rafikhand1', visible: true },
     ];
 
+    let activeSiteContent = {};
+
     function escapeHtml(str) {
         const div = document.createElement('div');
         div.textContent = str == null ? '' : String(str);
@@ -483,8 +485,10 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-w
                 if (target.mode === 'text') el.textContent = value;
                 else if (target.mode === 'href') el.setAttribute('href', value);
                 else if (target.mode === 'email') {
-                    el.setAttribute('href', `mailto:${value}`);
-                    el.textContent = value;
+                    el.setAttribute('href', `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(value)}`);
+                    el.setAttribute('target', '_blank');
+                    el.setAttribute('rel', 'noopener noreferrer');
+                    el.innerHTML = `<span class="material-symbols-outlined text-base">mail</span><span>${escapeHtml(value)}</span>`;
                 } else if (target.mode === 'resume') {
                     el.setAttribute('href', value);
                     el.setAttribute('target', '_blank');
@@ -752,14 +756,16 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-w
             if (overlay) overlay.classList.remove('hidden');
         }
 
+        activeSiteContent = byKey || {};
+
         const extraContact = document.getElementById('contact-extra');
         if (extraContact) {
             const pills = [];
-            if (byKey.contact_phone) pills.push(`<a href="tel:${escapeHtml(byKey.contact_phone.replace(/[^0-9+]/g, ''))}" class="liquid-glass-refractive rounded-full px-4 py-2 hover:text-primary-container transition-colors">${escapeHtml(byKey.contact_phone)}</a>`);
-            if (byKey.contact_whatsapp) pills.push(`<a href="https://wa.me/${escapeHtml(byKey.contact_whatsapp.replace(/[^0-9]/g, ''))}" target="_blank" rel="noopener noreferrer" class="liquid-glass-refractive rounded-full px-4 py-2 hover:text-primary-container transition-colors">WhatsApp</a>`);
             if (byKey.contact_address) pills.push(`<span class="liquid-glass-refractive rounded-full px-4 py-2">${escapeHtml(byKey.contact_address)}</span>`);
             extraContact.innerHTML = pills.join('');
         }
+
+        activeSiteContent = byKey;
 
         // The `orbit_enabled` setting used to be read out here and returned to the caller, where
         // it gated the auto-rotation of the Education orbital ring. That ring is gone, so the
@@ -825,7 +831,14 @@ ${iconHtml}
     function renderHeroSocialIcons(rows) {
         const container = document.getElementById('hero-social-icons');
         if (!container) return;
-        const visible = (rows && rows.length ? rows : FALLBACK_SOCIAL).filter((s) => s.visible !== false);
+        let visible = (rows && rows.length ? rows : FALLBACK_SOCIAL).filter((s) => s.visible !== false);
+        if (activeSiteContent && activeSiteContent.contact_whatsapp) {
+            const hasWa = visible.some((s) => /whatsapp/i.test(s.label || ''));
+            if (!hasWa) {
+                const cleanNum = activeSiteContent.contact_whatsapp.replace(/[^0-9]/g, '');
+                if (cleanNum) visible = [...visible, { label: 'WhatsApp', url: `https://wa.me/${cleanNum}`, visible: true }];
+            }
+        }
         if (!visible.length) {
             container.innerHTML = '';
             return;
@@ -837,7 +850,14 @@ ${iconHtml}
     function renderContactSocialIcons(rows) {
         const container = document.getElementById('contact-social-icons');
         if (!container) return;
-        const visible = (rows && rows.length ? rows : FALLBACK_SOCIAL).filter((s) => s.visible !== false);
+        let visible = (rows && rows.length ? rows : FALLBACK_SOCIAL).filter((s) => s.visible !== false);
+        if (activeSiteContent && activeSiteContent.contact_whatsapp) {
+            const hasWa = visible.some((s) => /whatsapp/i.test(s.label || ''));
+            if (!hasWa) {
+                const cleanNum = activeSiteContent.contact_whatsapp.replace(/[^0-9]/g, '');
+                if (cleanNum) visible = [...visible, { label: 'WhatsApp', url: `https://wa.me/${cleanNum}`, visible: true }];
+            }
+        }
         if (!visible.length) {
             container.innerHTML = '';
             return;
