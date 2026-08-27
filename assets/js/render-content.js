@@ -52,42 +52,293 @@
         };
     })();
 
-    function renderCards(containerId, items) {
+    // ==================== 3D Coverflow Carousel ====================
+    // Converted from a React component to vanilla JS. Each call creates an independent
+    // carousel instance with its own state, autoplay timer, and event listeners.
+
+    // Inline SVG icons (zero external dependencies, matching the React original)
+    const CHEVRON_LEFT_SVG = '<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>';
+    const CHEVRON_RIGHT_SVG = '<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>';
+    const ARROW_RIGHT_SVG = '<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>';
+
+    // 3D position presets: [translateX, scale, rotateY, opacity, zIndex, brightness, blur]
+    // Designed for 5-card visible range (center + 2 each side) that fit comfortably within viewport.
+    function getCoverflowTransform(offset, total) {
+        const o = ((offset % total) + total) % total;
+        if (o === 0)         return { tx: 0,    s: 1,    ry: 0,   op: 1,    z: 30, br: 1,    bl: 0 };
+        if (o === 1)         return { tx: 235,  s: 0.84, ry: -24, op: 0.65, z: 20, br: 0.75, bl: 0 };
+        if (o === 2)         return { tx: 420,  s: 0.68, ry: -38, op: 0.35, z: 10, br: 0.55, bl: 0 };
+        if (o === total - 1) return { tx: -235, s: 0.84, ry: 24,  op: 0.65, z: 20, br: 0.75, bl: 0 };
+        if (o === total - 2) return { tx: -420, s: 0.68, ry: 38,  op: 0.35, z: 10, br: 0.55, bl: 0 };
+        return { tx: 0, s: 0.4, ry: 0, op: 0, z: 0, br: 0.4, bl: 0 };
+    }
+
+    // Mobile-adjusted offsets
+    function getCoverflowTransformMobile(offset, total) {
+        const o = ((offset % total) + total) % total;
+        if (o === 0)         return { tx: 0,    s: 1,    ry: 0,   op: 1,    z: 30, br: 1,    bl: 0 };
+        if (o === 1)         return { tx: 145,  s: 0.82, ry: -18, op: 0.6,  z: 20, br: 0.75, bl: 0 };
+        if (o === 2)         return { tx: 250,  s: 0.65, ry: -28, op: 0.3,  z: 10, br: 0.55, bl: 0 };
+        if (o === total - 1) return { tx: -145, s: 0.82, ry: 18,  op: 0.6,  z: 20, br: 0.75, bl: 0 };
+        if (o === total - 2) return { tx: -250, s: 0.65, ry: 28,  op: 0.3,  z: 10, br: 0.55, bl: 0 };
+        return { tx: 0, s: 0.4, ry: 0, op: 0, z: 0, br: 0.4, bl: 0 };
+    }
+
+    function isMobile() { return window.innerWidth < 640; }
+
+    function renderCoverflow(containerId, items) {
         const container = document.getElementById(containerId);
-        if (!container) return;
+        if (!container || !items || items.length === 0) return;
 
-        container.innerHTML = items.map((p) => {
-            const thumbHtml = p.image_url
-                ? `<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.title)}" class="w-full h-full object-cover">`
-                : `<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 36px;">image</span>`;
+        const total = items.length;
+        let currentIndex = 0;
+        let hovered = false;
+        let autoplayTimer = null;
+        let touchStartX = 0;
 
-            const thumbClass = p.image_url
-                ? 'w-28 sm:w-32 shrink-0 rounded-2xl overflow-hidden flex items-center justify-center'
-                : 'w-28 sm:w-32 shrink-0 rounded-2xl border border-white/10 border-dashed bg-white/[0.02] flex items-center justify-center';
+        // ---------- Build DOM ----------
+        const wrap = document.createElement('div');
+        wrap.className = 'coverflow-wrap';
 
-            const linkButtons = [];
-            if (p.link_url) linkButtons.push(`<a href="${escapeHtml(p.link_url)}" target="_blank" rel="noopener noreferrer" aria-label="Visit ${escapeHtml(p.title)}" class="liquid-glass-refractive liquid-glass-interactive bounce-feedback w-10 h-10 rounded-full flex items-center justify-center text-primary-container transition-transform hover:brightness-125"><span class="material-symbols-outlined text-lg">open_in_new</span></a>`);
-            if (p.github_url) linkButtons.push(`<a href="${escapeHtml(p.github_url)}" target="_blank" rel="noopener noreferrer" aria-label="View source of ${escapeHtml(p.title)}" class="liquid-glass-refractive liquid-glass-interactive bounce-feedback w-10 h-10 rounded-full flex items-center justify-center text-primary-container transition-transform hover:brightness-125"><i class="fa-brands fa-github"></i></a>`);
-            const linkHtml = linkButtons.length
-                ? `<div class="mt-auto flex justify-end gap-2">${linkButtons.join('')}</div>`
-                : `<div class="mt-auto flex justify-end"><div class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant opacity-40"><span class="material-symbols-outlined text-lg">open_in_new</span></div></div>`;
+        // Ambient background removed — cards sit on the site's own background.
 
-            const tagHtml = p.tag
-                ? `<span class="px-3 py-1 rounded-full liquid-glass-refractive text-[10px] font-bold self-start mb-2">${escapeHtml(p.tag)}</span>`
-                : '';
+        // 3D stage
+        const stage = document.createElement('div');
+        stage.className = 'coverflow-stage';
 
-            return `<div class="min-w-[88vw] sm:min-w-[440px] liquid-glass-refractive liquid-glass-interactive bounce-feedback rounded-4xl p-4 flex gap-4" style="will-change: transform;">
-<div class="${thumbClass}" style="aspect-ratio: 3/4;">
-${thumbHtml}
-</div>
-<div class="flex flex-col flex-1 min-w-0 py-1">
-${tagHtml}
-<h3 class="font-headline-lg text-lg mb-2">${escapeHtml(p.title)}</h3>
-<p class="font-body-sm text-body-sm text-on-surface-variant brightness-110 leading-relaxed line-clamp-3 mb-3">${escapeHtml(p.description)}</p>
-${linkHtml}
-</div>
-</div>`;
-        }).join('');
+        // Build each card
+        const cards = items.map((item, idx) => {
+            const card = document.createElement('div');
+            card.className = 'coverflow-card';
+            card.dataset.idx = idx;
+
+            // Image or placeholder
+            if (item.image_url) {
+                const img = document.createElement('img');
+                img.className = 'coverflow-card-img';
+                img.src = item.image_url;
+                img.alt = item.title || '';
+                img.loading = 'lazy';
+                card.appendChild(img);
+            } else {
+                const ph = document.createElement('div');
+                ph.className = 'coverflow-card-placeholder';
+                ph.innerHTML = '<span class="material-symbols-outlined">image</span>';
+                card.appendChild(ph);
+            }
+
+            // Gradient overlay
+            const grad = document.createElement('div');
+            grad.className = 'coverflow-card-gradient';
+            card.appendChild(grad);
+
+            // Content overlay
+            const content = document.createElement('div');
+            content.className = 'coverflow-card-content';
+
+            // Tag (top-right)
+            const tagDiv = document.createElement('div');
+            tagDiv.style.textAlign = 'right';
+            tagDiv.style.width = '100%';
+            if (item.tag) {
+                const tagSpan = document.createElement('span');
+                tagSpan.className = 'coverflow-card-tag';
+                tagSpan.textContent = item.tag;
+                tagDiv.appendChild(tagSpan);
+            }
+            content.appendChild(tagDiv);
+
+            // Body (bottom section)
+            const body = document.createElement('div');
+            body.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:3px;margin-top:auto;padding-bottom:4px;';
+
+            // Title
+            const title = document.createElement('h3');
+            title.className = 'coverflow-card-title';
+            title.textContent = item.title || '';
+            body.appendChild(title);
+
+            // Divider
+            const divider = document.createElement('div');
+            divider.className = 'coverflow-card-divider';
+            body.appendChild(divider);
+
+            // Description
+            if (item.description) {
+                const desc = document.createElement('p');
+                desc.className = 'coverflow-card-desc';
+                desc.textContent = item.description;
+                body.appendChild(desc);
+            }
+
+            // CTA buttons
+            const actions = document.createElement('div');
+            actions.className = 'coverflow-card-actions';
+
+            if (item.link_url) {
+                const cta = document.createElement('a');
+                cta.href = item.link_url;
+                cta.target = '_blank';
+                cta.rel = 'noopener noreferrer';
+                cta.className = 'coverflow-cta';
+                cta.innerHTML = '<span>View Project</span>' + ARROW_RIGHT_SVG;
+                actions.appendChild(cta);
+            }
+            if (item.github_url) {
+                const gh = document.createElement('a');
+                gh.href = item.github_url;
+                gh.target = '_blank';
+                gh.rel = 'noopener noreferrer';
+                gh.className = 'coverflow-cta-github';
+                gh.innerHTML = '<i class="fa-brands fa-github"></i>';
+                gh.setAttribute('aria-label', 'View source on GitHub');
+                actions.appendChild(gh);
+            }
+            // If no links at all, show a muted icon
+            if (!item.link_url && !item.github_url) {
+                const muted = document.createElement('div');
+                muted.style.cssText = 'width:36px;height:36px;border-radius:9999px;display:flex;align-items:center;justify-content:center;color:rgba(185,202,203,0.35);';
+                muted.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px">open_in_new</span>';
+                actions.appendChild(muted);
+            }
+
+            body.appendChild(actions);
+            content.appendChild(body);
+            card.appendChild(content);
+
+            // Click side cards to navigate
+            card.addEventListener('click', () => {
+                if (idx !== currentIndex) goTo(idx);
+            });
+
+            stage.appendChild(card);
+            return card;
+        });
+
+        wrap.appendChild(stage);
+
+        // Nav arrows
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'coverflow-arrow coverflow-arrow-prev';
+        prevBtn.setAttribute('aria-label', 'Previous');
+        prevBtn.innerHTML = CHEVRON_LEFT_SVG;
+        prevBtn.addEventListener('click', prev);
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'coverflow-arrow coverflow-arrow-next';
+        nextBtn.setAttribute('aria-label', 'Next');
+        nextBtn.innerHTML = CHEVRON_RIGHT_SVG;
+        nextBtn.addEventListener('click', next);
+
+        stage.appendChild(prevBtn);
+        stage.appendChild(nextBtn);
+
+        // Pagination dots
+        const dotsWrap = document.createElement('div');
+        dotsWrap.className = 'coverflow-dots';
+        const dots = items.map((_, idx) => {
+            const dot = document.createElement('button');
+            dot.className = 'coverflow-dot';
+            dot.setAttribute('aria-label', 'Go to slide ' + (idx + 1));
+            dot.addEventListener('click', () => goTo(idx));
+            dotsWrap.appendChild(dot);
+            return dot;
+        });
+        wrap.appendChild(dotsWrap);
+
+        // Mount
+        container.innerHTML = '';
+        container.appendChild(wrap);
+
+        // ---------- State management ----------
+        function update() {
+            const getT = isMobile() ? getCoverflowTransformMobile : getCoverflowTransform;
+            cards.forEach((card, idx) => {
+                const offset = idx - currentIndex;
+                const t = getT(offset, total);
+                const isCenter = (offset % total + total) % total === 0;
+
+                card.style.transform = `translateX(${t.tx}px) scale(${t.s}) rotateY(${t.ry}deg)`;
+                card.style.opacity = t.op;
+                card.style.zIndex = t.z;
+
+                if (isCenter) {
+                    card.classList.add('is-center');
+                    card.style.filter = 'none';
+                } else {
+                    card.classList.remove('is-center');
+                    card.style.filter = t.bl ? `brightness(${t.br}) blur(${t.bl}px)` : (t.br < 1 ? `brightness(${t.br})` : 'none');
+                }
+            });
+
+
+
+            // Update dots
+            dots.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === currentIndex);
+            });
+        }
+
+        function next() { currentIndex = (currentIndex + 1) % total; update(); }
+        function prev() { currentIndex = (currentIndex - 1 + total) % total; update(); }
+        function goTo(idx) { currentIndex = idx % total; update(); }
+
+        // ---------- Autoplay ----------
+        function startAutoplay() {
+            stopAutoplay();
+            if (total <= 1) return;
+            autoplayTimer = setInterval(() => {
+                if (!hovered) next();
+            }, 5000);
+        }
+        function stopAutoplay() {
+            if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; }
+        }
+
+        wrap.addEventListener('mouseenter', () => { hovered = true; });
+        wrap.addEventListener('mouseleave', () => { hovered = false; });
+
+        // ---------- Touch swipe ----------
+        wrap.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+        wrap.addEventListener('touchend', (e) => {
+            const diff = e.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(diff) > 45) {
+                if (diff < 0) next(); else prev();
+            }
+        }, { passive: true });
+
+        // ---------- Keyboard (only when this panel is visible) ----------
+        function handleKey(e) {
+            // Only respond if this coverflow's panel is visible
+            const panel = container.closest('.work-panel');
+            if (panel && panel.classList.contains('hidden')) return;
+            if (e.key === 'ArrowLeft') { prev(); e.preventDefault(); }
+            if (e.key === 'ArrowRight') { next(); e.preventDefault(); }
+        }
+        window.addEventListener('keydown', handleKey);
+
+        // ---------- Responsive resize ----------
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(update, 150);
+        });
+
+        // ---------- Init ----------
+        update();
+        startAutoplay();
+
+        // Pause autoplay when the work scene isn't active (via SceneTimers)
+        // The carousel registers itself once; SceneTimers handles pause/resume.
+        if (window.SceneTimers && !window._coverflowSceneRegistered) {
+            window._coverflowSceneRegistered = true;
+            window.SceneTimers.register('work', {
+                resume() { startAutoplay(); },
+                pause() { stopAutoplay(); },
+            });
+        }
     }
 
     // The floating marquee pulls every skill name across all categories (not
@@ -375,6 +626,16 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-w
 
             applyBackground(activeOption);
 
+            // Pause background video when tab is hidden to save GPU cycles and battery
+            document.addEventListener('visibilitychange', () => {
+                if (!videoEl || videoBg.style.display === 'none') return;
+                if (document.hidden) {
+                    videoEl.pause();
+                } else {
+                    videoEl.play().catch(() => {});
+                }
+            });
+
             // Always show the switcher in the top right on desktop
             if (switcher) {
                 switcher.classList.remove('hidden');
@@ -584,9 +845,18 @@ ${iconHtml}
         container.innerHTML = visible.map((s) => createSocialButtonHtml(s, 'w-9 h-9 sm:w-11 sm:h-11 text-base sm:text-lg')).join('');
     }
 
-    // ---------- Experience: vertical timeline (a growing line with cards stacked along it).
-    // The line-grow + card-stagger entrance itself is handled by assets/js/scene-animations.js
-    // (targets .experience-line / .experience-card) when the "experience" scene becomes active.
+    // Curated dark tech stock images for experience cards if no custom image is uploaded
+    const STOCK_EXPERIENCE_IMAGES = [
+        'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=800&auto=format&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80',
+    ];
+
+    // ---------- Experience: Elastic Accordion Gallery ----------
+    // Converted from React ElasticGallery component.
+    // Expands active card with cubic-bezier spring curves, background zoom, and dual state.
     function renderExperience(rows) {
         const section = document.getElementById('experience');
         const container = document.getElementById('experience-list');
@@ -597,35 +867,61 @@ ${iconHtml}
         }
 
         section.classList.remove('hidden');
-        const cardsHtml = rows.map((x) => {
-            const thumbHtml = x.image_url
-                ? `<img src="${escapeHtml(x.image_url)}" alt="${escapeHtml(x.title)}" class="w-full h-full object-cover">`
-                : `<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 28px;">work</span>`;
 
-            const thumbClass = x.image_url
-                ? 'w-14 h-14 shrink-0 rounded-xl overflow-hidden flex items-center justify-center'
-                : 'w-14 h-14 shrink-0 rounded-xl border border-white/10 border-dashed bg-white/[0.02] flex items-center justify-center';
+        let activeIdx = 0; // Default active card (first / most recent)
 
+        const gallery = document.createElement('div');
+        gallery.className = 'elastic-gallery';
+
+        const cards = rows.map((x, idx) => {
+            const card = document.createElement('div');
+            card.className = `elastic-card experience-card ${idx === activeIdx ? 'is-active' : ''}`;
+            card.dataset.idx = idx;
+
+            const bgSrc = x.image_url || STOCK_EXPERIENCE_IMAGES[idx % STOCK_EXPERIENCE_IMAGES.length];
             const range = [x.start_date, x.end_date].filter(Boolean).join(' — ');
+            const link = x.website_url || x.website || x.link_url || x.url || x.company_url || '';
+            const linkBtnHtml = link
+                ? `<a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer" class="elastic-card-cta" onclick="event.stopPropagation()">
+                    <span>View Details</span>
+                    <span class="material-symbols-outlined text-xs">arrow_outward</span>
+                </a>`
+                : '';
 
-            return `<div class="relative pl-10 sm:pl-12">
-<span class="absolute left-0 top-1.5 w-3 h-3 rounded-full bg-primary-container shadow-[0_0_10px_rgba(0,240,255,0.6)]"></span>
-<div class="experience-card liquid-glass-refractive liquid-glass-interactive rounded-4xl p-5 sm:p-6 flex gap-4">
-<div class="${thumbClass}">
-${thumbHtml}
-</div>
-<div class="flex flex-col flex-1 min-w-0 py-0.5">
-${range ? `<span class="px-3 py-1 rounded-full liquid-glass-refractive text-[10px] font-bold self-start mb-2">${escapeHtml(range)}</span>` : ''}
-<h3 class="font-headline-lg text-lg mb-1">${escapeHtml(x.title)}</h3>
-<p class="font-body-sm text-body-sm text-primary-container mb-2">${escapeHtml(x.organization)}</p>
-${x.description ? `<p class="font-body-sm text-body-sm text-on-surface-variant brightness-110 leading-relaxed line-clamp-3">${escapeHtml(x.description)}</p>` : ''}
-</div>
-</div>
-</div>`;
-        }).join('');
+            card.innerHTML = `
+                <img class="elastic-card-bg" src="${escapeHtml(bgSrc)}" alt="${escapeHtml(x.title)}" loading="lazy">
+                <div class="elastic-card-overlay"></div>
+                <div class="elastic-card-content">
+                    <div class="flex items-center justify-between">
+                        ${range ? `<span class="elastic-card-tag">${escapeHtml(range)}</span>` : '<span></span>'}
+                    </div>
+                    <div class="elastic-collapsed-label">${escapeHtml(x.title)}</div>
+                    <div class="elastic-active-content">
+                        <h3 class="elastic-card-title">${escapeHtml(x.title)}</h3>
+                        <p class="elastic-card-org">${escapeHtml(x.organization)}</p>
+                        ${x.description ? `<p class="elastic-card-desc">${escapeHtml(x.description)}</p>` : ''}
+                        ${linkBtnHtml}
+                    </div>
+                </div>
+            `;
 
-        container.innerHTML = `<div class="experience-line absolute left-[5px] sm:left-[7px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary-container/70 via-primary-container/25 to-transparent"></div>
-<div class="flex flex-col gap-10 sm:gap-12">${cardsHtml}</div>`;
+            function activate() {
+                if (activeIdx === idx) return;
+                activeIdx = idx;
+                cards.forEach((c, i) => {
+                    c.classList.toggle('is-active', i === activeIdx);
+                });
+            }
+
+            card.addEventListener('mouseenter', activate);
+            card.addEventListener('click', activate);
+
+            gallery.appendChild(card);
+            return card;
+        });
+
+        container.innerHTML = '';
+        container.appendChild(gallery);
     }
 
     // The Education orbital ring that lived in the right-hand column of About -- nodes spaced
@@ -646,7 +942,7 @@ ${x.description ? `<p class="font-body-sm text-body-sm text-on-surface-variant b
         // position/company hold country/platform for these reviews (e.g. "United Kingdom · Fiverr").
         const roleLine = [t.position, t.company].filter(Boolean).join(' · ');
         return `<div class="testimonial-card liquid-glass-refractive rounded-3xl p-4 sm:p-5 flex flex-col gap-3">
-<div class="flex text-primary-container">${stars}</div>
+<div class="flex text-[#FFB800] gap-0.5" style="filter: drop-shadow(0 0 6px rgba(255, 184, 0, 0.45));">${stars}</div>
 <div class="flex-1 min-h-0"><p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed line-clamp-4">"${escapeHtml(t.quote)}"</p></div>
 <div class="flex items-center gap-2.5 pt-2 border-t border-white/10">
 ${photo}
@@ -677,175 +973,308 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
     // Autoplay pauses on hover and whenever the "testimonials" scene isn't on screen (via
     // window.SceneTimers); switching tabs re-registers it against the new review set and
     // clears the previous tab's interval so only one is ever running.
-    function renderCarousel(container, items) {
-        if (!items.length) {
+    // ==================== Testimonials 3D Physics Coverflow Carousel ====================
+    // Converted from React coverflow-carousel component to vanilla JS.
+    // Supports continuous pointer drag with momentum throw, 3D perspective rotation,
+    // depth recession, autoplay, dots, keyboard, and SceneTimers integration.
+
+    function renderTestimonialsCoverflow(container, items) {
+        if (!items || !items.length) {
             container.innerHTML = `<div class="liquid-glass-refractive rounded-4xl p-10 text-center text-on-surface-variant text-sm min-h-[200px] flex items-center justify-center">No reviews in this category yet.</div>`;
             return () => {};
         }
 
-        if (items.length === 1) {
-            container.innerHTML = `<div class="max-w-md mx-auto">${testimonialCardHtml(items[0])}</div>`;
-            return () => {};
-        }
+        const count = items.length;
+        const loop = count > 2;
 
-        const N = items.length;
+        // Constants for 3D physics
+        const rotate = 36; // degrees of tilt
+        const depth = 0.65; // depth recession fraction
+        const falloff = 0.55;
 
-        if (N < 5) {
-            // Too few reviews for the 5-slot infinite-loop mechanism (buffers would overlap
-            // with visible slots) -- just show them all, no looping/nav needed.
-            container.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-${Math.min(N, 3)} gap-4">${items.map(testimonialCardHtml).join('')}</div>`;
-            return () => {};
-        }
-
-        // The two arrows are `hidden sm:flex`: on a phone they'd cost about 100px of a 375px
-        // screen (two 44px buttons plus the row gaps), over a quarter of the width, which is
-        // what was squeezing the card. Below 640px the card takes the full width instead and
-        // the dot strip below plus a swipe replace them -- see the swipe handler and
-        // renderDots() further down.
-        container.innerHTML = `<div class="flex items-center gap-2 sm:gap-4">
-<button type="button" class="testimonial-prev w-10 h-10 sm:w-11 sm:h-11 rounded-full liquid-glass-refractive liquid-glass-interactive hidden sm:flex items-center justify-center bounce-feedback shrink-0" aria-label="Previous review"><span class="material-symbols-outlined text-lg">chevron_left</span></button>
-<div class="testimonial-viewport flex-1">
-<div class="testimonial-track"></div>
-</div>
-<button type="button" class="testimonial-next w-10 h-10 sm:w-11 sm:h-11 rounded-full liquid-glass-refractive liquid-glass-interactive hidden sm:flex items-center justify-center bounce-feedback shrink-0" aria-label="Next review"><span class="material-symbols-outlined text-lg">chevron_right</span></button>
-</div>
-<div class="testimonial-dots mt-5 flex sm:hidden justify-center items-center gap-2" aria-hidden="true"></div>`;
-
-        const track = container.querySelector('.testimonial-track');
-        const REST_ROLES = ['buffer', 'side', 'center', 'side', 'buffer'];
-        let center = 0;
-        let animating = false;
-
-        // On mobile only 1 slot is visible (see .testimonial-track's responsive width in
-        // styles.css) -- centering that single visible slot on the true "center" slot (index 2)
-        // needs a -40% resting offset instead of the -20% that correctly centers the 3-wide
-        // (desktop) or 2-wide (tablet) window. Without this, the one card mobile shows would be
-        // a dim "side" slot instead of the featured "center" one.
-        function restOffsetPct() {
-            return window.matchMedia('(min-width: 640px)').matches ? -20 : -40;
-        }
-
-        // Phone-only position indicator, standing in for the hidden arrows: it's what tells you
-        // there are more reviews at all, which a lone full-width card with nothing either side
-        // of it otherwise doesn't. Dots stop working as a count past roughly eight -- they
-        // either overflow the width or shrink into an unreadable smear -- so a plain "n / N"
-        // counter takes over from there rather than trying to squeeze in one dot per review.
-        //
-        // Built once and then only re-flagged, never re-rendered: .testimonial-dot animates its
-        // width to stretch the active one into a pill, and a fresh element out of innerHTML has
-        // no previous value to transition from, so rebuilding the strip each time would make it
-        // snap instead. (The >8 counter is plain text with nothing to animate, so it rewrites.)
-        const dotsEl = container.querySelector('.testimonial-dots');
-        const DOTS_MAX = 8;
-
-        if (N <= DOTS_MAX) {
-            dotsEl.innerHTML = items.map(() => '<span class="testimonial-dot"></span>').join('');
-        }
-
-        function syncDots() {
-            if (N <= DOTS_MAX) {
-                [...dotsEl.children].forEach((dot, i) => { dot.dataset.active = String(i === center); });
-            } else {
-                dotsEl.innerHTML = `<span class="font-label-md text-label-md text-on-surface-variant opacity-80">${center + 1} / ${N}</span>`;
-            }
-        }
-
-        function renderSlots() {
-            track.innerHTML = [-2, -1, 0, 1, 2].map((offset, i) => {
-                const idx = ((center + offset) % N + N) % N;
-                return `<div class="testimonial-slot" data-role="${REST_ROLES[i]}">${testimonialCardHtml(items[idx])}</div>`;
-            }).join('');
-            track.style.transform = `translateX(${restOffsetPct()}%)`;
-        }
-
-        function shift(direction) {
-            if (animating) return;
-            animating = true;
-
-            // `center` advances here rather than in onEnd (nothing below it depends on the old
-            // value -- the role retag and the transform are both purely relative) so the dots
-            // can move off it in the same frame the slide starts. Updating them at the end
-            // instead would leave the indicator sitting 600ms behind the card it describes,
-            // which reads as lag.
-            center = ((center + direction) % N + N) % N;
-            syncDots();
-
-            const slots = [...track.children];
-            const oldRoles = slots.map((s) => s.dataset.role);
-            slots.forEach((s, i) => {
-                s.dataset.role = oldRoles[i - direction] || 'buffer';
-            });
-            track.style.transform = `translateX(${restOffsetPct() - direction * 20}%)`;
-
-            const onEnd = () => {
-                track.removeEventListener('transitionend', onEnd);
-                track.classList.add('no-transition');
-                renderSlots(); // also snaps the transform back to restOffsetPct()
-                void track.offsetWidth; // commit the no-transition state before re-enabling it
-                track.classList.remove('no-transition');
-                animating = false;
-            };
-            track.addEventListener('transitionend', onEnd, { once: true });
-        }
-
-        renderSlots();
-        syncDots();
-
-        container.querySelector('.testimonial-prev').addEventListener('click', () => shift(-1));
-        container.querySelector('.testimonial-next').addEventListener('click', () => shift(1));
-
-        // Swipe. Registered unconditionally rather than behind a matchMedia check -- it's
-        // harmless on a touch-capable laptop, which still has the arrows -- but it's the only
-        // manual control that exists below 640px, where they're hidden.
-        //
-        // The gesture has to be clearly horizontal to count: mobile scrolls the page itself
-        // vertically (scene-nav.js's initMobile), so a drag that's mostly vertical, or that
-        // started as a swipe and turned into a scroll, belongs to the page and must not also
-        // advance the carousel. Listeners stay passive since nothing here calls preventDefault
-        // -- a horizontal drag doesn't scroll anything, so there's nothing to suppress.
-        let touchX = null;
-        let touchY = null;
-        const viewport = container.querySelector('.testimonial-viewport');
-        viewport.addEventListener('touchstart', (e) => {
-            touchX = e.touches[0].clientX;
-            touchY = e.touches[0].clientY;
-        }, { passive: true });
-        viewport.addEventListener('touchend', (e) => {
-            if (touchX == null) return;
-            const dx = touchX - e.changedTouches[0].clientX;
-            const dy = touchY - e.changedTouches[0].clientY;
-            touchX = null;
-            touchY = null;
-            if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
-            shift(dx > 0 ? 1 : -1); // drag left (positive dx) reveals the next review
-        }, { passive: true });
-
-        // Autoplay is torn down and rebuilt (not just flagged on/off) every time it should
-        // start or stop, so the next tick is always exactly 4s from whenever it actually
-        // starts -- a single always-running interval would keep ticking on its original phase
-        // from mount time, so the first tick after becoming active could land anywhere from
-        // 0-4s later rather than a full 4s, and could even double-fire within one "4 second"
-        // wait if the phase happened to align that way.
-        let sceneActive = false;
+        let pos = 0;
+        let target = 0;
+        let selected = 0;
+        let cardWidth = 280;
+        let rafId = null;
+        let drag = null;
+        let autoplayTimer = null;
         let hovering = false;
-        let intervalId = null;
+        let sceneActive = false;
 
+        function indexAt(p) {
+            return ((Math.round(p) % count) + count) % count;
+        }
+
+        function clamp(p) {
+            return loop ? p : Math.max(0, Math.min(count - 1, p));
+        }
+
+        function getPitch() {
+            const isMob = window.innerWidth < 640;
+            return isMob ? cardWidth * 0.72 : cardWidth * 0.76;
+        }
+
+        // Build DOM
+        const wrapper = document.createElement('div');
+        wrapper.className = 'testimonial-coverflow-wrapper';
+
+        const frame = document.createElement('div');
+        frame.className = 'testimonial-coverflow-frame';
+        frame.setAttribute('tabindex', '0');
+        frame.setAttribute('role', 'region');
+        frame.setAttribute('aria-label', 'Testimonials carousel');
+
+        const stage = document.createElement('div');
+        stage.className = 'testimonial-coverflow-stage';
+
+        const cardEls = items.map((t, idx) => {
+            const card = document.createElement('div');
+            card.className = 'testimonial-coverflow-card';
+            card.dataset.idx = idx;
+
+            const rating = Math.max(0, Math.min(5, Number(t.rating) || 5));
+            const stars = Array.from({ length: 5 }, (_, si) =>
+                `<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' ${si < rating ? 1 : 0};">star</span>`
+            ).join('');
+
+            const photo = t.photo_url
+                ? `<img src="${escapeHtml(t.photo_url)}" class="w-9 h-9 rounded-full object-cover shrink-0 border border-primary-container/30">`
+                : `<div class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center shrink-0 border border-white/10"><span class="material-symbols-outlined text-on-surface-variant text-base">person</span></div>`;
+
+            const roleLine = [t.position, t.company].filter(Boolean).join(' · ');
+
+            card.innerHTML = `
+                <div class="flex items-center justify-between pointer-events-none">
+                    <div class="flex text-[#FFB800] gap-0.5" style="filter: drop-shadow(0 0 6px rgba(255, 184, 0, 0.45));">${stars}</div>
+                    <span class="material-symbols-outlined text-white/20 text-2xl">format_quote</span>
+                </div>
+                <p class="testimonial-card-quote pointer-events-none">"${escapeHtml(t.quote)}"</p>
+                <div class="flex items-center gap-2.5 pt-3 border-t border-white/10 pointer-events-none">
+                    ${photo}
+                    <div class="min-w-0">
+                        <p class="font-bold text-xs sm:text-sm text-on-surface truncate">${escapeHtml(t.client_name)}</p>
+                        ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant truncate">${escapeHtml(roleLine)}</p>` : ''}
+                    </div>
+                </div>
+            `;
+
+            card.addEventListener('click', (e) => {
+                e.stopPropagation();
+                goTo(idx);
+            });
+
+            stage.appendChild(card);
+            return card;
+        });
+
+        frame.appendChild(stage);
+
+        // Arrows
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'testimonial-arrow testimonial-arrow-prev';
+        prevBtn.setAttribute('aria-label', 'Previous review');
+        prevBtn.innerHTML = CHEVRON_LEFT_SVG;
+        prevBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+        prevBtn.addEventListener('click', (e) => { e.stopPropagation(); nudge(-1); });
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'testimonial-arrow testimonial-arrow-next';
+        nextBtn.setAttribute('aria-label', 'Next review');
+        nextBtn.innerHTML = CHEVRON_RIGHT_SVG;
+        nextBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+        nextBtn.addEventListener('click', (e) => { e.stopPropagation(); nudge(1); });
+
+        frame.appendChild(prevBtn);
+        frame.appendChild(nextBtn);
+
+        wrapper.appendChild(frame);
+
+        // Dots
+        const dotsWrap = document.createElement('div');
+        dotsWrap.className = 'testimonial-coverflow-dots';
+        const dotEls = items.map((_, idx) => {
+            const dot = document.createElement('button');
+            dot.className = 'testimonial-coverflow-dot';
+            dot.setAttribute('aria-label', `Go to slide ${idx + 1}`);
+            dot.addEventListener('pointerdown', (e) => e.stopPropagation());
+            dot.addEventListener('click', (e) => { e.stopPropagation(); goTo(idx); });
+            dotsWrap.appendChild(dot);
+            return dot;
+        });
+        wrapper.appendChild(dotsWrap);
+
+        container.innerHTML = '';
+        container.appendChild(wrapper);
+
+        // Paint 3D transformations
+        function paint() {
+            if (!cardWidth) return;
+            const pitch = getPitch();
+
+            cardEls.forEach((card, index) => {
+                let offset = index - pos;
+                if (loop) {
+                    offset = ((offset % count) + count) % count;
+                    if (offset > count / 2) offset -= count;
+                }
+
+                const distance = Math.abs(offset);
+                if (distance > 2.3) {
+                    card.style.opacity = '0';
+                    card.style.pointerEvents = 'none';
+                    return;
+                }
+
+                const ramp = Math.pow(distance, falloff);
+                const tilt = Math.min(rotate * ramp, 76) * Math.sign(offset);
+
+                card.style.transform =
+                    `translateX(calc(-50% + ${offset * pitch}px)) ` +
+                    `translateZ(${-depth * cardWidth * ramp}px) rotateY(${-tilt}deg)`;
+
+                const opacity = distance <= 1
+                    ? (1 - distance * 0.35)
+                    : Math.max(0, 0.65 - (distance - 1) * 0.45);
+
+                card.style.opacity = String(opacity);
+                card.style.pointerEvents = 'auto';
+                card.style.zIndex = String(100 - Math.round(distance * 10));
+
+                if (distance < 0.45) {
+                    card.classList.add('is-center');
+                } else {
+                    card.classList.remove('is-center');
+                }
+            });
+
+            dotEls.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === selected);
+            });
+        }
+
+        function settle(dest) {
+            if (rafId !== null) cancelAnimationFrame(rafId);
+            target = dest;
+            selected = indexAt(dest);
+
+            const step = () => {
+                const remaining = target - pos;
+                if (Math.abs(remaining) < 0.0004) {
+                    pos = target;
+                    paint();
+                    rafId = null;
+                    return;
+                }
+                pos += remaining * 0.16;
+                paint();
+                rafId = requestAnimationFrame(step);
+            };
+            rafId = requestAnimationFrame(step);
+        }
+
+        function goTo(index) {
+            const dest = loop
+                ? index + Math.round((target - index) / count) * count
+                : index;
+            settle(clamp(dest));
+        }
+
+        function nudge(by) {
+            settle(clamp(Math.round(target) + by));
+        }
+
+        // Pointer Drag & Velocity Throw
+        function onPointerDown(e) {
+            if (e.target.closest('.testimonial-arrow') || e.target.closest('.testimonial-coverflow-dot')) return;
+            if (rafId !== null) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
+            drag = {
+                id: e.pointerId,
+                startX: e.clientX,
+                x: e.clientX,
+                pos: pos,
+                v: 0,
+                t: performance.now(),
+                captured: false,
+            };
+        }
+
+        function onPointerMove(e) {
+            if (!drag || drag.id !== e.pointerId) return;
+            const pitch = getPitch();
+            if (!pitch) return;
+
+            if (!drag.captured && Math.abs(e.clientX - drag.startX) > 4) {
+                try { frame.setPointerCapture(e.pointerId); } catch (err) {}
+                drag.captured = true;
+            }
+
+            const now = performance.now();
+            const prev = pos;
+            pos = clamp(drag.pos - (e.clientX - drag.startX) / pitch);
+            drag.v = ((pos - prev) / Math.max(now - drag.t, 1)) * 1000;
+            drag.t = now;
+            drag.x = e.clientX;
+
+            const idx = indexAt(pos);
+            if (idx !== selected) selected = idx;
+            paint();
+        }
+
+        function endDrag(e) {
+            if (!drag || drag.id !== e.pointerId) return;
+            const isClick = Math.abs(e.clientX - drag.startX) < 6;
+            const carried = isClick ? 0 : Math.max(-2, Math.min(2, drag.v * 0.18));
+            drag = null;
+            settle(clamp(Math.round(pos + carried)));
+        }
+
+        frame.addEventListener('pointerdown', onPointerDown);
+        frame.addEventListener('pointermove', onPointerMove);
+        frame.addEventListener('pointerup', endDrag);
+        frame.addEventListener('pointercancel', endDrag);
+
+        frame.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') { e.preventDefault(); nudge(-1); }
+            else if (e.key === 'ArrowRight') { e.preventDefault(); nudge(1); }
+        });
+
+        // Resize observation
+        function measure() {
+            if (cardEls[0]) {
+                cardWidth = cardEls[0].offsetWidth;
+                frame.style.perspective = `${cardWidth * 3.2}px`;
+                paint();
+            }
+        }
+        measure();
+        const ro = new ResizeObserver(measure);
+        ro.observe(frame);
+
+        // Autoplay
         function syncAutoplay() {
-            if (intervalId) { clearInterval(intervalId); intervalId = null; }
-            if (sceneActive && !hovering) {
-                intervalId = setInterval(() => { if (!animating) shift(1); }, 4000);
+            if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; }
+            if (sceneActive && !hovering && count > 1) {
+                autoplayTimer = setInterval(() => { nudge(1); }, 4500);
             }
         }
 
-        container.addEventListener('mouseenter', () => { hovering = true; syncAutoplay(); });
-        container.addEventListener('mouseleave', () => { hovering = false; syncAutoplay(); });
+        wrapper.addEventListener('mouseenter', () => { hovering = true; syncAutoplay(); });
+        wrapper.addEventListener('mouseleave', () => { hovering = false; syncAutoplay(); });
 
         window.SceneTimers.register('testimonials', {
             pause: () => { sceneActive = false; syncAutoplay(); },
             resume: () => { sceneActive = true; syncAutoplay(); },
         });
 
-        return () => { if (intervalId) clearInterval(intervalId); };
+        return () => {
+            if (rafId !== null) cancelAnimationFrame(rafId);
+            if (autoplayTimer) clearInterval(autoplayTimer);
+            ro.disconnect();
+        };
     }
 
     function renderTestimonials(rows) {
@@ -881,7 +1310,7 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
 
         function mount() {
             if (stopAutoplay) stopAutoplay();
-            stopAutoplay = renderCarousel(container, groups[activeSection]);
+            stopAutoplay = renderTestimonialsCoverflow(container, groups[activeSection]);
         }
 
         if (tabsEl) {
@@ -948,13 +1377,13 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
 
     loadFromSupabase().then((data) => {
         if (data) {
-            renderCards('projects-list', data.engineering.length ? data.engineering : FALLBACK_ENGINEERING);
-            renderCards('community-list', data.community.length ? data.community : FALLBACK_COMMUNITY);
+            renderCoverflow('projects-list', data.engineering.length ? data.engineering : FALLBACK_ENGINEERING);
+            renderCoverflow('community-list', data.community.length ? data.community : FALLBACK_COMMUNITY);
             renderSkills(data.skills);
             renderMarquee(data.skills);
         } else {
-            renderCards('projects-list', FALLBACK_ENGINEERING);
-            renderCards('community-list', FALLBACK_COMMUNITY);
+            renderCoverflow('projects-list', FALLBACK_ENGINEERING);
+            renderCoverflow('community-list', FALLBACK_COMMUNITY);
             renderSkills(FALLBACK_SKILLS);
             renderMarquee(FALLBACK_SKILLS);
         }

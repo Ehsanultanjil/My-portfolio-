@@ -177,20 +177,31 @@
    match (scrollIntoView instead of translateX), so every consumer keeps working through the
    same API. Sections size to their own content instead of being forced to 100vh each. */
 @media (max-width: 1023px) {
+    html, body {
+        overflow-x: hidden;
+        max-width: 100vw;
+    }
     #scene-viewport {
         position: static;
-        overflow: visible;
+        overflow-x: clip;
+        overflow-y: visible;
+        max-width: 100vw;
     }
     #scene-track {
         display: block;
         height: auto;
         transform: none !important;
         will-change: auto;
+        overflow-x: clip;
+        overflow-y: visible;
+        max-width: 100vw;
     }
     .scene {
-        width: auto;
+        width: 100%;
+        max-width: 100vw;
         height: auto;
-        overflow: visible;
+        overflow-x: clip;
+        overflow-y: visible;
     }
     /* Every .scene-inner's top/bottom padding utilities (e.g. pt-28 sm:pt-36 pb-24 sm:pb-28) was sized to
        vertically-center content inside a fixed 100vh box (justify-center) -- with sections
@@ -201,6 +212,8 @@
     .scene-inner {
         padding-top: 80px !important;
         padding-bottom: 48px !important;
+        overflow-x: clip;
+        overflow-y: visible;
     }
     /* Floating skill chips (assets/js/mobile-layout.js relocates the element itself into Hero,
        right after the photo/social-icons block) -- position:static so it flows with the page
@@ -211,131 +224,337 @@
     }
 }
 
-/* ==================== Phone-only card sizing ====================
-   Work cards and testimonial cards are both built as HTML strings in
-   assets/js/render-content.js with Tailwind utilities baked in, and both were sized for a
-   viewport with room to spare -- on a phone they eat most of the screen. Overridden here
-   rather than by editing those template strings so desktop markup stays byte-identical.
+/* ==================== 3D Coverflow Carousel ====================
+   Replaces the old horizontal-scroll card rail. Each work panel now contains a
+   perspective-based 3D carousel with ambient background blur, pagination dots, and
+   its own nav arrows. All sizing/layout lives here rather than in Tailwind utilities
+   so the render-content.js template strings stay clean. */
 
-   Breakpoint is 639px, not the 1023px used by the scene-system block above: every size in
-   these two cards already has an `sm:` (640px) variant that's the intended larger form, so
-   anything at or above 640px is deliberately left alone. Selectors are id-scoped (or carry
-   !important) purely to outrank the single-class Tailwind utilities they're replacing --
-   the Tailwind Play CDN injects its stylesheet at runtime, so source order alone isn't
-   something to rely on here. */
+/* --- Wrapper (one per panel: engineering, community) --- */
+.coverflow-wrap {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    padding: 12px 0 8px;
+    user-select: none;
+}
+
+/* --- Ambient blurred background (shows active card's image) --- */
+/* Ambient blurred background removed — cards sit on the site's own background. */
+
+/* --- 3D Stage --- */
+.coverflow-stage {
+    position: relative;
+    width: 100%;
+    max-width: 72rem;
+    height: 470px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1400px;
+    margin-bottom: 12px;
+    z-index: 10;
+    overflow: visible;
+}
+
+/* --- Individual Card --- */
+.coverflow-card {
+    position: absolute;
+    width: 300px;
+    height: 440px;
+    border-radius: 22px;
+    overflow: hidden;
+    background: #0a0e10;
+    border: 1px solid rgba(0, 219, 233, 0.22);
+    transform-origin: center center;
+    transition: transform 700ms cubic-bezier(0.25, 1, 0.5, 1),
+                opacity 700ms cubic-bezier(0.25, 1, 0.5, 1),
+                box-shadow 700ms ease,
+                border-color 700ms ease;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.coverflow-card.is-center {
+    cursor: default;
+    filter: none !important;
+    box-shadow:
+        0 20px 50px rgba(0,0,0,0.85),
+        0 0 35px rgba(0, 219, 233, 0.22),
+        0 0 1px 1px rgba(0, 219, 233, 0.25);
+    border-color: rgba(0, 219, 233, 0.55);
+}
+.coverflow-card:not(.is-center) {
+    cursor: pointer;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.55);
+}
+
+/* Card image */
+.coverflow-card-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Gradient overlay on each card */
+.coverflow-card-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(0,0,0,0.35) 0%,
+        rgba(0,0,0,0.08) 30%,
+        rgba(0,0,0,0.6) 60%,
+        rgba(0,0,0,0.95) 100%
+    );
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Card content overlay (only visible on center card) */
+.coverflow-card-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 20px 18px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    z-index: 20;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 300ms ease, transform 300ms ease;
+    pointer-events: none;
+    -webkit-font-smoothing: antialiased;
+}
+.coverflow-card.is-center .coverflow-card-content {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Tag */
+.coverflow-card-tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #00F0FF;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    text-align: right;
+    padding-right: 4px;
+}
+
+/* Title */
+.coverflow-card-title {
+    font-size: 1.55rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.15;
+    text-shadow: 0 3px 12px rgba(0,0,0,0.95);
+}
+
+/* Divider accent */
+.coverflow-card-divider {
+    width: 34px;
+    height: 2px;
+    background: #00DBE9;
+    border-radius: 2px;
+    margin: 6px auto 5px;
+    box-shadow: 0 0 10px rgba(0, 219, 233, 0.7);
+}
+
+/* Description */
+.coverflow-card-desc {
+    font-size: 0.82rem;
+    font-style: italic;
+    color: rgba(255,255,255,0.88);
+    max-width: 280px;
+    margin: 0 auto 12px;
+    line-height: 1.35;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* CTA buttons row */
+.coverflow-card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: auto;
+    padding-bottom: 2px;
+}
+.coverflow-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 20px;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #00F0FF 0%, #00a8b3 100%);
+    color: #002022;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4), 0 0 18px rgba(0,219,233,0.3);
+    cursor: pointer;
+    transition: transform 200ms ease, box-shadow 200ms ease;
+    border: none;
+}
+.coverflow-cta:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 25px rgba(0,219,233,0.5);
+}
+.coverflow-cta-github {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 219, 233, 0.3);
+    color: #00F0FF;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 200ms ease, background 200ms ease;
+}
+.coverflow-cta-github:hover {
+    transform: scale(1.1);
+    background: rgba(0, 219, 233, 0.15);
+}
+
+/* --- Nav arrows --- */
+.coverflow-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 219, 233, 0.25);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    z-index: 40;
+    transition: all 200ms ease;
+    padding: 0;
+}
+.coverflow-arrow:hover {
+    background: rgba(0, 219, 233, 0.12);
+    border-color: rgba(0, 219, 233, 0.5);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 12px rgba(0,219,233,0.2);
+}
+.coverflow-arrow-prev { left: 16px; }
+.coverflow-arrow-next { right: 16px; }
+
+/* --- Pagination dots --- */
+.coverflow-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    z-index: 30;
+    padding-top: 4px;
+}
+.coverflow-dot {
+    height: 8px;
+    width: 8px;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.22);
+    border: none;
+    cursor: pointer;
+    box-shadow: none;
+    transition: all 300ms ease;
+    padding: 0;
+}
+.coverflow-dot.active {
+    width: 28px;
+    background: #00DBE9;
+    box-shadow: 0 0 12px rgba(0,219,233,0.7);
+}
+
+/* --- Placeholder (no image) --- */
+.coverflow-card-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(0,219,233,0.06) 0%, rgba(0,0,0,0.3) 100%);
+}
+.coverflow-card-placeholder .material-symbols-outlined {
+    font-size: 48px;
+    color: rgba(185, 202, 203, 0.25);
+}
+
+/* ==================== Coverflow responsive (phone) ==================== */
 @media (max-width: 639px) {
-    /* Rail gutters: px-8/py-6 exists so .liquid-glass-interactive's hover lift + shadow
-       aren't clipped by overflow-x-auto. No hover on touch, so this only needs enough room
-       for the resting shadow -- the reclaimed ~40px of width goes to the cards. */
-    #projects-list,
-    #community-list {
-        gap: 12px !important;
-        padding-left: 12px !important;
-        padding-right: 12px !important;
-        padding-top: 10px !important;
-        padding-bottom: 12px !important;
+    .coverflow-wrap {
+        min-height: 360px;
+        padding: 16px 0 12px;
     }
-    /* Card: narrower (leaves a clear sliver of the next card visible, so the rail reads as
-       swipeable) and tighter internally. */
-    #projects-list > div,
-    #community-list > div {
-        min-width: 78vw;
-        padding: 12px;
-        gap: 12px;
-        border-radius: 24px;
+    .coverflow-stage {
+        height: 320px;
+        perspective: 900px;
+        margin-bottom: 12px;
     }
-    /* Thumb keeps its inline aspect-ratio: 3/4 -- shrinking the width alone takes the height
-       down with it (112px -> 88px wide, ~149px -> ~117px tall). */
-    #projects-list > div > div:first-child,
-    #community-list > div > div:first-child {
-        width: 88px;
+    .coverflow-card {
+        width: 220px;
+        height: 340px;
+        border-radius: 14px;
     }
-    #projects-list > div h3,
-    #community-list > div h3 {
-        font-size: 15px;
-        line-height: 1.3;
-        margin-bottom: 6px;
+    .coverflow-card-title {
+        font-size: 1.15rem;
     }
-    /* Text column, not the thumb, is what actually sets the card's height -- two clamped
-       lines instead of three is the single biggest reduction here. */
-    #projects-list > div p,
-    #community-list > div p {
+    .coverflow-card-desc {
+        font-size: 0.75rem;
         -webkit-line-clamp: 2;
         margin-bottom: 8px;
     }
-    #projects-list > div a,
-    #community-list > div a {
-        width: 34px;
-        height: 34px;
+    .coverflow-cta {
+        font-size: 0.65rem;
+        padding: 6px 14px;
     }
-    #projects-list > div a .material-symbols-outlined,
-    #community-list > div a .material-symbols-outlined {
-        font-size: 16px;
+    .coverflow-cta-github {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
     }
-
-    /* Testimonials. The card's own min-height was holding it open far past its content -- a
-       two-line quote left a visible hole between the quote and the author row, because the
-       quote's wrapper is flex-1 and absorbed all the slack. Dropped entirely; the card is
-       sized by what's in it now.
-
-       Doing only that would make each card a different height, and since .testimonial-track is
-       align-items: stretch, all five slots take the tallest one in the current window -- so the
-       whole section would visibly resize every time shift() recycles content. Pinning the quote
-       to exactly three lines instead (clamped from above, min-height from below) makes every
-       card identical in height, so there's nothing left to jump. 4.875em is those three lines:
-       Tailwind's leading-relaxed is a 1.625 line-height, and 3 x 1.625 = 4.875. */
-    #testimonials-list .testimonial-card {
-        min-height: 0;
-        padding: 14px !important;
-        gap: 8px !important;
-        border-radius: 20px;
+    .coverflow-arrow {
+        width: 36px;
+        height: 36px;
     }
-    #testimonials-list .testimonial-card p.line-clamp-4 {
-        -webkit-line-clamp: 3;
-        min-height: 4.875em;
-    }
-    /* Full-bleed: with the arrows hidden below 640px the viewport is the entire row, so zeroing
-       the slot's gutter is what actually hands that reclaimed width to the card. */
-    .testimonial-slot {
-        padding: 0;
-    }
-
-    /* Under 5 reviews there's no carousel at all -- renderCarousel() bails to a plain
-       `grid-cols-1 sm:grid-cols-N` grid (the 5-slot loop needs its buffers not to overlap the
-       visible slots), which on a phone is a tall vertical stack. Rebuilt here as a horizontal
-       snap rail so a short review list doesn't cost several screens of height. Native
-       scroll-snap does all of it, no JS.
-
-       This one does peek (88%, so the next card shows at the edge) where the carousel above
-       deliberately doesn't. The difference is the arrows: peeking failed there because the
-       slivers landed right beside the two arrow buttons and read as clipping rather than as
-       design. There's nothing at the edges here, and on a plain scroll container a peeking
-       neighbour is the ordinary way to say "this scrolls" -- there are no dots on this path to
-       say it instead.
-
-       `> .grid` is what distinguishes this path: the carousel root is `flex items-center`, the
-       single-review root is `max-w-md mx-auto`, and the empty state is a glass panel -- none of
-       them carry .grid. */
-    #testimonials-list > .grid {
-        display: flex;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        scroll-behavior: smooth;
-        /* Lets the first and last card still reach the centre of the screen to snap -- it needs
-           to be at least half the leftover width, (100 - 88) / 2. */
-        padding-inline: 6%;
-        scrollbar-width: none;
-    }
-    #testimonials-list > .grid::-webkit-scrollbar {
-        display: none;
-    }
-    #testimonials-list > .grid > .testimonial-card {
-        /* flex-basis, not width -- .testimonial-card's own `width: 100%` would otherwise make
-           every card a full screen wide and defeat the peek. */
-        flex: 0 0 88%;
-        scroll-snap-align: center;
+    .coverflow-arrow-prev { left: 6px; }
+    .coverflow-arrow-next { right: 6px; }
+    .coverflow-card-content {
+        padding: 14px 12px 16px;
     }
 }
+
+
 
 /* Floating skill chips -- fixed position, drifts forever (animate-marquee), never animates
    with scene transitions. */
@@ -381,97 +600,404 @@
     50% { transform: translateY(-8px); }
 }
 
-/* Experience: the timeline line grows top-down while entering (assets/js/scene-animations.js
-   scales it on the Y axis) -- without an explicit top origin, GSAP's default center origin
-   would grow it both up and down from the middle instead. */
-.experience-line {
-    transform-origin: top;
+/* ==================== Experience: Elastic Accordion Gallery ====================
+   Interactive expanding flex gallery with smooth spring curves, background zoom, and dual state. */
+
+.elastic-gallery {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 460px;
+    gap: 14px;
+    overflow: visible;
+    user-select: none;
 }
 
-/* ==================== Testimonials: 3-up infinite sliding carousel ====================
-   Only 5 DOM cards ever exist (2 invisible buffers + up to 3 visible), regardless of how
-   many reviews there are -- .testimonial-track holds them and is wide enough that each
-   .testimonial-slot is exactly 1/5 of its width; translateX is expressed as a percentage of
-   the track's own width so -20%/-40%/0% always equal exactly 1/2 slot-widths without any JS
-   pixel math, and stay correct across the responsive width changes below. Each slot's
-   data-role (center/side/buffer, assigned in assets/js/render-content.js) drives the actual
-   visible scale/opacity/glow difference. */
-.testimonial-viewport {
+.elastic-card {
+    position: relative;
+    flex: 1;
+    border-radius: 22px;
     overflow: hidden;
-    width: 100%;
+    cursor: pointer;
+    background: #0c1014;
+    border: 1px solid rgba(0, 219, 233, 0.18);
+    transition: flex 700ms cubic-bezier(0.25, 1, 0.5, 1),
+                filter 600ms ease,
+                border-color 400ms ease,
+                box-shadow 400ms ease;
+    filter: brightness(0.55);
+    will-change: flex;
 }
-.testimonial-track {
-    display: flex;
-    align-items: stretch;
-    width: 500%; /* mobile: 1 of 5 slots visible */
-    /* transform is always set explicitly by assets/js/render-content.js (restOffsetPct()) --
-       mobile's resting offset differs from tablet/desktop's, see the comment there. */
-    transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
-    will-change: transform;
+
+.elastic-card:hover {
+    filter: brightness(0.75);
+    border-color: rgba(0, 219, 233, 0.35);
 }
-@media (min-width: 640px) {
-    .testimonial-track { width: 250%; } /* tablet: 2 visible */
-}
-@media (min-width: 1024px) {
-    .testimonial-track { width: 166.6667%; } /* desktop: 3 visible */
-}
-/* Suspended for one frame during the instant post-slide recycle (see shift() in
-   render-content.js) so relabeling content + snapping the transform back never animates. */
-.testimonial-track.no-transition,
-.testimonial-track.no-transition .testimonial-card {
-    transition: none !important;
-}
-.testimonial-slot {
-    flex: 0 0 20%;
-    width: 20%;
-    box-sizing: border-box;
-    padding: 0 6px;
-    display: flex;
-}
-@media (min-width: 640px) {
-    .testimonial-slot { padding: 0 10px; }
-}
-.testimonial-card {
-    width: 100%;
-    min-height: 260px;
-    transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.6s ease, box-shadow 0.6s ease;
-    transform-origin: center center;
-}
-.testimonial-slot[data-role="center"] .testimonial-card {
-    transform: scale(1);
-    opacity: 1;
+
+.elastic-card.is-active {
+    flex: 3.8;
+    filter: brightness(1);
+    border-color: rgba(0, 219, 233, 0.6);
     box-shadow:
-        inset 0 0 30px rgba(0, 219, 233, 0.18),
-        0 0 55px -8px rgba(0, 240, 255, 0.5),
-        0 20px 50px -12px rgba(0, 0, 0, 0.9);
-    z-index: 2;
+        0 20px 50px rgba(0, 0, 0, 0.9),
+        0 0 35px rgba(0, 219, 233, 0.22),
+        0 0 1px 1px rgba(0, 219, 233, 0.2);
+    cursor: default;
 }
-.testimonial-slot[data-role="side"] .testimonial-card {
-    transform: scale(0.88);
-    opacity: 0.55;
+
+.elastic-card-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1000ms cubic-bezier(0.25, 1, 0.5, 1), filter 600ms ease;
+    transform: scale(1.12);
+    filter: blur(5px);
 }
-.testimonial-slot[data-role="buffer"] .testimonial-card {
-    transform: scale(0.8);
-    opacity: 0.25;
+.elastic-card.is-active .elastic-card-bg {
+    transform: scale(1.0);
+    filter: blur(0px);
 }
-/* Phone-only position dots (rendered by renderDots() in assets/js/render-content.js; the
-   container itself is `flex sm:hidden`, so no media query is needed here). The active one
-   stretches into a pill rather than just changing colour -- that reads at a glance on a small
-   screen in a way a 6px dot swapping shade doesn't. Not interactive: tapping to jump would
-   mean stepping shift() N times through the 5-slot recycle, so swipe and autoplay are the
-   ways to move and these only report where you are. */
-.testimonial-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.22);
+
+.elastic-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.25) 0%,
+        rgba(0, 0, 0, 0.55) 50%,
+        rgba(0, 0, 0, 0.96) 100%
+    );
+    transition: opacity 500ms ease;
+}
+
+.elastic-card-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 24px 20px;
+    z-index: 10;
+}
+
+/* Active State Content */
+.elastic-active-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: auto;
+    transition: transform 500ms cubic-bezier(0.25, 1, 0.5, 1), opacity 400ms ease;
+}
+.elastic-card.is-active .elastic-active-content {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 150ms;
+}
+.elastic-card:not(.is-active) .elastic-active-content {
+    transform: translateY(20px);
+    opacity: 0;
     pointer-events: none;
-    transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.35s ease, box-shadow 0.35s ease;
 }
-.testimonial-dot[data-active="true"] {
-    width: 22px;
-    background: #00dbe9;
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.55);
+
+.elastic-card-tag {
+    align-self: flex-start;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: rgba(0, 240, 255, 0.12);
+    border: 1px solid rgba(0, 219, 233, 0.4);
+    color: #00F0FF;
+    backdrop-filter: blur(10px);
+    transition: opacity 400ms ease, transform 400ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+.elastic-card.is-active .elastic-card-tag {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition-delay: 150ms;
+}
+.elastic-card:not(.is-active) .elastic-card-tag {
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+}
+
+.elastic-card-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.15;
+    margin: 2px 0;
+}
+
+.elastic-card-org {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #00DBE9;
+}
+
+.elastic-card-desc {
+    font-size: 0.825rem;
+    line-height: 1.5;
+    color: rgba(229, 226, 225, 0.88);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.elastic-card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    background: rgba(0, 240, 255, 0.15);
+    border: 1px solid rgba(0, 219, 233, 0.4);
+    color: #00F0FF;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    width: fit-content;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+.elastic-card-cta:hover {
+    background: rgba(0, 240, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Collapsed State Typography */
+.elastic-collapsed-label {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) rotate(180deg);
+    writing-mode: vertical-rl;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    white-space: nowrap;
+    transition: opacity 400ms ease, transform 400ms ease;
+}
+.elastic-card.is-active .elastic-collapsed-label {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.6);
+    pointer-events: none;
+}
+.elastic-card:not(.is-active) .elastic-collapsed-label {
+    opacity: 1;
+    transition-delay: 200ms;
+}
+
+@media (max-width: 768px) {
+    .elastic-gallery {
+        flex-direction: column;
+        height: 520px;
+        gap: 8px;
+    }
+    .elastic-card {
+        border-radius: 16px;
+    }
+    .elastic-card.is-active {
+        flex: 3.5;
+    }
+    .elastic-card:not(.is-active) {
+        flex: 1;
+    }
+    .elastic-card-content {
+        padding: 16px 14px;
+    }
+    .elastic-card-title {
+        font-size: 1.25rem;
+    }
+    .elastic-card-desc {
+        -webkit-line-clamp: 2;
+        font-size: 0.75rem;
+    }
+    .elastic-collapsed-label {
+        writing-mode: horizontal-tb;
+        transform: translateX(-50%);
+        bottom: 12px;
+        font-size: 0.8rem;
+        letter-spacing: 0.05em;
+    }
+    .elastic-card.is-active .elastic-collapsed-label {
+        transform: translateX(-50%) scale(0.8);
+    }
+}
+
+/* ==================== Testimonials: 3D Physics Coverflow Carousel ====================
+   Physics-driven continuous momentum drag with 3D perspective, depth recession, and rotation. */
+
+.testimonial-coverflow-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    padding: 10px 0;
+    user-select: none;
+}
+
+.testimonial-coverflow-frame {
+    position: relative;
+    width: 100%;
+    height: 380px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: visible;
+    cursor: grab;
+    touch-action: pan-y;
+    outline: none;
+}
+.testimonial-coverflow-frame:active {
+    cursor: grabbing;
+}
+
+.testimonial-coverflow-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+}
+
+/* Individual Testimonial 3D Card */
+.testimonial-coverflow-card {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: clamp(260px, 30vw, 340px);
+    height: 310px;
+    margin-top: -155px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(20, 24, 28, 0.85) 0%, rgba(10, 12, 14, 0.95) 100%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(0, 219, 233, 0.22);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    cursor: pointer;
+    will-change: transform, opacity;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.testimonial-coverflow-card.is-center {
+    cursor: default;
+    border-color: rgba(0, 219, 233, 0.55);
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.85),
+        0 0 35px rgba(0, 219, 233, 0.22),
+        0 0 1px 1px rgba(0, 219, 233, 0.2);
+}
+
+.testimonial-card-quote {
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: rgba(229, 226, 225, 0.92);
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 8px 0 auto;
+    font-style: italic;
+}
+
+/* Nav arrows */
+.testimonial-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 219, 233, 0.3);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    z-index: 120;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+.testimonial-arrow:hover {
+    background: rgba(0, 219, 233, 0.15);
+    border-color: rgba(0, 219, 233, 0.6);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 12px rgba(0, 219, 233, 0.3);
+}
+.testimonial-arrow-prev { left: 8px; }
+.testimonial-arrow-next { right: 8px; }
+
+/* Pagination Dots */
+.testimonial-coverflow-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    z-index: 30;
+    margin-top: 14px;
+}
+.testimonial-coverflow-dot {
+    height: 8px;
+    width: 8px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.25);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+.testimonial-coverflow-dot.active {
+    width: 24px;
+    background: #00DBE9;
+    box-shadow: 0 0 10px rgba(0, 219, 233, 0.65);
+}
+
+@media (max-width: 639px) {
+    .testimonial-coverflow-frame {
+        height: 330px;
+    }
+    .testimonial-coverflow-card {
+        width: clamp(230px, 75vw, 280px);
+        height: 270px;
+        margin-top: -135px;
+        padding: 16px 14px;
+        border-radius: 18px;
+    }
+    .testimonial-card-quote {
+        font-size: 0.8rem;
+        -webkit-line-clamp: 3;
+    }
+    .testimonial-arrow {
+        width: 34px;
+        height: 34px;
+    }
+    .testimonial-arrow-prev { left: 2px; }
+    .testimonial-arrow-next { right: 2px; }
+}
 }
 .ambient-glow {
     position: fixed;

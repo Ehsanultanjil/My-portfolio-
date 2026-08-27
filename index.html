@@ -2,6 +2,10 @@
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>Tanjil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;500&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -64,7 +68,7 @@ if (isCustomBg) {
      every other .liquid-glass-refractive element). Ported from the uilayouts LiquidMetalButton
      (@paper-design/shaders, loaded from esm.sh -- no React/build step needed, the shader class
      itself is framework-agnostic). -->
-<nav class="fixed top-0 left-0 right-0 z-50 flex items-center px-2 sm:px-6 py-2 gap-1 sm:gap-component-gap mt-6 mx-auto max-w-fit liquid-glass-refractive rounded-full shadow-2xl">
+<nav class="fixed top-0 left-0 right-0 z-50 flex items-center px-2 sm:px-6 py-2 gap-1 sm:gap-component-gap mt-4 sm:mt-6 mx-auto w-max max-w-[calc(100vw-1.5rem)] sm:max-w-fit liquid-glass-refractive rounded-full shadow-2xl">
 <!-- Populated at runtime by render-content.js only if a logo is set in Website Settings -->
 <img id="nav-logo" class="hidden h-7 w-auto object-contain ml-1 mr-1" alt="Logo">
 <div class="flex gap-0.5 sm:gap-6 items-center px-1 sm:px-4 relative z-10" id="nav-links">
@@ -203,7 +207,7 @@ if (isCustomBg) {
 
 <!-- Scene: Projects / Work -->
 <section class="scene" id="work">
-<div class="scene-inner min-h-full flex flex-col justify-center max-w-7xl mx-auto px-gutter pt-28 sm:pt-36 pb-24 sm:pb-28 space-y-8">
+<div class="scene-inner min-h-full flex flex-col justify-center max-w-7xl mx-auto px-gutter pt-20 sm:pt-28 pb-16 sm:pb-20 space-y-6 sm:space-y-8">
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
 <div class="work-anim space-y-4">
 <h2 id="work-heading" class="font-headline-lg text-headline-lg">My Work</h2>
@@ -212,22 +216,14 @@ if (isCustomBg) {
 <button class="work-tab px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-300 text-on-surface-variant" data-tab="community">Community Work</button>
 </div>
 </div>
-<div class="work-anim flex gap-4">
-<button type="button" class="work-arrow-prev w-14 h-14 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback" style="will-change: transform;" aria-label="Previous projects">
-<span class="material-symbols-outlined">chevron_left</span>
-</button>
-<button type="button" class="work-arrow-next w-14 h-14 rounded-full liquid-glass-refractive liquid-glass-interactive flex items-center justify-center bounce-feedback" style="will-change: transform;" aria-label="Next projects">
-<span class="material-symbols-outlined">chevron_right</span>
-</button>
-</div>
 </div>
 <div class="work-panel transition-opacity duration-300" data-panel="projects">
-<!-- Populated at runtime by assets/js/render-content.js (Supabase, falls back to placeholder cards if not configured) -->
-<div id="projects-list" class="flex gap-6 overflow-x-auto pb-8 custom-scrollbar scroll-smooth px-8 py-6"></div>
+<!-- Populated at runtime by assets/js/render-content.js (3D coverflow carousel) -->
+<div id="projects-list"></div>
 </div>
 <div class="work-panel hidden transition-opacity duration-300" data-panel="community">
-<!-- Populated at runtime by assets/js/render-content.js (Supabase, falls back to placeholder cards if not configured) -->
-<div id="community-list" class="flex gap-6 overflow-x-auto pb-8 custom-scrollbar scroll-smooth px-8 py-6"></div>
+<!-- Populated at runtime by assets/js/render-content.js (3D coverflow carousel) -->
+<div id="community-list"></div>
 </div>
 </div>
 </section>
@@ -250,7 +246,7 @@ if (isCustomBg) {
 
 <!-- Scene: Experience (hidden until admin adds at least one entry) -->
 <section class="scene hidden" id="experience">
-<div class="scene-inner min-h-full flex flex-col justify-center max-w-3xl mx-auto px-gutter pt-20 sm:pt-36 pb-20 sm:pb-28 space-y-6 sm:space-y-12">
+<div class="scene-inner min-h-full flex flex-col justify-center max-w-6xl mx-auto px-gutter pt-20 sm:pt-28 pb-16 sm:pb-20 space-y-6 sm:space-y-8">
 <div class="experience-anim flex flex-col items-center text-center space-y-4">
 <div class="flex items-center gap-4">
 <div class="w-8 h-px bg-primary-container"></div>
@@ -266,7 +262,7 @@ if (isCustomBg) {
 
 <!-- Scene: Testimonials (hidden until admin adds at least one entry) -->
 <section class="scene hidden" id="testimonials">
-<div class="scene-inner min-h-full flex flex-col justify-center max-w-5xl mx-auto px-gutter pt-28 sm:pt-36 pb-24 sm:pb-28 space-y-8 relative">
+<div class="scene-inner min-h-full flex flex-col justify-center max-w-6xl mx-auto px-gutter pt-20 sm:pt-28 pb-16 sm:pb-20 space-y-6 sm:space-y-8 relative">
 <div class="testimonials-anim relative flex flex-col items-center text-center space-y-4">
 <div class="flex items-center gap-4">
 <div class="w-8 h-px bg-primary-container"></div>

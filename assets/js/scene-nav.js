@@ -42,15 +42,8 @@
         const listeners = [];
         const beforeListeners = [];
 
-        // While the cursor is over the Work section's project carousel, the wheel controls it
-        // exclusively -- full-page navigation is suspended entirely (not just deferred-until-the-
-        // carousel-is-exhausted), so scrolling aggressively to reach the last project can never
-        // accidentally page away from Work. Restored the instant the cursor leaves.
-        let isInteractingWithProjects = false;
-        document.querySelectorAll('.work-panel').forEach((panel) => {
-            panel.addEventListener('mouseenter', () => { isInteractingWithProjects = true; });
-            panel.addEventListener('mouseleave', () => { isInteractingWithProjects = false; });
-        });
+        // The 3D coverflow carousel uses arrows/dots/click/keyboard for navigation,
+        // so wheel events over .work-panel fall through to scene-change as normal.
 
         // The whole strip of scenes is one flex row inside #scene-track, so "current slides left"
         // and "next slides in from right" are literally the same translateX -- a single GSAP tween
@@ -132,12 +125,7 @@
                 return;
             }
 
-            if (isInteractingWithProjects) {
-                e.preventDefault();
-                const rail = document.querySelector('.work-panel:not(.hidden) [id$="-list"]');
-                if (rail) rail.scrollLeft += (e.deltaX || e.deltaY); // trackpad horizontal swipes send deltaX; wheel/vertical swipes send deltaY
-                return; // never falls through to page navigation while the cursor is over the carousel
-            }
+
 
             const scenes = getScenes();
             const activeScene = scenes.find((s) => s.id === currentId);

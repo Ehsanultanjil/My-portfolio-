@@ -225,6 +225,19 @@
     resize();
     frameId = requestAnimationFrame(animate);
 
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            if (frameId) {
+                cancelAnimationFrame(frameId);
+                frameId = null;
+            }
+        } else {
+            if (!frameId) {
+                frameId = requestAnimationFrame(animate);
+            }
+        }
+    });
+
     window.addEventListener('beforeunload', () => {
         if (frameId) cancelAnimationFrame(frameId);
     });
