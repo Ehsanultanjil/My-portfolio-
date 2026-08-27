@@ -835,68 +835,70 @@
     .elastic-gallery {
         flex-direction: column;
         height: auto;
-        min-height: 600px;
-        gap: 12px;
+        gap: 10px;
         padding: 4px 0;
     }
     .elastic-card {
-        border-radius: 18px;
+        border-radius: 16px;
         flex: none !important;
-        height: 68px;
-        min-height: 68px;
-        transition: height 600ms cubic-bezier(0.25, 1, 0.5, 1),
-                    filter 500ms ease,
-                    border-color 400ms ease,
-                    box-shadow 400ms ease;
+        height: 56px;
+        min-height: 56px;
+        max-height: 56px;
+        transition: height 450ms cubic-bezier(0.25, 1, 0.5, 1),
+                    filter 400ms ease,
+                    border-color 300ms ease;
     }
     .elastic-card.is-active {
-        height: auto;
-        min-height: 380px;
+        height: 270px;
+        min-height: 270px;
+        max-height: 270px;
         filter: brightness(1);
     }
     .elastic-card:not(.is-active) {
-        height: 68px;
-        filter: brightness(0.65);
+        height: 56px;
+        min-height: 56px;
+        max-height: 56px;
+        filter: brightness(0.6);
     }
     .elastic-card-content {
-        padding: 20px 18px;
+        padding: 16px;
     }
     .elastic-card-tag {
-        font-size: 0.725rem;
-        padding: 4px 12px;
+        font-size: 0.7rem;
+        padding: 3px 10px;
     }
     .elastic-card-title {
-        font-size: 1.35rem;
+        font-size: 1.15rem;
         font-weight: 800;
-        margin: 4px 0 2px;
-        line-height: 1.25;
+        margin: 2px 0;
+        line-height: 1.2;
     }
     .elastic-card-org {
-        font-size: 0.95rem;
+        font-size: 0.85rem;
         font-weight: 700;
     }
     .elastic-card-desc {
-        -webkit-line-clamp: 6;
-        font-size: 0.875rem;
-        line-height: 1.6;
-        color: rgba(240, 240, 240, 0.95);
-        margin-top: 6px;
+        -webkit-line-clamp: 3;
+        font-size: 0.78rem;
+        line-height: 1.45;
+        color: rgba(235, 235, 235, 0.9);
+        margin-top: 4px;
     }
     .elastic-card-cta {
-        padding: 8px 18px;
-        font-size: 0.8rem;
-        margin-top: 12px;
+        padding: 6px 14px;
+        font-size: 0.75rem;
+        margin-top: 8px;
     }
     .elastic-collapsed-label {
         writing-mode: horizontal-tb;
         position: absolute;
-        left: 20px;
+        left: 16px;
         top: 50%;
         bottom: auto;
         transform: translateY(-50%);
-        font-size: 0.95rem;
+        font-size: 0.875rem;
         font-weight: 700;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.01em;
         text-transform: none;
         color: #ffffff;
         max-width: 85%;

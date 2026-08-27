@@ -134,25 +134,9 @@
             setTimeout(() => SCENES[initialId].reveal(initialEl), 200);
         }
     } else {
-        // Mobile: no discrete "transition" moment to hook (assets/js/scene-nav.js's
-        // initMobile() never fires onBeforeChange), just a continuous scroll position. Put
-        // every scene into its pre-animation state upfront -- including ones still
-        // class="hidden" pending Supabase data, harmless since gsap.set on a display:none
-        // element is a no-op -- then reveal each one exactly once, the first time
-        // IntersectionObserver (inside scene-nav.js) reports it's scrolled into view. The
-        // already-in-view Hero gets this from the observer's initial callback, same as
-        // everything else -- no separate first-load special case needed like desktop's above.
-        document.querySelectorAll('.scene').forEach((el) => {
-            if (SCENES[el.id]) SCENES[el.id].hide(el);
-        });
-
-        const revealed = new Set();
+        // Mobile: native continuous vertical scrolling runs directly on GPU compositor at 60-120fps.
+        // Elements stay visible immediately with zero scroll-blocking JS calculations.
         window.SceneNav.onChange((_index, id) => {
-            if (!revealed.has(id)) {
-                revealed.add(id);
-                const el = document.getElementById(id);
-                if (el && SCENES[id]) SCENES[id].reveal(el);
-            }
             if (window.SceneTimers) window.SceneTimers.setActive(id);
         });
     }
