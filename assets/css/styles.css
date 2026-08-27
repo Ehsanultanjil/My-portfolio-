@@ -222,6 +222,34 @@
     #floating-chips {
         position: static !important;
     }
+/* ==================== Sliding Tab Glider Indicator ==================== */
+#work-tabs, #testimonials-tabs {
+    position: relative;
+    isolation: isolate;
+}
+
+.tab-glider {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 0;
+    border-radius: 9999px;
+    background: #00F0FF;
+    box-shadow:
+        0 0 20px rgba(0, 240, 255, 0.4),
+        0 4px 12px rgba(0, 0, 0, 0.5);
+    transition: transform 450ms cubic-bezier(0.25, 1, 0.5, 1),
+                width 450ms cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.work-tab, .testimonial-tab {
+    position: relative;
+    z-index: 2;
+    background: transparent !important;
+    user-select: none;
+    transition: color 300ms ease;
 }
 
 /* ==================== 3D Coverflow Carousel ====================

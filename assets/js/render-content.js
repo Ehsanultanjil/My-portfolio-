@@ -1318,14 +1318,40 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
         let activeSection = groups.engineering.length ? 'engineering' : 'community';
         let stopAutoplay = null;
 
-        function setActiveTab() {
+        let glider = tabsEl ? tabsEl.querySelector('.tab-glider') : null;
+        if (tabsEl && !glider) {
+            glider = document.createElement('div');
+            glider.className = 'tab-glider';
+            tabsEl.insertBefore(glider, tabsEl.firstChild);
+        }
+
+        function updateGlider(activeTab, animated = true) {
+            if (!glider || !activeTab) return;
+            if (!animated) {
+                glider.style.transition = 'none';
+            } else {
+                glider.style.transition = 'transform 450ms cubic-bezier(0.25, 1, 0.5, 1), width 450ms cubic-bezier(0.25, 1, 0.5, 1)';
+            }
+            glider.style.width = `${activeTab.offsetWidth}px`;
+            glider.style.transform = `translateX(${activeTab.offsetLeft}px)`;
+            if (!animated) {
+                requestAnimationFrame(() => {
+                    glider.style.transition = '';
+                });
+            }
+        }
+
+        function setActiveTab(animated = true) {
             if (!tabsEl) return;
+            let activeBtn = null;
             tabsEl.querySelectorAll('.testimonial-tab').forEach((btn) => {
                 const active = btn.dataset.section === activeSection;
-                btn.classList.toggle('bg-primary-container', active);
+                if (active) activeBtn = btn;
+                btn.classList.remove('bg-primary-container');
                 btn.classList.toggle('text-on-primary-container', active);
                 btn.classList.toggle('text-on-surface-variant', !active);
             });
+            if (activeBtn) updateGlider(activeBtn, animated);
         }
 
         function mount() {
@@ -1338,13 +1364,13 @@ ${roleLine ? `<p class="text-[10px] sm:text-[11px] text-on-surface-variant trunc
                 btn.addEventListener('click', () => {
                     if (btn.dataset.section === activeSection) return;
                     activeSection = btn.dataset.section;
-                    setActiveTab();
+                    setActiveTab(true);
                     mount();
                 });
             });
         }
 
-        setActiveTab();
+        setActiveTab(false);
         mount();
     }
 
