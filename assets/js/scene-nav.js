@@ -101,54 +101,22 @@
             goTo(getScenes().findIndex((s) => s.id === currentId) - 1);
         }
 
-        // Nested-scroll passthrough: if the wheel is over a vertically-scrollable region inside the
-        // active scene that isn't at its edge yet, let that scroll happen instead of paging -- only
-        // once it's exhausted does the wheel gesture fall through to a scene change (same
-        // reconciliation fullpage.js-style libraries use). This is for scenes whose content genuinely
-        // overflows 100vh (About/Skills/Experience with enough admin-added items) -- it's a deferred
-        // handoff, unlike the project carousel's hard gate above, because there's no separate "leave
-        // this area" signal for a region that's just part of the scene's normal vertical flow.
-        function findScrollableAncestorY(el, root) {
-            while (el && el !== document.body && el !== document.documentElement) {
-                const style = getComputedStyle(el);
-                const canScrollY = (style.overflowY === 'auto' || style.overflowY === 'scroll') && el.scrollHeight > el.clientHeight + 1;
-                if (canScrollY) return el;
-                if (el === root) break; // .scene itself is the outermost candidate -- don't walk past it
-                el = el.parentElement;
-            }
-            return null;
-        }
+        let wheelLocked = false;
 
         function onWheel(e) {
-            if (isAnimating) {
-                e.preventDefault();
-                return;
-            }
-
-
-
-            const scenes = getScenes();
-            const activeScene = scenes.find((s) => s.id === currentId);
-            const scrollable = activeScene ? findScrollableAncestorY(e.target, activeScene) : null;
-
-            if (scrollable) {
-                const goingDown = e.deltaY > 0;
-                const atBottom = scrollable.scrollTop + scrollable.clientHeight >= scrollable.scrollHeight - 1;
-                const atTop = scrollable.scrollTop <= 1;
-                if ((goingDown && !atBottom) || (!goingDown && !atTop)) {
-                    // Driven explicitly (same pattern as the project carousel above) rather than
-                    // left to the browser's raw wheel-scroll default, which jumps scrollTop
-                    // instantly per tick with no easing -- .scene has scroll-behavior:smooth, so
-                    // this animates the same way the carousel's scrollLeft does.
-                    e.preventDefault();
-                    scrollable.scrollTop += e.deltaY;
-                    return;
-                }
-            }
-
             e.preventDefault();
-            if (e.deltaY > 0) next();
-            else if (e.deltaY < 0) prev();
+            if (isAnimating || wheelLocked) return;
+
+            const absY = Math.abs(e.deltaY);
+            const absX = Math.abs(e.deltaX);
+            if (absY < 15 && absX < 15) return;
+
+            wheelLocked = true;
+            setTimeout(() => { wheelLocked = false; }, 650);
+
+            const delta = absY >= absX ? e.deltaY : e.deltaX;
+            if (delta > 0) next();
+            else if (delta < 0) prev();
         }
         window.addEventListener('wheel', onWheel, { passive: false });
 
@@ -157,21 +125,30 @@
         // only -- a touch-capable desktop/laptop still pages this way; phones/tablets run
         // initMobile() instead and never register these.)
         let touchStartY = null;
+        let touchStartX = null;
         window.addEventListener('touchstart', (e) => {
             touchStartY = e.touches[0].clientY;
+            touchStartX = e.touches[0].clientX;
         }, { passive: true });
         window.addEventListener('touchend', (e) => {
-            if (touchStartY == null || isAnimating) { touchStartY = null; return; }
+            if (touchStartY == null || isAnimating) {
+                touchStartY = null;
+                touchStartX = null;
+                return;
+            }
             const dy = touchStartY - e.changedTouches[0].clientY;
+            const dx = touchStartX != null ? touchStartX - e.changedTouches[0].clientX : 0;
             touchStartY = null;
-            if (Math.abs(dy) < 50) return;
-            if (dy > 0) next();
+            touchStartX = null;
+            const maxDelta = Math.abs(dy) >= Math.abs(dx) ? dy : dx;
+            if (Math.abs(maxDelta) < 40) return;
+            if (maxDelta > 0) next();
             else prev();
         }, { passive: true });
 
         window.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); next(); }
-            else if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+            if (['ArrowDown', 'PageDown', 'ArrowRight'].includes(e.key)) { e.preventDefault(); next(); }
+            else if (['ArrowUp', 'PageUp', 'ArrowLeft'].includes(e.key)) { e.preventDefault(); prev(); }
         });
 
         // Snap (no animation) to the current scene's correct pixel offset after a viewport resize,

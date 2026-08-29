@@ -369,7 +369,7 @@
     // 'orbit_enabled' was dropped from this list along with its toggle in admin.html: it gated
     // the auto-rotation of the Education orbital ring on the public site, and that ring is gone.
     // Any existing site_content row for the key is simply left alone -- nothing reads it now.
-    const SETTINGS_KEYS = ['seo_title', 'seo_description', 'favicon_url', 'logo_url', 'maintenance_mode', 'ga_id', 'gsc_verification', 'particles_enabled', 'cursor_light_enabled', 'preloader_enabled', 'video_bg_enabled', 'video_bg_url', 'bg_image_url'];
+    const SETTINGS_KEYS = ['seo_title', 'seo_description', 'favicon_url', 'logo_url', 'maintenance_mode', 'ga_id', 'gsc_verification', 'particles_enabled', 'cursor_light_enabled', 'preloader_enabled', 'video_bg_enabled', 'video_bg_url', 'bg_image_url', 'accent_color'];
 
     let siteContentCache = {};
 
@@ -382,6 +382,12 @@
         [...HERO_KEYS, ...ABOUT_KEYS, ...TITLES_KEYS, ...CONTACT_KEYS, ...SETTINGS_KEYS].forEach((key) => {
             if (siteContentCache[key] != null) setFieldValue(`sc-${key}`, siteContentCache[key]);
         });
+
+        const accentColor = siteContentCache.accent_color || '#00f0ff';
+        const colorPicker = document.getElementById('sc-accent_color');
+        const colorText = document.getElementById('sc-accent_color_text');
+        if (colorPicker) colorPicker.value = accentColor;
+        if (colorText) colorText.value = accentColor.toUpperCase();
 
         if (siteContentCache.hero_photo_url) {
             document.getElementById('sc-hero-photo-preview').src = siteContentCache.hero_photo_url;
@@ -570,6 +576,30 @@
             errorEl.classList.remove('hidden');
         }
     });
+
+    (function wireAccentColorPicker() {
+        const picker = document.getElementById('sc-accent_color');
+        const text = document.getElementById('sc-accent_color_text');
+        if (!picker || !text) return;
+        picker.addEventListener('input', () => {
+            text.value = picker.value.toUpperCase();
+        });
+        text.addEventListener('input', () => {
+            let val = text.value.trim();
+            if (!val.startsWith('#') && /^[0-9A-Fa-f]{6}$/.test(val)) val = '#' + val;
+            if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+                picker.value = val;
+            }
+        });
+        document.querySelectorAll('.color-preset-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const color = btn.dataset.color;
+                if (!color) return;
+                picker.value = color;
+                text.value = color.toUpperCase();
+            });
+        });
+    })();
 
     // ================= Projects =================
 

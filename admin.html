@@ -4,7 +4,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Admin — Tanjil</title>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="assets/js/tailwind-config.js"></script>
 <link rel="stylesheet" href="assets/css/styles.css">
@@ -340,6 +340,24 @@
 <p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-2">Analytics</p>
 <input type="text" id="sc-ga_id" placeholder="Google Analytics ID (e.g. G-XXXXXXX)" class="admin-input">
 <input type="text" id="sc-gsc_verification" placeholder="Google Search Console verification code" class="admin-input">
+
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-2">Theme & Accent Color</p>
+<div class="liquid-glass-refractive rounded-3xl p-4 space-y-3">
+    <label class="block text-sm font-bold text-on-surface">Primary Accent Color</label>
+    <div class="flex flex-wrap items-center gap-3">
+        <input type="color" id="sc-accent_color" value="#00f0ff" class="w-11 h-11 rounded-2xl cursor-pointer bg-transparent border border-white/20 p-1">
+        <input type="text" id="sc-accent_color_text" placeholder="#00F0FF" value="#00F0FF" class="admin-input uppercase max-w-[130px] font-mono text-sm">
+        <div class="flex items-center gap-2 flex-wrap" id="accent-preset-container">
+            <button type="button" class="color-preset-btn w-8 h-8 rounded-full border-2 border-white/20 hover:scale-110 transition-transform shadow-md" style="background:#00f0ff;" data-color="#00f0ff" title="Neon Cyan (Default)"></button>
+            <button type="button" class="color-preset-btn w-8 h-8 rounded-full border-2 border-white/20 hover:scale-110 transition-transform shadow-md" style="background:#a855f7;" data-color="#a855f7" title="Cyber Purple"></button>
+            <button type="button" class="color-preset-btn w-8 h-8 rounded-full border-2 border-white/20 hover:scale-110 transition-transform shadow-md" style="background:#10b981;" data-color="#10b981" title="Emerald Green"></button>
+            <button type="button" class="color-preset-btn w-8 h-8 rounded-full border-2 border-white/20 hover:scale-110 transition-transform shadow-md" style="background:#f59e0b;" data-color="#f59e0b" title="Golden Amber"></button>
+            <button type="button" class="color-preset-btn w-8 h-8 rounded-full border-2 border-white/20 hover:scale-110 transition-transform shadow-md" style="background:#3b82f6;" data-color="#3b82f6" title="Electric Blue"></button>
+            <button type="button" class="color-preset-btn w-8 h-8 rounded-full border-2 border-white/20 hover:scale-110 transition-transform shadow-md" style="background:#f43f5e;" data-color="#f43f5e" title="Crimson Rose"></button>
+        </div>
+    </div>
+    <p class="text-xs text-on-surface-variant opacity-70">Changes the primary accent color across headings, buttons, glowing borders, and particle highlights.</p>
+</div>
 
 <p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-2">Visual Effects</p>
 <label class="flex items-center justify-between gap-3 py-1"><span class="text-sm">Particle background</span><span class="toggle-switch"><input type="checkbox" id="sc-particles_enabled"><span class="toggle-track"></span></span></label>

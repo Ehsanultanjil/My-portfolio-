@@ -383,16 +383,15 @@
         const container = document.getElementById('skills-list');
         if (!container) return;
 
-        container.innerHTML = groups.map((g, i) => `<div class="skill-card liquid-glass-refractive liquid-glass-interactive p-3 sm:p-6 rounded-2xl sm:rounded-4xl h-full flex flex-col" style="will-change: transform; animation-delay: ${(i % 4) * 0.15}s;">
-<div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-primary-container/10 flex items-center justify-center mb-2 sm:mb-5">
+        container.innerHTML = groups.map((g, i) => `<div class="skill-card liquid-glass-refractive liquid-glass-interactive p-3.5 sm:p-5 lg:p-5 rounded-2xl sm:rounded-3xl h-full flex flex-col" style="will-change: transform; animation-delay: ${(i % 4) * 0.15}s;">
+<div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-primary-container/10 flex items-center justify-center mb-2 sm:mb-3">
 <span class="material-symbols-outlined text-primary-container text-lg sm:text-2xl">${escapeHtml(g.icon)}</span>
 </div>
-<h3 class="font-headline-lg text-sm sm:text-lg mb-2 sm:mb-4">${escapeHtml(g.category)}</h3>
-<div class="flex flex-wrap gap-1 sm:gap-2 content-start">
-${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/5 text-on-surface-variant text-[10px] sm:text-xs">${escapeHtml(n)}</span>`).join('')}
+<h3 class="font-headline-lg text-sm sm:text-base font-bold mb-2 sm:mb-2.5">${escapeHtml(g.category)}</h3>
+<div class="flex flex-wrap gap-1 sm:gap-1.5 content-start">
+${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-white/5 text-on-surface-variant text-[10px] sm:text-xs">${escapeHtml(n)}</span>`).join('')}
 </div>
 </div>`).join('');
-
     }
 
     // The row of category filter pills that used to sit above this grid ("All" plus one per
@@ -505,10 +504,182 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-w
         });
     }
 
+    function applyAccentColor(hex) {
+        if (!hex || !/^#[0-9A-Fa-f]{6}$/.test(hex)) return;
+        localStorage.setItem('site_accent_color', hex);
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+
+        document.documentElement.style.setProperty('--color-primary-container', hex);
+        document.documentElement.style.setProperty('--accent-rgb', `${r}, ${g}, ${b}`);
+
+        let styleEl = document.getElementById('dynamic-accent-theme');
+        if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = 'dynamic-accent-theme';
+            document.head.appendChild(styleEl);
+        }
+
+        styleEl.textContent = `
+            :root {
+                --primary-container: ${hex} !important;
+                --primary-fixed-dim: ${hex} !important;
+                --primary-accent: ${hex} !important;
+                --accent-rgb: ${r}, ${g}, ${b} !important;
+            }
+            .text-primary-container, .text-primary {
+                color: ${hex} !important;
+            }
+            .bg-primary-container {
+                background-color: ${hex} !important;
+            }
+            .border-primary-container, .border-primary-container\\/30, .border-primary-container\\/40 {
+                border-color: rgba(${r}, ${g}, ${b}, 0.4) !important;
+            }
+            .liquid-glass-refractive {
+                border-color: rgba(${r}, ${g}, ${b}, 0.2) !important;
+            }
+            .liquid-glass-refractive:hover, .liquid-glass-interactive:hover {
+                border-color: rgba(${r}, ${g}, ${b}, 0.5) !important;
+                box-shadow: 0 0 25px rgba(${r}, ${g}, ${b}, 0.25) !important;
+            }
+            .ambient-glow {
+                background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(${r}, ${g}, ${b}, 0.16) 0%, transparent 20%) !important;
+            }
+            #hero-glow {
+                background-color: rgba(${r}, ${g}, ${b}, 0.35) !important;
+            }
+            /* Tab Glider Pill & Toggle Buttons */
+            .tab-glider {
+                background: ${hex} !important;
+                box-shadow: 0 0 20px rgba(${r}, ${g}, ${b}, 0.5), 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+            }
+            .work-tab.text-on-primary-container, .testimonial-tab.text-on-primary-container {
+                color: #000000 !important;
+                font-weight: 800 !important;
+            }
+            .toggle-switch input:checked + .toggle-track {
+                background: rgba(${r}, ${g}, ${b}, 0.6) !important;
+                border-color: rgba(${r}, ${g}, ${b}, 0.85) !important;
+                box-shadow: 0 0 10px rgba(${r}, ${g}, ${b}, 0.5) !important;
+            }
+            #nav-indicator {
+                background: rgba(${r}, ${g}, ${b}, 0.25) !important;
+                border-color: rgba(${r}, ${g}, ${b}, 0.5) !important;
+                box-shadow: 0 0 15px rgba(${r}, ${g}, ${b}, 0.25) !important;
+            }
+            /* Project Coverflow */
+            .coverflow-card {
+                border-color: rgba(${r}, ${g}, ${b}, 0.22) !important;
+            }
+            .coverflow-card.is-center {
+                border-color: rgba(${r}, ${g}, ${b}, 0.6) !important;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.85), 0 0 35px rgba(${r}, ${g}, ${b}, 0.28), 0 0 1px 1px rgba(${r}, ${g}, ${b}, 0.3) !important;
+            }
+            .coverflow-card-tag {
+                color: ${hex} !important;
+            }
+            .coverflow-card-divider {
+                background: ${hex} !important;
+                box-shadow: 0 0 10px rgba(${r}, ${g}, ${b}, 0.7) !important;
+            }
+            .coverflow-cta {
+                background: linear-gradient(135deg, ${hex} 0%, rgba(${r}, ${g}, ${b}, 0.75) 100%) !important;
+                color: #000000 !important;
+                box-shadow: 0 4px 14px rgba(0,0,0,0.4), 0 0 18px rgba(${r}, ${g}, ${b}, 0.4) !important;
+            }
+            .coverflow-cta:hover {
+                box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 25px rgba(${r}, ${g}, ${b}, 0.6) !important;
+            }
+            .coverflow-cta-github {
+                border-color: rgba(${r}, ${g}, ${b}, 0.4) !important;
+                color: ${hex} !important;
+                background: rgba(${r}, ${g}, ${b}, 0.1) !important;
+            }
+            .coverflow-cta-github:hover {
+                background: rgba(${r}, ${g}, ${b}, 0.25) !important;
+            }
+            .coverflow-arrow {
+                border-color: rgba(${r}, ${g}, ${b}, 0.3) !important;
+            }
+            .coverflow-arrow:hover {
+                background: rgba(${r}, ${g}, ${b}, 0.18) !important;
+                border-color: rgba(${r}, ${g}, ${b}, 0.6) !important;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 14px rgba(${r}, ${g}, ${b}, 0.3) !important;
+            }
+            .coverflow-dot.active {
+                background: ${hex} !important;
+                box-shadow: 0 0 12px rgba(${r}, ${g}, ${b}, 0.7) !important;
+            }
+            .coverflow-card-placeholder {
+                background: linear-gradient(135deg, rgba(${r}, ${g}, ${b}, 0.08) 0%, rgba(0,0,0,0.3) 100%) !important;
+            }
+            /* Experience */
+            .elastic-card {
+                border-color: rgba(${r}, ${g}, ${b}, 0.2) !important;
+            }
+            .elastic-card:hover {
+                border-color: rgba(${r}, ${g}, ${b}, 0.4) !important;
+            }
+            .elastic-card.is-active {
+                border-color: rgba(${r}, ${g}, ${b}, 0.7) !important;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(${r}, ${g}, ${b}, 0.3), 0 0 1px 1px rgba(${r}, ${g}, ${b}, 0.3) !important;
+            }
+            .elastic-card-org {
+                color: ${hex} !important;
+            }
+            .elastic-card-tag, .elastic-card-cta {
+                background: rgba(${r}, ${g}, ${b}, 0.15) !important;
+                border-color: rgba(${r}, ${g}, ${b}, 0.4) !important;
+                color: ${hex} !important;
+            }
+            .elastic-card-cta:hover {
+                background: rgba(${r}, ${g}, ${b}, 0.3) !important;
+            }
+            /* Testimonials */
+            .testimonial-coverflow-card {
+                border-color: rgba(${r}, ${g}, ${b}, 0.22) !important;
+            }
+            .testimonial-coverflow-card.is-center {
+                border-color: rgba(${r}, ${g}, ${b}, 0.6) !important;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.85), 0 0 35px rgba(${r}, ${g}, ${b}, 0.28) !important;
+            }
+            .testimonial-coverflow-arrow {
+                border-color: rgba(${r}, ${g}, ${b}, 0.3) !important;
+            }
+            .testimonial-coverflow-arrow:hover {
+                background: rgba(${r}, ${g}, ${b}, 0.18) !important;
+                border-color: rgba(${r}, ${g}, ${b}, 0.6) !important;
+            }
+            .testimonial-coverflow-dot.active {
+                background: ${hex} !important;
+                box-shadow: 0 0 12px rgba(${r}, ${g}, ${b}, 0.7) !important;
+            }
+            /* Skills */
+            .skill-card {
+                border-color: rgba(${r}, ${g}, ${b}, 0.18) !important;
+            }
+            .skill-card:hover {
+                border-color: rgba(${r}, ${g}, ${b}, 0.5) !important;
+                box-shadow: 0 0 25px rgba(${r}, ${g}, ${b}, 0.2) !important;
+            }
+            .floating-chip {
+                border-color: rgba(${r}, ${g}, ${b}, 0.3) !important;
+            }
+            .floating-chip:hover {
+                border-color: rgba(${r}, ${g}, ${b}, 0.6) !important;
+                box-shadow: 0 0 15px rgba(${r}, ${g}, ${b}, 0.25) !important;
+            }
+        `;
+    }
+
     // Settings that don't map cleanly onto a single "find element(s), set an
     // attribute" rule -- document head tags, feature toggles, the nav logo
     // slot, and the maintenance overlay. All optional/no-op if unset.
     function applySiteExtras(byKey, bgVideos) {
+        if (byKey.accent_color) applyAccentColor(byKey.accent_color);
+
         if (byKey.seo_title) document.title = byKey.seo_title;
 
         if (byKey.seo_description) {
@@ -889,14 +1060,14 @@ ${iconHtml}
 
         section.classList.remove('hidden');
 
-        let activeIdx = 0; // Default active card (first / most recent)
+        let activeIdx = -1; // No card is active by default — all start collapsed
 
         const gallery = document.createElement('div');
         gallery.className = 'elastic-gallery';
 
         const cards = rows.map((x, idx) => {
             const card = document.createElement('div');
-            card.className = `elastic-card experience-card ${idx === activeIdx ? 'is-active' : ''}`;
+            card.className = 'elastic-card experience-card';
             card.dataset.idx = idx;
 
             const bgSrc = x.image_url || STOCK_EXPERIENCE_IMAGES[idx % STOCK_EXPERIENCE_IMAGES.length];
@@ -929,6 +1100,7 @@ ${iconHtml}
             function activate() {
                 if (activeIdx === idx) return;
                 activeIdx = idx;
+                gallery.classList.add('has-active');
                 cards.forEach((c, i) => {
                     c.classList.toggle('is-active', i === activeIdx);
                 });
@@ -939,6 +1111,15 @@ ${iconHtml}
 
             gallery.appendChild(card);
             return card;
+        });
+
+        // When cursor leaves the entire gallery, collapse all cards
+        gallery.addEventListener('mouseleave', () => {
+            activeIdx = -1;
+            gallery.classList.remove('has-active');
+            cards.forEach((c) => {
+                c.classList.remove('is-active');
+            });
         });
 
         container.innerHTML = '';

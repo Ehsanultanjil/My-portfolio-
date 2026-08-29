@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="assets/js/tailwind-config.js"></script>
@@ -25,6 +25,167 @@
 <script>
 if (localStorage.getItem('preloader_enabled') === 'false') document.documentElement.classList.add('no-preloader');
 if (localStorage.getItem('particles_enabled') === 'false') document.documentElement.classList.add('no-particles');
+// Dynamic accent color: restore cached accent theme immediately to prevent color flash
+const savedAccent = localStorage.getItem('site_accent_color');
+if (savedAccent && /^#[0-9A-Fa-f]{6}$/.test(savedAccent)) {
+    const r = parseInt(savedAccent.slice(1, 3), 16);
+    const g = parseInt(savedAccent.slice(3, 5), 16);
+    const b = parseInt(savedAccent.slice(5, 7), 16);
+    const styleEl = document.createElement('style');
+    styleEl.id = 'dynamic-accent-theme';
+    styleEl.textContent = `
+        :root {
+            --primary-container: ${savedAccent} !important;
+            --primary-fixed-dim: ${savedAccent} !important;
+            --primary-accent: ${savedAccent} !important;
+            --accent-rgb: ${r}, ${g}, ${b} !important;
+        }
+        .text-primary-container, .text-primary {
+            color: ${savedAccent} !important;
+        }
+        .bg-primary-container {
+            background-color: ${savedAccent} !important;
+        }
+        .border-primary-container, .border-primary-container\\/30, .border-primary-container\\/40 {
+            border-color: rgba(${r}, ${g}, ${b}, 0.4) !important;
+        }
+        .liquid-glass-refractive {
+            border-color: rgba(${r}, ${g}, ${b}, 0.2) !important;
+        }
+        .liquid-glass-refractive:hover, .liquid-glass-interactive:hover {
+            border-color: rgba(${r}, ${g}, ${b}, 0.5) !important;
+            box-shadow: 0 0 25px rgba(${r}, ${g}, ${b}, 0.25) !important;
+        }
+        .ambient-glow {
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(${r}, ${g}, ${b}, 0.16) 0%, transparent 20%) !important;
+        }
+        #hero-glow {
+            background-color: rgba(${r}, ${g}, ${b}, 0.35) !important;
+        }
+        /* Tab Glider Pill & Toggle Buttons */
+        .tab-glider {
+            background: ${savedAccent} !important;
+            box-shadow: 0 0 20px rgba(${r}, ${g}, ${b}, 0.5), 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+        }
+        .work-tab.text-on-primary-container, .testimonial-tab.text-on-primary-container {
+            color: #000000 !important;
+            font-weight: 800 !important;
+        }
+        .toggle-switch input:checked + .toggle-track {
+            background: rgba(${r}, ${g}, ${b}, 0.6) !important;
+            border-color: rgba(${r}, ${g}, ${b}, 0.85) !important;
+            box-shadow: 0 0 10px rgba(${r}, ${g}, ${b}, 0.5) !important;
+        }
+        #nav-indicator {
+            background: rgba(${r}, ${g}, ${b}, 0.25) !important;
+            border-color: rgba(${r}, ${g}, ${b}, 0.5) !important;
+            box-shadow: 0 0 15px rgba(${r}, ${g}, ${b}, 0.25) !important;
+        }
+        /* Project Coverflow */
+        .coverflow-card {
+            border-color: rgba(${r}, ${g}, ${b}, 0.22) !important;
+        }
+        .coverflow-card.is-center {
+            border-color: rgba(${r}, ${g}, ${b}, 0.6) !important;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.85), 0 0 35px rgba(${r}, ${g}, ${b}, 0.28), 0 0 1px 1px rgba(${r}, ${g}, ${b}, 0.3) !important;
+        }
+        .coverflow-card-tag {
+            color: ${savedAccent} !important;
+        }
+        .coverflow-card-divider {
+            background: ${savedAccent} !important;
+            box-shadow: 0 0 10px rgba(${r}, ${g}, ${b}, 0.7) !important;
+        }
+        .coverflow-cta {
+            background: linear-gradient(135deg, ${savedAccent} 0%, rgba(${r}, ${g}, ${b}, 0.75) 100%) !important;
+            color: #000000 !important;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.4), 0 0 18px rgba(${r}, ${g}, ${b}, 0.4) !important;
+        }
+        .coverflow-cta:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 25px rgba(${r}, ${g}, ${b}, 0.6) !important;
+        }
+        .coverflow-cta-github {
+            border-color: rgba(${r}, ${g}, ${b}, 0.4) !important;
+            color: ${savedAccent} !important;
+            background: rgba(${r}, ${g}, ${b}, 0.1) !important;
+        }
+        .coverflow-cta-github:hover {
+            background: rgba(${r}, ${g}, ${b}, 0.25) !important;
+        }
+        .coverflow-arrow {
+            border-color: rgba(${r}, ${g}, ${b}, 0.3) !important;
+        }
+        .coverflow-arrow:hover {
+            background: rgba(${r}, ${g}, ${b}, 0.18) !important;
+            border-color: rgba(${r}, ${g}, ${b}, 0.6) !important;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 14px rgba(${r}, ${g}, ${b}, 0.3) !important;
+        }
+        .coverflow-dot.active {
+            background: ${savedAccent} !important;
+            box-shadow: 0 0 12px rgba(${r}, ${g}, ${b}, 0.7) !important;
+        }
+        .coverflow-card-placeholder {
+            background: linear-gradient(135deg, rgba(${r}, ${g}, ${b}, 0.08) 0%, rgba(0,0,0,0.3) 100%) !important;
+        }
+        /* Experience */
+        .elastic-card {
+            border-color: rgba(${r}, ${g}, ${b}, 0.2) !important;
+        }
+        .elastic-card:hover {
+            border-color: rgba(${r}, ${g}, ${b}, 0.4) !important;
+        }
+        .elastic-card.is-active {
+            border-color: rgba(${r}, ${g}, ${b}, 0.7) !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(${r}, ${g}, ${b}, 0.3), 0 0 1px 1px rgba(${r}, ${g}, ${b}, 0.3) !important;
+        }
+        .elastic-card-org {
+            color: ${savedAccent} !important;
+        }
+        .elastic-card-tag, .elastic-card-cta {
+            background: rgba(${r}, ${g}, ${b}, 0.15) !important;
+            border-color: rgba(${r}, ${g}, ${b}, 0.4) !important;
+            color: ${savedAccent} !important;
+        }
+        .elastic-card-cta:hover {
+            background: rgba(${r}, ${g}, ${b}, 0.3) !important;
+        }
+        /* Testimonials */
+        .testimonial-coverflow-card {
+            border-color: rgba(${r}, ${g}, ${b}, 0.22) !important;
+        }
+        .testimonial-coverflow-card.is-center {
+            border-color: rgba(${r}, ${g}, ${b}, 0.6) !important;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.85), 0 0 35px rgba(${r}, ${g}, ${b}, 0.28) !important;
+        }
+        .testimonial-coverflow-arrow {
+            border-color: rgba(${r}, ${g}, ${b}, 0.3) !important;
+        }
+        .testimonial-coverflow-arrow:hover {
+            background: rgba(${r}, ${g}, ${b}, 0.18) !important;
+            border-color: rgba(${r}, ${g}, ${b}, 0.6) !important;
+        }
+        .testimonial-coverflow-dot.active {
+            background: ${savedAccent} !important;
+            box-shadow: 0 0 12px rgba(${r}, ${g}, ${b}, 0.7) !important;
+        }
+        /* Skills */
+        .skill-card {
+            border-color: rgba(${r}, ${g}, ${b}, 0.18) !important;
+        }
+        .skill-card:hover {
+            border-color: rgba(${r}, ${g}, ${b}, 0.5) !important;
+            box-shadow: 0 0 25px rgba(${r}, ${g}, ${b}, 0.2) !important;
+        }
+        .floating-chip {
+            border-color: rgba(${r}, ${g}, ${b}, 0.3) !important;
+        }
+        .floating-chip:hover {
+            border-color: rgba(${r}, ${g}, ${b}, 0.6) !important;
+            box-shadow: 0 0 15px rgba(${r}, ${g}, ${b}, 0.25) !important;
+        }
+    `;
+    document.head.appendChild(styleEl);
+}
 // Custom background: check if active background is a video/image
 const savedBgId = localStorage.getItem('active_bg_video_id');
 const videoBgEnabled = localStorage.getItem('video_bg_enabled') === 'true';
@@ -97,7 +258,7 @@ if (isCustomBg) {
   </div>
 </div>
 <!-- Floating skill chips: fixed band, drifts forever, never moves with scene transitions. -->
-<div id="floating-chips" class="fixed left-0 right-0 bottom-6 sm:bottom-8 z-40 overflow-hidden pointer-events-none" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
+<div id="floating-chips" class="fixed left-0 right-0 bottom-2 sm:bottom-4 z-40 overflow-hidden pointer-events-none" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
 <div class="flex animate-marquee whitespace-nowrap w-max px-8 py-2">
 <!-- Populated at runtime by assets/js/render-content.js (same skills you manage in admin.html) -->
 <div class="flex gap-6 shrink-0 mr-6" id="marquee-set-1"></div>
@@ -112,13 +273,13 @@ if (isCustomBg) {
 
 <!-- Scene: Hero -->
 <section class="scene" id="hero">
-<div class="scene-inner min-h-full flex flex-col justify-center max-w-7xl mx-auto px-gutter pt-20 sm:pt-36 pb-20 sm:pb-28">
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-12 items-center min-h-0 lg:min-h-[60vh]">
-<div class="space-y-3 sm:space-y-6">
+<div class="scene-inner w-full min-h-full flex flex-col justify-center max-w-7xl mx-auto px-gutter pt-16 sm:pt-28 pb-16 sm:pb-24">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 lg:gap-12 items-center min-h-0">
+<div class="space-y-3 sm:space-y-5">
 <div id="hero-badge" class="hero-anim inline-block px-4 py-1 liquid-glass-refractive text-primary font-label-md text-label-md uppercase tracking-widest rounded-full">
                 Available for hire
             </div>
-<h1 class="hero-anim font-headline-xl text-3xl sm:text-headline-xl lg:text-7xl leading-tight">
+<h1 class="hero-anim font-headline-xl text-3xl sm:text-headline-xl lg:text-5xl xl:text-6xl leading-tight">
 <span id="hero-heading">Building Fast, Reliable</span> <span id="hero-heading-highlight" class="text-primary-container">Web Experiences.</span>
             </h1>
 <p id="hero-bio" class="hero-anim font-body-md text-sm sm:text-body-md text-on-surface-variant max-w-lg leading-relaxed brightness-125">
@@ -134,11 +295,11 @@ if (isCustomBg) {
 </div>
 </div>
 <div class="hero-anim group flex flex-col lg:flex-row items-center gap-3 sm:gap-4 mx-auto lg:mx-0">
-<div class="relative max-w-[125px] sm:max-w-[340px] md:max-w-[440px] lg:max-w-none w-full lg:flex-1 lg:min-w-0">
+<div class="relative max-w-[125px] sm:max-w-[280px] md:max-w-[340px] lg:max-w-[340px] xl:max-w-[400px] w-full">
 <!-- Populated at runtime by render-content.js only if a Hero Background Image is set -->
 <div id="hero-bg-layer" class="hidden absolute -inset-6 -z-10 bg-cover bg-center rounded-4xl opacity-25 blur-sm"></div>
-<div id="hero-glow" class="absolute -inset-4 bg-primary-container/20 blur-3xl rounded-full transition-opacity group-hover:opacity-60 opacity-30"></div>
-<div class="relative aspect-square overflow-hidden liquid-glass-refractive p-2 transform rotate-1 group-hover:rotate-0 transition-transform duration-500 rounded-4xl">
+<div id="hero-glow" class="hero-floating-glow absolute -inset-4 bg-primary-container/20 blur-3xl rounded-full transition-opacity group-hover:opacity-60 opacity-30"></div>
+<div class="hero-floating-frame relative aspect-square overflow-hidden liquid-glass-refractive p-2 transform transition-transform duration-500 rounded-4xl">
 <img id="hero-photo-img" src="assets/images/myprofile.png" alt="Ehsanul Karim Tanjil" class="w-full h-full object-cover rounded-[32px]">
 </div>
 </div>
@@ -151,25 +312,14 @@ if (isCustomBg) {
 
 <!-- Scene: About -->
 <section class="scene" id="about">
-<!-- max-w-5xl rather than the max-w-7xl the other sections use: at 7xl each of the two columns
-     is ~590px, which stretched the detail cards wide enough that a value like "Bangladesh" sat
-     against a lot of empty space and the whole block read as oversized. Narrowing the section
-     shrinks both columns together, so the cards tighten without leaving a gap beside them. -->
-<div class="scene-inner min-h-full flex flex-col justify-center max-w-5xl mx-auto px-gutter pt-16 sm:pt-32 pb-16 sm:pb-24">
-<!-- items-start, not items-center: the details column is taller than the intro text, and
-     centring made the two read as unrelated blocks floating at different heights. -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-start">
+<div class="scene-inner w-full min-h-full flex flex-col justify-center max-w-5xl mx-auto px-gutter pt-16 sm:pt-24 pb-14 sm:pb-20">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-start">
 <div class="space-y-2 sm:space-y-3">
 <h2 id="about-heading" class="about-anim font-headline-lg text-headline-lg lg:text-5xl">Who I Am</h2>
 <p id="about-text" class="about-anim font-body-md text-sm sm:text-body-md text-on-surface-variant leading-relaxed brightness-125">I'm Ehsanul Karim Tanjil, a Computer Science &amp; Engineering student at BUBT and a Fiverr Level 2 Seller with 65+ reviews and a 4.9★ rating. I build fast, reliable web experiences using an AI-assisted workflow, and manage Telegram communities with a focus on safety and engagement.</p>
 </div>
-<!-- Personal details. This column previously held the orbital education ring; the chip row and
-     the four stat cards that sat under the intro text are gone too.
-
-     Hardcoded here rather than pulled from Supabase, matching how the chips and stat cards it
-     replaces worked -- edit the values in this file. The labels use the theme's cyan
-     (text-primary-container) rather than the orange of the reference design. -->
-<div class="about-anim space-y-2" id="about-details">
+<!-- Personal details. 2-column grid for clean vertical balance on laptop screens -->
+<div class="about-anim grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5" id="about-details">
 <div class="liquid-glass-refractive rounded-xl px-4 py-2.5">
 <div class="font-label-md text-[10px] font-semibold text-primary-container uppercase tracking-widest">Full Name</div>
 <div class="font-body-md text-sm text-on-surface mt-0.5">Ehsanul Karim Tanjil</div>
@@ -203,8 +353,8 @@ if (isCustomBg) {
 
 <!-- Scene: Projects / Work -->
 <section class="scene" id="work">
-<div class="scene-inner min-h-full flex flex-col justify-center max-w-7xl mx-auto px-gutter pt-20 sm:pt-28 pb-16 sm:pb-20 space-y-6 sm:space-y-8">
-<div class="work-anim flex flex-col items-center text-center space-y-4">
+<div class="scene-inner w-full min-h-full flex flex-col justify-center max-w-7xl mx-auto px-gutter pt-16 sm:pt-24 pb-14 sm:pb-18 space-y-4 sm:space-y-6">
+<div class="work-anim flex flex-col items-center text-center space-y-3">
 <h2 id="work-heading" class="font-headline-lg text-headline-lg lg:text-5xl">My Work</h2>
 <div class="inline-flex liquid-glass-refractive rounded-full p-1 gap-1 mx-auto max-w-full overflow-x-auto" id="work-tabs">
 <button class="work-tab px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-300 bg-primary-container text-on-primary-container" data-tab="projects">Engineering Work</button>
@@ -224,30 +374,30 @@ if (isCustomBg) {
 
 <!-- Scene: Skills -->
 <section class="scene" id="skills">
-<div class="scene-inner min-h-full flex flex-col justify-center max-w-7xl mx-auto px-gutter pt-20 sm:pt-36 pb-20 sm:pb-28 space-y-4 sm:space-y-8">
-<div class="skills-anim flex flex-col items-center text-center space-y-2 sm:space-y-4">
+<div class="scene-inner w-full min-h-full flex flex-col justify-center max-w-7xl mx-auto px-gutter pt-16 sm:pt-24 pb-14 sm:pb-18 space-y-3 sm:space-y-6">
+<div class="skills-anim flex flex-col items-center text-center space-y-2 sm:space-y-3">
 <h2 class="font-headline-lg text-headline-lg lg:text-5xl"><span id="skills-heading">Tools &amp; Technologies I</span> <span id="skills-heading-highlight" class="text-primary-container">Use</span></h2>
 </div>
 <!-- Populated at runtime by assets/js/render-content.js (Supabase, falls back to placeholder cards if not configured). Two per row even on mobile (not one) -- Skills is admin-driven/unbounded, so this is what keeps it close to fitting one screen instead of a tall single column. -->
-<div id="skills-list" class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-6 items-stretch"></div>
+<div id="skills-list" class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-5 items-stretch"></div>
 </div>
 </section>
 
 <!-- Scene: Experience (hidden until admin adds at least one entry) -->
 <section class="scene hidden" id="experience">
-<div class="scene-inner min-h-full flex flex-col justify-center max-w-6xl mx-auto px-gutter pt-20 sm:pt-28 pb-16 sm:pb-20 space-y-6 sm:space-y-8">
-<div class="experience-anim flex flex-col items-center text-center space-y-4">
+<div class="scene-inner w-full min-h-full flex flex-col justify-center max-w-7xl mx-auto px-gutter pt-16 sm:pt-24 pb-14 sm:pb-18 space-y-4 sm:space-y-6">
+<div class="experience-anim flex flex-col items-center text-center space-y-3">
 <h2 id="experience-heading" class="font-headline-lg text-headline-lg lg:text-5xl">Experience</h2>
 </div>
 <!-- Populated at runtime by assets/js/render-content.js as an elastic accordion gallery -->
-<div id="experience-list" class="relative"></div>
+<div id="experience-list" class="relative w-full"></div>
 </div>
 </section>
 
 <!-- Scene: Testimonials (hidden until admin adds at least one entry) -->
 <section class="scene hidden" id="testimonials">
-<div class="scene-inner min-h-full flex flex-col justify-center max-w-6xl mx-auto px-gutter pt-20 sm:pt-28 pb-16 sm:pb-20 space-y-6 sm:space-y-8 relative">
-<div class="testimonials-anim relative flex flex-col items-center text-center space-y-4">
+<div class="scene-inner w-full min-h-full flex flex-col justify-center max-w-6xl mx-auto px-gutter pt-16 sm:pt-24 pb-14 sm:pb-18 space-y-4 sm:space-y-6 relative">
+<div class="testimonials-anim relative flex flex-col items-center text-center space-y-3">
 <h2 id="testimonials-heading" class="font-headline-lg text-headline-lg lg:text-5xl">What Clients Say</h2>
 </div>
 <div class="testimonials-anim inline-flex liquid-glass-refractive rounded-full p-1 gap-1 mx-auto" id="testimonials-tabs">
@@ -261,8 +411,8 @@ if (isCustomBg) {
 
 <!-- Scene: Contact (footer merged in -- there's no "scroll past the end" anymore, so it lives here) -->
 <section class="scene" id="contact">
-<div class="scene-inner min-h-full flex flex-col justify-center max-w-3xl mx-auto px-gutter pt-28 sm:pt-36 pb-16 sm:pb-20 gap-10">
-<div class="liquid-glass-refractive rounded-4xl p-6 sm:p-12 flex flex-col items-center text-center gap-6">
+<div class="scene-inner w-full min-h-full flex flex-col justify-center max-w-3xl mx-auto px-gutter pt-20 sm:pt-28 pb-12 sm:pb-16 gap-6">
+<div class="liquid-glass-refractive rounded-4xl p-6 sm:p-10 flex flex-col items-center text-center gap-5">
 <h2 id="contact-heading" class="contact-anim font-headline-lg text-headline-lg">Get In Touch</h2>
 <p id="contact-text" class="contact-anim font-body-md text-body-md text-on-surface-variant max-w-lg leading-relaxed brightness-125">Have a project in mind or need a Telegram community managed? Send an email — I read every message.</p>
 <a id="contact-email-link" href="https://mail.google.com/mail/?view=cm&fs=1&to=ehsanultanjil@gmail.com" target="_blank" rel="noopener noreferrer" class="contact-anim group relative inline-flex items-center justify-center overflow-hidden rounded-full px-8 py-4 bg-[#11191d] border border-primary-container/40 text-white font-bold bounce-feedback tracking-tight transition-all duration-500 hover:border-transparent">
