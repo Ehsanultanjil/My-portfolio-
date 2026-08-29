@@ -258,8 +258,10 @@ if (isCustomBg) {
   </div>
 </div>
 <!-- Floating skill chips: fixed band, drifts forever, never moves with scene transitions. -->
-<div id="floating-chips" class="fixed left-0 right-0 bottom-2 sm:bottom-4 z-40 overflow-hidden pointer-events-none" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
-<div class="flex animate-marquee whitespace-nowrap w-max px-8 py-2">
+<div id="floating-chips" class="fixed left-0 right-0 bottom-2 sm:bottom-4 z-40 overflow-hidden pointer-events-none">
+<div class="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
+<div class="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
+<div class="marquee-track flex whitespace-nowrap w-max px-8 py-2">
 <!-- Populated at runtime by assets/js/render-content.js (same skills you manage in admin.html) -->
 <div class="flex gap-6 shrink-0 mr-6" id="marquee-set-1"></div>
 <div class="flex gap-6 shrink-0 mr-6" id="marquee-set-2"></div>

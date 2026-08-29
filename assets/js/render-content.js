@@ -369,8 +369,7 @@
         // and gave the band more visual weight than a background detail wants. Note this also
         // slows the drift on its own: the marquee animation covers a fixed -50% of the track in
         // a fixed time, so a narrower track is fewer pixels per second even before the duration
-        // change in tailwind-config.js.
-        const pillsHtml = allNames.map((n) => `<div class="marquee-chip px-5 py-1.5 liquid-glass-refractive flex items-center gap-2 rounded-full">
+        const pillsHtml = allNames.map((n) => `<div class="marquee-chip px-5 py-1.5 flex items-center gap-2 rounded-full">
 <span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
 <span class="font-body-sm text-body-sm">${escapeHtml(n)}</span>
 </div>`).join('');

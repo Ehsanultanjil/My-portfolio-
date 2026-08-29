@@ -365,6 +365,31 @@ html, body {
     }
 }
 
+/* Floating skill chips marquee */
+#floating-chips {
+    contain: layout paint;
+}
+
+.marquee-track {
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    animation: marqueeDrift 38s linear infinite;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+@keyframes marqueeDrift {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.marquee-chip {
+    background: rgba(14, 18, 22, 0.85);
+    border: 1px solid rgba(var(--accent-rgb, 0, 240, 255), 0.22);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    transform: translateZ(0);
+}
+
 /* ==================== Sliding Tab Glider Indicator ==================== */
 #work-tabs, #testimonials-tabs {
     position: relative;
