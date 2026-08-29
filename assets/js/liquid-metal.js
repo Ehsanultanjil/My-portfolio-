@@ -80,15 +80,14 @@ function mount(el, lib) {
     }
 }
 
-// Dynamic import (not a static top-level `import`) so a CDN hiccup can't take the whole
-// script down with it -- without this, if the fetch fails, NONE of the code below it would
-// run either, and the failure is silent (module scripts don't surface import errors the way
-// a normal script tag's parse error would).
-import('https://cdn.jsdelivr.net/npm/@paper-design/shaders@0.0.77/+esm')
-    .then((lib) => {
-        const nav = document.querySelector('nav.fixed.liquid-glass-refractive');
-        if (nav) mount(nav, lib);
-    })
-    .catch((err) => {
-        console.warn('[liquid-metal] shader library failed to load, nav keeps its plain glass look:', err);
-    });
+// Only load WebGL shader on desktop devices (width >= 768px) to keep mobile 60-120fps smooth
+if (window.innerWidth >= 768) {
+    import('https://cdn.jsdelivr.net/npm/@paper-design/shaders@0.0.77/+esm')
+        .then((lib) => {
+            const nav = document.querySelector('nav.fixed.liquid-glass-refractive');
+            if (nav) mount(nav, lib);
+        })
+        .catch((err) => {
+            console.warn('[liquid-metal] shader library failed to load, nav keeps its plain glass look:', err);
+        });
+}

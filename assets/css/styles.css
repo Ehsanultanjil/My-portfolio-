@@ -8,7 +8,20 @@ body, html {
 .ambient-glow {
     will-change: transform;
     transform: translateZ(0);
-    contain: strict;
+}
+
+#site-particles::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(var(--accent-rgb, 0, 240, 255), 0.08) 0%, transparent 65%);
+    pointer-events: none;
+    animation: particleGlowPulse 6s ease-in-out infinite alternate;
+}
+
+@keyframes particleGlowPulse {
+    0% { opacity: 0.5; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1.05); }
 }
 
 .liquid-glass-refractive {
