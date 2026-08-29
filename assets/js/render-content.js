@@ -544,7 +544,7 @@ ${g.names.map((n) => `<span class="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg
                 box-shadow: 0 0 25px rgba(${r}, ${g}, ${b}, 0.25) !important;
             }
             .ambient-glow {
-                background: radial-gradient(circle at center, rgba(${r}, ${g}, ${b}, 0.16) 0%, transparent 65%) !important;
+                background: radial-gradient(circle at center, rgba(${r}, ${g}, ${b}, 0.18) 0%, transparent 70%) !important;
             }
             #hero-glow {
                 background-color: rgba(${r}, ${g}, ${b}, 0.35) !important;

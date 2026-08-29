@@ -10,17 +10,19 @@ body, html {
 }
 
 .ambient-glow {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 360px;
-    height: 360px;
-    margin-top: -180px;
-    margin-left: -180px;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: -10;
-    background: radial-gradient(circle at center, rgba(var(--accent-rgb, 0, 240, 255), 0.16) 0%, transparent 68%);
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: 360px !important;
+    height: 360px !important;
+    margin-top: -180px !important;
+    margin-left: -180px !important;
+    border-radius: 50% !important;
+    pointer-events: none !important;
+    z-index: -10 !important;
+    background: radial-gradient(circle at center, rgba(var(--accent-rgb, 0, 240, 255), 0.18) 0%, transparent 70%) !important;
     transform: translate3d(-1000px, -1000px, 0);
     will-change: transform;
     transition: opacity 0.2s ease;
