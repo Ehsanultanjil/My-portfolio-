@@ -9,10 +9,10 @@
     container.appendChild(canvas);
     const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
 
-    // Full particle density for lush starfield
-    const PARTICLE_DENSITY = 0.00015;
-    const BG_PARTICLE_DENSITY = 0.00005;
-    const MOUSE_RADIUS = 160;
+    // Balanced 120 FPS particle count
+    const MAX_PARTICLES = 85;
+    const MAX_BG_PARTICLES = 25;
+    const MOUSE_RADIUS = 150;
     const MOUSE_RADIUS_SQ = MOUSE_RADIUS * MOUSE_RADIUS;
     const RETURN_SPEED = 0.08;
     const DAMPING = 0.9;
@@ -71,12 +71,12 @@
     }
 
     function initParticles() {
-        const count = Math.floor(width * height * PARTICLE_DENSITY);
+        const count = Math.min(Math.floor(width * height * 0.000065), MAX_PARTICLES);
         particles = [];
         for (let i = 0; i < count; i++) {
             const x = Math.random() * width;
             const y = Math.random() * height;
-            const size = randomRange(1.2, 2.6);
+            const size = randomRange(1.2, 2.5);
             particles.push({
                 x, y,
                 originX: x, originY: y,
@@ -87,7 +87,7 @@
             });
         }
 
-        const bgCount = Math.floor(width * height * BG_PARTICLE_DENSITY);
+        const bgCount = Math.min(Math.floor(width * height * 0.000022), MAX_BG_PARTICLES);
         bgParticles = [];
         for (let i = 0; i < bgCount; i++) {
             const size = randomRange(0.8, 1.8);
@@ -109,7 +109,6 @@
         height = window.innerHeight;
         if (width === 0 || height === 0) return;
 
-        // Cap DPR at 1.25 to guarantee 60-120 FPS on all screens without quality loss
         const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
         canvas.width = Math.floor(width * dpr);
         canvas.height = Math.floor(height * dpr);
