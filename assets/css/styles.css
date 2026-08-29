@@ -13,8 +13,10 @@ body, html {
     position: fixed;
     top: 0;
     left: 0;
-    width: 320px;
-    height: 320px;
+    width: 360px;
+    height: 360px;
+    margin-top: -180px;
+    margin-left: -180px;
     border-radius: 50%;
     pointer-events: none;
     z-index: -10;
@@ -200,11 +202,15 @@ html, body {
     inset: 0;
     overflow: hidden;
     z-index: 10;
+    contain: strict;
 }
 #scene-track {
     display: flex;
     height: 100vh;
     will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 .scene {
     width: 100vw;
@@ -215,6 +221,10 @@ html, body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    contain: paint;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 .scene-inner {

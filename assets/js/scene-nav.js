@@ -87,8 +87,9 @@
 
             gsap.to(track, {
                 x: endX,
-                duration: 0.8, // 700-900ms range
-                ease: 'power3.inOut',
+                duration: 0.65,
+                ease: 'power3.out',
+                force3D: true,
                 onComplete: finish,
             });
         }

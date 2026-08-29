@@ -7,14 +7,13 @@
         return;
     }
 
-    const radius = 160;
     let mouseX = -1000;
     let mouseY = -1000;
     let rafId = null;
 
     function renderGlow() {
-        // Direct, instantaneous 120 FPS cursor tracking with 0ms lag
-        glow.style.transform = `translate3d(${mouseX - radius}px, ${mouseY - radius}px, 0)`;
+        // Direct, 0ms latency hardware translate3d centered at exact cursor point
+        glow.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
         rafId = null;
     }
 

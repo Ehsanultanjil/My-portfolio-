@@ -40,7 +40,7 @@
         const clear = suspendTransitions(targets);
         const defaultDuration = isMobileViewport ? 0.35 : 0.6;
         const defaultStagger = isMobileViewport ? 0.04 : 0.08;
-        gsap.to(targets, Object.assign({ duration: defaultDuration, stagger: defaultStagger, ease: 'power2.out', onComplete: clear, onInterrupt: clear }, vars));
+        gsap.to(targets, Object.assign({ duration: defaultDuration, stagger: defaultStagger, ease: 'power2.out', force3D: true, onComplete: clear, onInterrupt: clear }, vars));
     }
 
     const NEUTRAL = { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0 };
