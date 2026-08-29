@@ -4,10 +4,24 @@ body, html {
 
 #site-particles,
 #site-video-bg,
-#site-image-bg,
-.ambient-glow {
+#site-image-bg {
     will-change: transform;
     transform: translateZ(0);
+}
+
+.ambient-glow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -10;
+    background: radial-gradient(circle at center, rgba(var(--accent-rgb, 0, 240, 255), 0.16) 0%, transparent 65%);
+    transform: translate3d(-1000px, -1000px, 0);
+    will-change: transform;
+    transition: opacity 0.3s ease;
 }
 
 #site-particles::before {
