@@ -102,20 +102,22 @@
             goTo(getScenes().findIndex((s) => s.id === currentId) - 1);
         }
 
-        let wheelLocked = false;
+        let lastWheelTime = 0;
 
         function onWheel(e) {
             e.preventDefault();
-            if (isAnimating || wheelLocked) return;
+            if (isAnimating) return;
+
+            const now = performance.now();
+            if (now - lastWheelTime < 800) return;
 
             const absY = Math.abs(e.deltaY);
             const absX = Math.abs(e.deltaX);
-            if (absY < 15 && absX < 15) return;
-
-            wheelLocked = true;
-            setTimeout(() => { wheelLocked = false; }, 650);
-
             const delta = absY >= absX ? e.deltaY : e.deltaX;
+
+            if (Math.abs(delta) < 18) return;
+
+            lastWheelTime = now;
             if (delta > 0) next();
             else if (delta < 0) prev();
         }
@@ -148,8 +150,8 @@
         }, { passive: true });
 
         window.addEventListener('keydown', (e) => {
-            if (['ArrowDown', 'PageDown', 'ArrowRight'].includes(e.key)) { e.preventDefault(); next(); }
-            else if (['ArrowUp', 'PageUp', 'ArrowLeft'].includes(e.key)) { e.preventDefault(); prev(); }
+            if (['ArrowDown', 'PageDown'].includes(e.key)) { e.preventDefault(); next(); }
+            else if (['ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); prev(); }
         });
 
         // Snap (no animation) to the current scene's correct pixel offset after a viewport resize,
